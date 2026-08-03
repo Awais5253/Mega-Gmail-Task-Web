@@ -67,15 +67,15 @@
         <form action="/register" method="POST">
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" name="full_name" placeholder="Your Full Name" required>
+                <input type="text" name="full_name" placeholder="Your Full Name" maxlength="20" required>
             </div>
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="text" name="whatsapp" placeholder="e.g. 03001234567" required>
+                <input type="tel" name="whatsapp" placeholder="e.g. 03001234567" pattern="[0-9]{11}" maxlength="11" minlength="11" title="Please enter an 11-digit WhatsApp number" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="********" required>
+                <input type="password" name="password" placeholder="Minimum 5 characters" minlength="5" required>
             </div>
             <button type="submit">Create Account</button>
         </form>
