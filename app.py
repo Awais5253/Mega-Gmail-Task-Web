@@ -13,7 +13,6 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
-    # Users Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -29,7 +28,6 @@ def init_db():
     cur.close()
     conn.close()
 
-# Database Initialize
 try:
     init_db()
 except Exception as e:
