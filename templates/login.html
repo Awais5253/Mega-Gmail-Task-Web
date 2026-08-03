@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mega Gmail Task</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0b0f19; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: #161e2e; width: 100%; max-width: 400px; padding: 30px; border-radius: 16px; border: 1px solid #243044; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
+        h2 { color: #38bdf8; margin-bottom: 8px; font-size: 26px; }
+        p.subtitle { color: #94a3b8; margin-bottom: 25px; font-size: 14px; }
+        .form-group { text-align: left; margin-bottom: 18px; }
+        label { display: block; color: #cbd5e1; margin-bottom: 6px; font-size: 14px; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; outline: none; }
+        input:focus { border-color: #38bdf8; }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:hover { opacity: 0.9; }
+        .link { margin-top: 20px; font-size: 14px; color: #94a3b8; }
+        .link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
+        .alert { background: #ef444422; color: #f87171; border: 1px solid #ef444455; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Mega Gmail Task</h2>
+        <p class="subtitle">اپنے اکاؤنٹ میں لاگ ان کریں</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label>واٹس ایپ نمبر (WhatsApp Number)</label>
+                <input type="text" name="whatsapp" placeholder="03001234567" required>
+            </div>
+            <div class="form-group">
+                <label>پاس ورڈ (Password)</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <div class="link">
+            نیا اکاؤنٹ بنانا چاہتے ہیں؟ <a href="/register">Register</a>
+        </div>
+    </div>
+</body>
+</html>
