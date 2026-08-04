@@ -1,4 +1,5 @@
 import os
+import random
 import psycopg2
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
@@ -13,6 +14,8 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # Users Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -24,6 +27,23 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+    
+    # Tasks Table
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS tasks (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            gid VARCHAR(20) NOT NULL,
+            name VARCHAR(100) NOT NULL,
+            dob_year VARCHAR(10) NOT NULL,
+            email VARCHAR(150) NOT NULL,
+            password VARCHAR(100) NOT NULL,
+            price NUMERIC DEFAULT 30,
+            status VARCHAR(20) DEFAULT 'active',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
+    
     conn.commit()
     cur.close()
     conn.close()
@@ -32,6 +52,39 @@ try:
     init_db()
 except Exception as e:
     print("Database init error:", e)
+
+# Helper function to generate random task data
+def generate_random_task(user_id):
+    first_names = ["Gregory", "Jason", "Christopher", "Daniel", "Matthew", "Andrew", "Joshua", "David", "James", "Robert"]
+    last_names = ["Pruitt", "Waters", "Long", "Miller", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris"]
+    
+    first = random.choice(first_names)
+    last = random.choice(last_names)
+    full_name = f"{first} {last}"
+    
+    dob_year = str(random.randint(1993, 2004)) # 20+ years old
+    rand_num = random.randint(1000000, 9999999)
+    email = f"{first.lower()}{last.lower()}{rand_num}@gmail.com"
+    password = f"aass{random.randint(1000, 9999)}"
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM tasks")
+    total_count = cur.fetchone()[0] + 1
+    gid = f"G{total_count}"
+    
+    # Delete old active task if exists (Cleanup)
+    cur.execute("DELETE FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
+    
+    # Insert new active task
+    cur.execute('''
+        INSERT INTO tasks (user_id, gid, name, dob_year, email, password, price, status)
+        VALUES (%s, %s, %s, %s, %s, %s, 30, 'active')
+    ''', (user_id, gid, full_name, dob_year, email, password))
+    
+    conn.commit()
+    cur.close()
+    conn.close()
 
 @app.route('/')
 def index():
@@ -91,12 +144,74 @@ def home():
     
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # Fetch User Details
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
+    
+    # Fetch Pending Tasks for Recent Activity Section
+    cur.execute("SELECT email FROM tasks WHERE user_id = %s AND status = 'pending'", (session['user_id'],))
+    pending_rows = cur.fetchall()
+    
+    pending_items = []
+    for row in pending_rows:
+        pending_items.append({'title': f"Gmail Task ({row[0]})"})
+        
     cur.close()
     conn.close()
     
-    return render_template('home.html', user=user_info)
+    return render_template('home.html', user=user_info, pending_items=pending_items)
+
+@app.route('/tasks', methods=['GET', 'POST'])
+def tasks():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'start_new':
+            generate_random_task(user_id)
+            return redirect(url_for('tasks'))
+            
+        elif action == 'done':
+            # Change status from active to pending
+            cur.execute("UPDATE tasks SET status = 'pending' WHERE user_id = %s AND status = 'active'", (user_id,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect(url_for('home'))
+            
+        elif action == 'cancel':
+            # Delete active task to save DB memory
+            cur.execute("DELETE FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return redirect(url_for('tasks'))
+
+    # Fetch active task if exists
+    cur.execute("SELECT gid, name, dob_year, email, password, price FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
+    active_row = cur.fetchone()
+    cur.close()
+    conn.close()
+    
+    active_task = None
+    if active_row:
+        active_task = {
+            'gid': active_row[0],
+            'name': active_row[1],
+            'dob_year': active_row[2],
+            'email': active_row[3],
+            'password': active_row[4],
+            'price': active_row[5]
+        }
+        
+    return render_template('tasks.html', active_task=active_task)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
