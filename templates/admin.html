@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Mega Gmail Task</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 15px 40px 15px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+        .admin-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00f2fe;
+            margin-bottom: 4px;
+        }
+        .admin-sub {
+            color: #7a8b9e;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        /* Task Card */
+        .admin-card {
+            background: #121827;
+            border-radius: 18px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+        }
+        
+        /* User Header */
+        .user-info-header {
+            background: #182238;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 14px;
+            border-left: 4px solid #00f2fe;
+        }
+        .user-name {
+            font-weight: 800;
+            font-size: 15px;
+            color: #ffffff;
+        }
+        .user-phone {
+            font-size: 13px;
+            color: #7a8b9e;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Task Details Box */
+        .details-box {
+            background: #0d1322;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            font-family: monospace;
+            color: #d1d5db;
+        }
+        .details-box strong {
+            color: #00f2fe;
+        }
+
+        /* Copy Button */
+        .btn-copy {
+            background: rgba(0, 242, 254, 0.15);
+            color: #00f2fe;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+        }
+        .btn-copy:active {
+            transform: scale(0.98);
+            background: #00f2fe;
+            color: #090d16;
+        }
+
+        /* Action Buttons Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        .btn-action {
+            padding: 12px 6px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+        .btn-approve {
+            background: #2ed573;
+            color: #ffffff;
+        }
+        .btn-notexist {
+            background: #ffa500;
+            color: #ffffff;
+        }
+        .btn-reject {
+            background: #ff4757;
+            color: #ffffff;
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7a8b9e;
+            font-size: 14px;
+            background: #121827;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-title">Admin Dashboard 👑</div>
+        <div class="admin-sub">Manage Pending Tasks & User Submissions</div>
+
+        {% if tasks %}
+            {% for task in tasks %}
+            <div class="admin-card">
+                <!-- User Details -->
+                <div class="user-info-header">
+                    <div class="user-name">👤 User: {{ task[1] }}</div>
+                    <div class="user-phone">📞 Phone: {{ task[2] }}</div>
+                </div>
+
+                <!-- Task Details Block -->
+                <div class="details-box" id="task-text-{{ task[0] }}">
+ID: {{ task[3] }}
+Name: {{ task[4] }}
+DOB: {{ task[5] }}
+Email: {{ task[6] }}
+Password: {{ task[7] }}
+                </div>
+
+                <!-- One-Tap Copy Button -->
+                <button class="btn-copy" onclick="copyCardData('task-text-{{ task[0] }}', this)">
+                    📋 Copy Task Details
+                </button>
+
+                <!-- Action Buttons -->
+                <div class="action-grid">
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="task_id" value="{{ task[0] }}">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit" class="btn-action btn-approve">✅ Approve</button>
+                    </form>
+
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="task_id" value="{{ task[0] }}">
+                        <input type="hidden" name="action" value="not_exist">
+                        <button type="submit" class="btn-action btn-notexist">⚠️ Not Exist</button>
+                    </form>
+
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="task_id" value="{{ task[0] }}">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn-action btn-reject">❌ Reject</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-tasks">
+                🎉 No pending tasks available right now!
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function copyCardData(elementId, btn) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "✓ Copied!";
+                btn.style.background = "#00f2fe";
+                btn.style.color = "#090d16";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "rgba(0, 242, 254, 0.15)";
+                    btn.style.color = "#00f2fe";
+                }, 1200);
+            });
+        }
+    </script>
+</body>
+</html>
