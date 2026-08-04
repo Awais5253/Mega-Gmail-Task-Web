@@ -21,47 +21,86 @@
             max-width: 450px;
         }
         .page-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #00f2fe;
             margin-bottom: 20px;
             text-align: center;
+            letter-spacing: 0.5px;
         }
         .card {
             background: #121827;
             border-radius: 16px;
-            padding: 16px;
+            padding: 16px 18px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 10px;
             margin-bottom: 12px;
         }
-        .details {
-            font-size: 13px;
-            color: #d1d5db;
-            line-height: 1.6;
-            font-family: monospace;
+        .amount {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ffffff;
         }
         .status {
             font-weight: 800;
-            font-size: 12px;
-            margin-top: 8px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-block;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .status-pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; }
-        .status-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
-        .status-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
+        .status-pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.3); }
+        .status-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.3); }
+        .status-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.3); }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .label {
+            color: #7a8b9e;
+            font-weight: 600;
+        }
+        .val {
+            color: #e2e8f0;
+            font-weight: 700;
+        }
+        .time-box {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            font-size: 11px;
+            color: #00f2fe;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
         .btn-back {
             display: block;
             width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            padding: 14px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+            color: #ffffff;
             text-align: center;
-            border-radius: 10px;
+            border-radius: 12px;
             text-decoration: none;
             font-weight: 700;
-            margin-top: 20px;
+            font-size: 14px;
+            margin-top: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -72,13 +111,8 @@
         {% if withdrawals %}
             {% for w in withdrawals %}
             <div class="card">
-                <div class="details">
-Method: {{ w[0] }}<br>
-Account: {{ w[1] }}<br>
-Amount: PKR {{ w[2] }}<br>
-Date & Time: {{ w[4] }}
-                </div>
-                <div>
+                <div class="card-header">
+                    <div class="amount">PKR {{ w[2] }}</div>
                     {% if w[3] == 'pending' %}
                         <span class="status status-pending">Pending</span>
                     {% elif w[3] == 'Approved' %}
@@ -87,10 +121,24 @@ Date & Time: {{ w[4] }}
                         <span class="status status-rejected">Rejected</span>
                     {% endif %}
                 </div>
+                
+                <div class="info-row">
+                    <span class="label">💳 Payment Method</span>
+                    <span class="val">{{ w[0] }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">📱 Account Number</span>
+                    <span class="val">{{ w[1] }}</span>
+                </div>
+                
+                <div class="time-box">
+                    <span>🕒 Date & Time:</span>
+                    <span>{{ w[4] }}</span>
+                </div>
             </div>
             {% endfor %}
         {% else %}
-            <div style="text-align: center; color: #7a8b9e; padding: 20px;">No withdrawal history found.</div>
+            <div style="text-align: center; color: #7a8b9e; padding: 30px; background:#121827; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">No withdrawal history found.</div>
         {% endif %}
 
         <a href="{{ url_for('wallet') }}" class="btn-back">⬅ Back to Wallet</a>
