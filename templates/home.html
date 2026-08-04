@@ -10,7 +10,7 @@
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px 15px 90px 15px; /* Bottom padding so content doesn't hide behind nav */
+            padding: 20px 15px 90px 15px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -20,175 +20,170 @@
             width: 100%;
             max-width: 420px;
         }
-        /* Top Header */
-        .header {
-            margin-bottom: 25px;
-        }
-        .brand-name {
-            color: #00f2fe;
-            font-size: 20px;
+        .welcome-title {
+            font-size: 22px;
             font-weight: 800;
-            margin: 0 0 6px 0;
-            letter-spacing: 0.5px;
-        }
-        .welcome-text {
-            font-size: 26px;
-            font-weight: 800;
+            margin-bottom: 20px;
             color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         /* Balance Card */
         .balance-card {
-            background: linear-gradient(135deg, #131b2e 0%, #17223b 100%);
-            padding: 24px 20px;
+            background: #121827;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            margin-bottom: 20px;
+            padding: 22px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            margin-bottom: 18px;
         }
         .balance-label {
-            font-size: 13px;
-            color: #8a99ad;
-            letter-spacing: 1.2px;
+            font-size: 12px;
+            color: #7a8b9e;
             font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
         .balance-amount {
-            font-size: 42px;
-            font-weight: 900;
-            background: linear-gradient(90deg, #00f2fe, #4facfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 12px 0 0 0;
-            line-height: 1;
+            font-size: 32px;
+            font-weight: 800;
+            color: #00f2fe;
+            margin-top: 6px;
         }
 
-        /* Action Buttons */
-        .btn-group {
-            display: flex;
+        /* Top Action Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 25px;
         }
-        .action-btn {
-            flex: 1;
-            padding: 16px 12px;
+        .nav-btn {
+            background: #121827;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
-            background: #141c2e;
+            padding: 14px;
             color: #ffffff;
+            font-size: 13px;
             font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            border: 1px solid #23314d;
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.2s;
         }
-        .action-btn:active {
-            transform: scale(0.98);
+        .nav-btn:active {
+            transform: scale(0.97);
             border-color: #00f2fe;
         }
 
         /* Recent Activity Container Card */
-        .activity-card-container {
+        .activity-card {
             background: #121827;
-            border-radius: 22px;
-            padding: 22px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
         .activity-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 16px;
         }
         .icon-box {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            background: rgba(0, 242, 254, 0.15);
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 198, 255, 0.3);
         }
         .icon-box svg {
-            width: 22px;
-            height: 22px;
-            fill: #ffffff;
+            width: 20px;
+            height: 20px;
+            fill: #00f2fe;
         }
         .activity-title {
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 800;
-            color: #ffffff;
-            margin: 0;
         }
 
-        /* Empty State */
-        .empty-state {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 25px 10px;
-            text-align: center;
-        }
-        .empty-icon-box {
-            width: 55px;
-            height: 55px;
-            background: #1a2338;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-        .empty-icon-box svg {
-            width: 28px;
-            height: 28px;
-            fill: #4a5975;
-        }
-        .empty-text {
-            color: #7a8b9e;
-            font-size: 14px;
-            font-weight: 500;
-            max-width: 240px;
-            line-height: 1.4;
-            margin: 0;
+        /* Horizontal Scrollable Table Wrapper */
+        .table-scroll-container {
+            width: 100%;
+            max-height: 280px; /* Fixed height for max 10 items scroll */
+            overflow-x: auto;  /* Horizontal Scroll for long emails */
+            overflow-y: auto;  /* Vertical Scroll if items grow */
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Pending Activity Item */
-        .pending-item {
+        /* Custom Scrollbar */
+        .table-scroll-container::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background: #23314d;
+            border-radius: 4px;
+        }
+
+        /* Activity Table Styling */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 320px; /* Ensures scrolling on small screens */
+            text-align: left;
+        }
+        .custom-table th {
             background: #182238;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border-left: 4px solid #ff9f43;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+            color: #7a8b9e;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 12px 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .pending-text {
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffffff;
+        .custom-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+            font-weight: 600;
+            color: #d1d5db;
+            white-space: nowrap; /* Keeps email in one line for scrolling */
+        }
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            display: inline-block;
         }
         .badge-pending {
-            background: rgba(255, 159, 67, 0.18);
-            color: #ff9f43;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 800;
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+        .badge-approved {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+        .badge-rejected {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
         }
 
-        /* Fixed Bottom Navigation Bar */
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -212,7 +207,6 @@
             font-size: 12px;
             font-weight: 700;
             gap: 4px;
-            transition: color 0.2s;
         }
         .nav-item.active {
             color: #00f2fe;
@@ -226,50 +220,62 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="brand-name">Mega Gmail Task</div>
-            <div class="welcome-text">Welcome back, {{ user[0] }} 👋</div>
-        </div>
+        <div class="welcome-title">Welcome back, {{ user[0] }} 👋</div>
 
-        <!-- Available Balance -->
+        <!-- Balance Card -->
         <div class="balance-card">
-            <div class="balance-label">AVAILABLE BALANCE</div>
+            <div class="balance-label">Available Balance</div>
             <div class="balance-amount">PKR {{ user[1] }}</div>
         </div>
 
-        <!-- 2 Action Buttons -->
-        <div class="btn-group">
-            <a href="/account-history" class="action-btn">Account History</a>
-            <a href="/withdraw-history" class="action-btn">Withdraw History</a>
+        <!-- Top Navigation Buttons -->
+        <div class="btn-grid">
+            <a href="#" class="nav-btn">Account History</a>
+            <a href="#" class="nav-btn">Withdraw History</a>
         </div>
 
-        <!-- Recent Activity Box -->
-        <div class="activity-card-container">
+        <!-- Recent Activity Section -->
+        <div class="activity-card">
             <div class="activity-header">
                 <div class="icon-box">
-                    <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 1 1 7 7 7.07 7.07 0 0 1-6-3.15l-1.45 1.45A8.94 8.94 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
                 </div>
-                <h3 class="activity-title">Recent Activity</h3>
+                <div class="activity-title">Recent Activity</div>
             </div>
 
-            <!-- Auto Checking Pending Activity -->
-            {% if pending_items %}
-                {% for item in pending_items %}
-                <div class="pending-item">
-                    <span class="pending-text">{{ item.title }}</span>
-                    <span class="badge-pending">Pending</span>
+            <!-- Scrollable Table -->
+            <div class="table-scroll-container">
+                {% if recent_activities %}
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Activity Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in recent_activities %}
+                        <tr>
+                            <td>Gmail Task ({{ item.email }})</td>
+                            <td>
+                                {% if item.status == 'pending' %}
+                                    <span class="badge badge-pending">Pending</span>
+                                {% elif item.status == 'approved' or item.status == 'Approved' %}
+                                    <span class="badge badge-approved">Approved</span>
+                                {% else %}
+                                    <span class="badge badge-rejected">{{ item.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="padding: 20px; text-align: center; color: #7a8b9e; font-size: 13px;">
+                    No recent activity found.
                 </div>
-                {% endfor %}
-            {% else %}
-                <!-- Empty State -->
-                <div class="empty-state">
-                    <div class="empty-icon-box">
-                        <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 12H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                    </div>
-                    <p class="empty-text">No activity yet. Start completing tasks to earn money!</p>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 
