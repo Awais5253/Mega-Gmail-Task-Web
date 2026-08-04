@@ -6,53 +6,66 @@
     <title>Home - Mega Gmail Task</title>
     <style>
         body {
-            background-color: #0b132b;
+            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
             color: #ffffff;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 20px 15px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
             width: 100%;
             max-width: 420px;
         }
+        /* Top Header */
         .header {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        .header h3 {
+        .brand-name {
             color: #00f2fe;
-            margin: 0 0 5px 0;
             font-size: 20px;
+            font-weight: 800;
+            margin: 0 0 6px 0;
+            letter-spacing: 0.5px;
         }
         .welcome-text {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+
         /* Balance Card */
         .balance-card {
-            background: #1c2541;
-            padding: 25px 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #131b2e 0%, #17223b 100%);
+            padding: 24px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             margin-bottom: 20px;
-            border: 1px solid #2a3a5e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .balance-label {
             font-size: 13px;
-            color: #a0aec0;
-            letter-spacing: 1px;
-            font-weight: bold;
+            color: #8a99ad;
+            letter-spacing: 1.2px;
+            font-weight: 700;
         }
         .balance-amount {
-            font-size: 40px;
-            font-weight: bold;
-            color: #00f2fe;
-            margin: 10px 0;
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(90deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 12px 0 0 0;
+            line-height: 1;
         }
-        /* Side by Side Buttons */
+
+        /* Action Buttons */
         .btn-group {
             display: flex;
             gap: 12px;
@@ -60,60 +73,119 @@
         }
         .action-btn {
             flex: 1;
-            padding: 14px 10px;
-            border: none;
-            border-radius: 10px;
-            background: #1c2541;
+            padding: 16px 12px;
+            border-radius: 14px;
+            background: #141c2e;
             color: #ffffff;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            border: 1px solid #3a506b;
+            border: 1px solid #23314d;
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
         }
-        .action-btn:hover {
+        .action-btn:active {
+            transform: scale(0.98);
             border-color: #00f2fe;
-            color: #00f2fe;
         }
-        /* Recent Activity Section */
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #e2e8f0;
+
+        /* Recent Activity Container Card */
+        .activity-card-container {
+            background: #121827;
+            border-radius: 22px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
         }
-        .activity-card {
-            background: #1c2541;
-            padding: 15px;
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .icon-box {
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
-            margin-bottom: 10px;
-            border-left: 4px solid #f6ad55; /* Pending color */
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 198, 255, 0.3);
+        }
+        .icon-box svg {
+            width: 22px;
+            height: 22px;
+            fill: #ffffff;
+        }
+        .activity-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 10px;
+            text-align: center;
+        }
+        .empty-icon-box {
+            width: 60px;
+            height: 60px;
+            background: #1a2338;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .empty-icon-box svg {
+            width: 30px;
+            height: 30px;
+            fill: #4a5975;
+        }
+        .empty-text {
+            color: #7a8b9e;
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 240px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Pending Activity Item */
+        .pending-item {
+            background: #182238;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border-left: 4px solid #ff9f43;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
         }
-        .activity-info div {
+        .pending-text {
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 700;
+            color: #ffffff;
         }
         .badge-pending {
-            background: rgba(246, 173, 85, 0.2);
-            color: #f6ad55;
-            padding: 4px 10px;
+            background: rgba(255, 159, 67, 0.18);
+            color: #ff9f43;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
-        }
-        .empty-msg {
-            text-align: center;
-            color: #a0aec0;
-            font-size: 14px;
-            padding: 20px;
-            background: #1c2541;
-            border-radius: 12px;
+            font-weight: 800;
         }
     </style>
 </head>
@@ -121,34 +193,49 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h3>Mega Gmail Task</h3>
+            <div class="brand-name">Mega Gmail Task</div>
             <div class="welcome-text">Welcome back, {{ user[0] }} 👋</div>
         </div>
 
-        <!-- Balance Card -->
+        <!-- Available Balance -->
         <div class="balance-card">
             <div class="balance-label">AVAILABLE BALANCE</div>
             <div class="balance-amount">PKR {{ user[1] }}</div>
         </div>
 
-        <!-- 2 Side-by-Side Buttons -->
+        <!-- 2 Action Buttons -->
         <div class="btn-group">
-            <a href="#" class="action-btn">Account History</a>
-            <a href="#" class="action-btn">Withdraw History</a>
+            <a href="/account-history" class="action-btn">Account History</a>
+            <a href="/withdraw-history" class="action-btn">Withdraw History</a>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="section-title">Recent Activity</div>
-        
-        <!-- Pending Items (Only showing pending tasks/withdrawals) -->
-        <div class="activity-card">
-            <div class="activity-info">
-                <div>Gmail Task Submission</div>
+        <!-- Recent Activity Box -->
+        <div class="activity-card-container">
+            <div class="activity-header">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 1 1 7 7 7.07 7.07 0 0 1-6-3.15l-1.45 1.45A8.94 8.94 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                </div>
+                <h3 class="activity-title">Recent Activity</h3>
             </div>
-            <span class="badge-pending">Pending</span>
-        </div>
 
-        <!-- Note: When approved, items disappear automatically -->
+            <!-- Auto Checking Pending Activity -->
+            {% if pending_items %}
+                {% for item in pending_items %}
+                <div class="pending-item">
+                    <span class="pending-text">{{ item.title }}</span>
+                    <span class="badge-pending">Pending</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State when nothing is pending -->
+                <div class="empty-state">
+                    <div class="empty-icon-box">
+                        <svg viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 12H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    </div>
+                    <p class="empty-text">No activity yet. Start completing tasks to earn money!</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
