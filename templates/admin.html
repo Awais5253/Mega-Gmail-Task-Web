@@ -70,29 +70,30 @@
             padding: 14px;
             font-size: 13px;
             line-height: 1.6;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             font-family: monospace;
             color: #d1d5db;
         }
-        .details-box strong {
-            color: #00f2fe;
-        }
 
-        /* Copy Button */
-        .btn-copy {
+        /* Single Copy Email Button */
+        .btn-copy-email {
             background: rgba(0, 242, 254, 0.15);
             color: #00f2fe;
             border: 1px solid rgba(0, 242, 254, 0.3);
             width: 100%;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 12px;
             font-weight: 800;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             transition: all 0.2s;
         }
-        .btn-copy:active {
+        .btn-copy-email:active {
             transform: scale(0.98);
             background: #00f2fe;
             color: #090d16;
@@ -130,6 +131,33 @@
             color: #ffffff;
         }
 
+        /* Status Banner for Processed Tasks (Telegram Style) */
+        .status-banner {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 13px;
+            text-align: center;
+            box-sizing: border-box;
+            letter-spacing: 0.5px;
+        }
+        .status-approved-bg {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.4);
+        }
+        .status-notexist-bg {
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.4);
+        }
+        .status-rejected-bg {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+        }
+
         .no-tasks {
             text-align: center;
             padding: 40px 20px;
@@ -156,20 +184,21 @@
                 </div>
 
                 <!-- Task Details Block -->
-                <div class="details-box" id="task-text-{{ task[0] }}">
-ID: {{ task[3] }}
-Name: {{ task[4] }}
-DOB: {{ task[5] }}
-Email: {{ task[6] }}
+                <div class="details-box">
+ID: {{ task[3] }}<br>
+Name: {{ task[4] }}<br>
+DOB: {{ task[5] }}<br>
+Email: {{ task[6] }}<br>
 Password: {{ task[7] }}
                 </div>
 
-                <!-- One-Tap Copy Button -->
-                <button class="btn-copy" onclick="copyCardData('task-text-{{ task[0] }}', this)">
-                    📋 Copy Task Details
+                <!-- One-Tap Copy Email Only Button -->
+                <button class="btn-copy-email" onclick="copyEmailOnly('{{ task[6] }}', this)">
+                    📧 Copy Email
                 </button>
 
-                <!-- Action Buttons -->
+                <!-- Status OR Action Buttons -->
+                {% if task[9] == 'pending' %}
                 <div class="action-grid">
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="task_id" value="{{ task[0] }}">
@@ -189,25 +218,37 @@ Password: {{ task[7] }}
                         <button type="submit" class="btn-action btn-reject">❌ Reject</button>
                     </form>
                 </div>
+                {% elif task[9] == 'Approved' or task[9] == 'approved' %}
+                    <div class="status-banner status-approved-bg">
+                        STATUS: APPROVED
+                    </div>
+                {% elif task[9] == 'Not Exist' %}
+                    <div class="status-banner status-notexist-bg">
+                        STATUS: NOT EXIST
+                    </div>
+                {% else %}
+                    <div class="status-banner status-rejected-bg">
+                        STATUS: REJECTED
+                    </div>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}
             <div class="no-tasks">
-                🎉 No pending tasks available right now!
+                🎉 No task history available right now!
             </div>
         {% endif %}
     </div>
 
     <script>
-        function copyCardData(elementId, btn) {
-            const text = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = btn.innerText;
-                btn.innerText = "✓ Copied!";
+        function copyEmailOnly(emailText, btn) {
+            navigator.clipboard.writeText(emailText).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = "✓ Email Copied!";
                 btn.style.background = "#00f2fe";
                 btn.style.color = "#090d16";
                 setTimeout(() => {
-                    btn.innerText = originalText;
+                    btn.innerHTML = originalText;
                     btn.style.background = "rgba(0, 242, 254, 0.15)";
                     btn.style.color = "#00f2fe";
                 }, 1200);
