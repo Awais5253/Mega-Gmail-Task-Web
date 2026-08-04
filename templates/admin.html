@@ -189,7 +189,8 @@
                     <div class="details-box">
 Method: {{ w[3] }}<br>
 Account: {{ w[4] }}<br>
-Amount: PKR {{ w[5] }}
+Amount: PKR {{ w[5] }}<br>
+Time: {{ w[7] }}
                     </div>
                     {% if w[6] == 'pending' %}
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -232,7 +233,8 @@ ID: {{ task[3] }}<br>
 Name: {{ task[4] }}<br>
 DOB: {{ task[5] }}<br>
 Email: {{ task[6] }}<br>
-Password: {{ task[7] }}
+Password: {{ task[7] }}<br>
+Time: {{ task[10] }}
                     </div>
 
                     <button class="btn-copy-email" onclick="copyEmailOnly('{{ task[6] }}', this)">
@@ -281,6 +283,7 @@ Password: {{ task[7] }}
                         <div class="user-name">👤 Name: {{ u[0] }}</div>
                         <div class="user-phone">📞 Phone: {{ u[1] }}</div>
                         <div class="user-phone" style="color: #00f2fe; margin-top: 4px;">🔑 Password: {{ u[2] }}</div>
+                        <div class="user-phone" style="color: #7a8b9e; margin-top: 4px;">⏰ Joined: {{ u[3] }}</div>
                     </div>
                 </div>
                 {% endfor %}
