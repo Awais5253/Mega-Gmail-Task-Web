@@ -426,11 +426,19 @@ def admin():
         LIMIT 30
     """)
     all_withdrawals = cur.fetchall()
+
+    # تمام رجسٹرڈ یوزرز کا ڈیٹا حاصل کرنا (نام، فون، پاسورڈ)
+    cur.execute("""
+        SELECT full_name, whatsapp, password 
+        FROM users 
+        ORDER BY id DESC
+    """)
+    all_users = cur.fetchall()
     
     cur.close()
     conn.close()
     
-    return render_template('admin.html', tasks=all_tasks, withdrawals=all_withdrawals)
+    return render_template('admin.html', tasks=all_tasks, withdrawals=all_withdrawals, users=all_users)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
