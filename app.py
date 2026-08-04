@@ -242,14 +242,11 @@ def admin():
         action = request.form.get('action')
         
         if action == 'approve':
-            # Get user_id and price
-            cur.execute("SELECT user_id, price FROM tasks WHERE id = %s", (task_id,))
+            cur.execute("SELECT user_id, price, status FROM tasks WHERE id = %s", (task_id,))
             row = cur.fetchone()
-            if row:
+            if row and row[2] == 'pending':
                 u_id, price = row[0], row[1]
-                # Update task status to Approved
                 cur.execute("UPDATE tasks SET status = 'Approved' WHERE id = %s", (task_id,))
-                # Add balance to user account
                 cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
                 conn.commit()
                 
@@ -265,20 +262,21 @@ def admin():
         conn.close()
         return redirect(url_for('admin'))
     
-    # Fetch all pending tasks joined with user details
+    # Fetch all tasks (Pending first, then processed ones, Limit 30)
     cur.execute("""
         SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
-               tasks.dob_year, tasks.email, tasks.password, tasks.price
+               tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status
         FROM tasks 
         JOIN users ON tasks.user_id = users.id 
-        WHERE tasks.status = 'pending' 
-        ORDER BY tasks.id DESC
+        WHERE tasks.status != 'active' 
+        ORDER BY (CASE WHEN tasks.status = 'pending' THEN 1 ELSE 2 END), tasks.id DESC 
+        LIMIT 30
     """)
-    pending_tasks = cur.fetchall()
+    all_tasks = cur.fetchall()
     cur.close()
     conn.close()
     
-    return render_template('admin.html', tasks=pending_tasks)
+    return render_template('admin.html', tasks=all_tasks)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
