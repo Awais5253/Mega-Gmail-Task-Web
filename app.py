@@ -43,6 +43,19 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+
+    # Withdrawals Table
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS withdrawals (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            method VARCHAR(20) NOT NULL,
+            account_number VARCHAR(20) NOT NULL,
+            amount NUMERIC NOT NULL,
+            status VARCHAR(20) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
     
     conn.commit()
     cur.close()
@@ -62,10 +75,10 @@ def generate_random_task(user_id):
     last = random.choice(last_names)
     full_name = f"{first} {last}"
     
-    dob_year = str(random.randint(1993, 2004)) # 20+ years old
+    dob_year = str(random.randint(1993, 2004))
     rand_num = random.randint(1000000, 9999999)
     email = f"{first.lower()}{last.lower()}{rand_num}@gmail.com"
-    password = "aass1122"  # Strictly fixed password as requested
+    password = "aass1122"
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -73,10 +86,8 @@ def generate_random_task(user_id):
     total_count = cur.fetchone()[0] + 1
     gid = f"G{total_count}"
     
-    # Delete old active task if exists (Cleanup)
     cur.execute("DELETE FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
     
-    # Insert new active task
     cur.execute('''
         INSERT INTO tasks (user_id, gid, name, dob_year, email, password, price, status)
         VALUES (%s, %s, %s, %s, %s, %s, 30, 'active')
@@ -145,11 +156,9 @@ def home():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Fetch User Details
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
     
-    # Fetch Recent Activity (Pending first, then Approved/Rejected, Limit 10)
     cur.execute("""
         SELECT gid, email, status 
         FROM tasks 
@@ -182,7 +191,6 @@ def tasks():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # 1-Hour Task Expiry Cleanup
     cur.execute("""
         DELETE FROM tasks 
         WHERE user_id = %s AND status = 'active' 
@@ -198,7 +206,6 @@ def tasks():
             return redirect(url_for('tasks'))
             
         elif action == 'done':
-            # Change status from active to pending
             cur.execute("UPDATE tasks SET status = 'pending' WHERE user_id = %s AND status = 'active'", (user_id,))
             conn.commit()
             cur.close()
@@ -206,14 +213,12 @@ def tasks():
             return redirect(url_for('home'))
             
         elif action == 'cancel':
-            # Delete active task to save DB memory
             cur.execute("DELETE FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
             conn.commit()
             cur.close()
             conn.close()
             return redirect(url_for('tasks'))
 
-    # Fetch active task if exists
     cur.execute("SELECT gid, name, dob_year, email, password, price FROM tasks WHERE user_id = %s AND status = 'active'", (user_id,))
     active_row = cur.fetchone()
     cur.close()
@@ -232,6 +237,61 @@ def tasks():
         
     return render_template('tasks.html', active_task=active_task)
 
+@app.route('/wallet', methods=['GET', 'POST'])
+def wallet():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user_id = session['user_id']
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if request.method == 'POST':
+        method = request.form.get('method')
+        account_number = request.form.get('account_number', '').strip()
+        try:
+            amount = float(request.form.get('amount', 0))
+        except ValueError:
+            amount = 0
+            
+        cur.execute("SELECT balance FROM users WHERE id = %s", (user_id,))
+        user_balance = float(cur.fetchone()[0])
+        
+        if method not in ['JazzCash', 'EasyPaisa']:
+            flash("Please select JazzCash or EasyPaisa!", "danger")
+        elif not account_number.isdigit() or len(account_number) != 11:
+            flash("Account number must be exactly 11 digits!", "danger")
+        elif amount < 30:
+            flash("Minimum withdrawal amount is PKR 30!", "danger")
+        elif amount > user_balance:
+            flash("Insufficient balance!", "danger")
+        else:
+            cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (amount, user_id))
+            cur.execute("""
+                INSERT INTO withdrawals (user_id, method, account_number, amount, status)
+                VALUES (%s, %s, %s, %s, 'pending')
+            """, (user_id, method, account_number, amount))
+            conn.commit()
+            flash("Withdrawal request submitted successfully!", "success")
+            cur.close()
+            conn.close()
+            return redirect(url_for('wallet'))
+
+    cur.execute("SELECT balance FROM users WHERE id = %s", (user_id,))
+    balance = cur.fetchone()[0]
+    
+    cur.execute("""
+        SELECT method, account_number, amount, status 
+        FROM withdrawals 
+        WHERE user_id = %s 
+        ORDER BY id DESC LIMIT 10
+    """, (user_id,))
+    withdrawals = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    return render_template('wallet.html', balance=balance, withdrawals=withdrawals)
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     conn = get_db_connection()
@@ -239,30 +299,42 @@ def admin():
     
     if request.method == 'POST':
         task_id = request.form.get('task_id')
+        withdraw_id = request.form.get('withdraw_id')
         action = request.form.get('action')
         
-        if action == 'approve':
-            cur.execute("SELECT user_id, price, status FROM tasks WHERE id = %s", (task_id,))
-            row = cur.fetchone()
-            if row and row[2] == 'pending':
-                u_id, price = row[0], row[1]
-                cur.execute("UPDATE tasks SET status = 'Approved' WHERE id = %s", (task_id,))
-                cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+        if task_id:
+            if action == 'approve':
+                cur.execute("SELECT user_id, price, status FROM tasks WHERE id = %s", (task_id,))
+                row = cur.fetchone()
+                if row and row[2] == 'pending':
+                    u_id, price = row[0], row[1]
+                    cur.execute("UPDATE tasks SET status = 'Approved' WHERE id = %s", (task_id,))
+                    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                    conn.commit()
+            elif action == 'not_exist':
+                cur.execute("UPDATE tasks SET status = 'Not Exist' WHERE id = %s", (task_id,))
+                conn.commit()
+            elif action == 'reject':
+                cur.execute("UPDATE tasks SET status = 'Rejected' WHERE id = %s", (task_id,))
                 conn.commit()
                 
-        elif action == 'not_exist':
-            cur.execute("UPDATE tasks SET status = 'Not Exist' WHERE id = %s", (task_id,))
-            conn.commit()
-            
-        elif action == 'reject':
-            cur.execute("UPDATE tasks SET status = 'Rejected' WHERE id = %s", (task_id,))
-            conn.commit()
+        elif withdraw_id:
+            if action == 'approve_withdraw':
+                cur.execute("UPDATE withdrawals SET status = 'Approved' WHERE id = %s", (withdraw_id,))
+                conn.commit()
+            elif action == 'reject_withdraw':
+                cur.execute("SELECT user_id, amount, status FROM withdrawals WHERE id = %s", (withdraw_id,))
+                w_row = cur.fetchone()
+                if w_row and w_row[2] == 'pending':
+                    u_id, w_amount = w_row[0], w_row[1]
+                    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (w_amount, u_id))
+                    cur.execute("UPDATE withdrawals SET status = 'Rejected' WHERE id = %s", (withdraw_id,))
+                    conn.commit()
             
         cur.close()
         conn.close()
         return redirect(url_for('admin'))
     
-    # Fetch all tasks (Pending first, then processed ones, Limit 30)
     cur.execute("""
         SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
                tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status
@@ -273,10 +345,21 @@ def admin():
         LIMIT 30
     """)
     all_tasks = cur.fetchall()
+    
+    cur.execute("""
+        SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
+               withdrawals.account_number, withdrawals.amount, withdrawals.status
+        FROM withdrawals 
+        JOIN users ON withdrawals.user_id = users.id 
+        ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
+        LIMIT 30
+    """)
+    all_withdrawals = cur.fetchall()
+    
     cur.close()
     conn.close()
     
-    return render_template('admin.html', tasks=all_tasks)
+    return render_template('admin.html', tasks=all_tasks, withdrawals=all_withdrawals)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
