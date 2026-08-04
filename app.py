@@ -179,7 +179,6 @@ def home():
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
     
-    # Fetch recent 6 tasks
     cur.execute("""
         SELECT gid, email, status 
         FROM tasks 
@@ -245,7 +244,8 @@ def withdraw_history():
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT method, account_number, amount, status 
+        SELECT method, account_number, amount, status,
+               COALESCE(TO_CHAR(created_at, 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM withdrawals 
         WHERE user_id = %s 
         ORDER BY id DESC
@@ -356,7 +356,8 @@ def wallet():
     balance = cur.fetchone()[0]
     
     cur.execute("""
-        SELECT method, account_number, amount, status 
+        SELECT method, account_number, amount, status,
+               COALESCE(TO_CHAR(created_at, 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM withdrawals 
         WHERE user_id = %s 
         ORDER BY id DESC LIMIT 10
@@ -413,7 +414,8 @@ def admin():
     
     cur.execute("""
         SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
-               tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status
+               tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status,
+               COALESCE(TO_CHAR(tasks.created_at, 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM tasks 
         JOIN users ON tasks.user_id = users.id 
         WHERE tasks.status != 'active' 
@@ -424,7 +426,8 @@ def admin():
     
     cur.execute("""
         SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
-               withdrawals.account_number, withdrawals.amount, withdrawals.status
+               withdrawals.account_number, withdrawals.amount, withdrawals.status,
+               COALESCE(TO_CHAR(withdrawals.created_at, 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM withdrawals 
         JOIN users ON withdrawals.user_id = users.id 
         ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
@@ -432,9 +435,9 @@ def admin():
     """)
     all_withdrawals = cur.fetchall()
 
-    # Fetch all registered users data
     cur.execute("""
-        SELECT full_name, whatsapp, password 
+        SELECT full_name, whatsapp, password,
+               COALESCE(TO_CHAR(created_at, 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM users 
         ORDER BY id DESC
     """)
