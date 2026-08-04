@@ -35,6 +35,8 @@ except Exception as e:
 
 @app.route('/')
 def index():
+    if 'user_id' in session:
+        return redirect(url_for('home'))
     return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -76,11 +78,25 @@ def login():
         if user and user[2] == password:
             session['user_id'] = user[0]
             session['user_name'] = user[1]
-            return "<h1>Login Successful! (Home Page Coming Soon)</h1>"
+            return redirect(url_for('home'))
         else:
             flash("Invalid WhatsApp Number or Password!", "danger")
             
     return render_template('login.html')
+
+@app.route('/home')
+def home():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
+    user_info = cur.fetchone()
+    cur.close()
+    conn.close()
+    
+    return render_template('home.html', user=user_info)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
