@@ -111,24 +111,23 @@
         /* Scrollable Table Wrapper */
         .table-scroll-container {
             width: 100%;
-            max-height: 270px;
+            max-height: 280px;
             overflow-x: auto;
             overflow-y: auto;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Stylish Custom Scrollbars */
+        /* Subtle Dark Scrollbar (No ugly blue lines) */
         .table-scroll-container::-webkit-scrollbar {
-            height: 5px;
-            width: 5px;
+            height: 4px;
+            width: 4px;
         }
         .table-scroll-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+            background: transparent;
         }
         .table-scroll-container::-webkit-scrollbar-thumb {
-            background: #00f2fe;
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
         }
 
@@ -149,32 +148,41 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .custom-table td {
             padding: 12px 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 13px;
             font-weight: 600;
-            color: #d1d5db;
+            color: #ffffff;
             white-space: nowrap;
-        }
-        .custom-table tr:hover {
-            background: rgba(255, 255, 255, 0.02);
         }
         .custom-table tr:last-child td {
             border-bottom: none;
         }
 
+        /* Numbering Tag Style */
+        .row-num {
+            color: #00f2fe;
+            font-weight: 800;
+            margin-right: 8px;
+            display: inline-block;
+            min-width: 22px;
+        }
+
+        /* Email Text Style */
+        .email-text {
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
         /* Status Badges */
         .badge {
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 800;
             display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .badge-pending {
             background: rgba(255, 165, 0, 0.15);
@@ -264,7 +272,10 @@
                     <tbody>
                         {% for item in recent_activities %}
                         <tr>
-                            <td>Gmail Task ({{ item.email }})</td>
+                            <td>
+                                <span class="row-num">#{{ loop.index }}.</span>
+                                Gmail Task <span class="email-text">({{ item.email }})</span>
+                            </td>
                             <td>
                                 {% if item.status == 'pending' %}
                                     <span class="badge badge-pending">Pending</span>
