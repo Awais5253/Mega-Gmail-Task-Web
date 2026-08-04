@@ -11,6 +11,19 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
+def cleanup_old_records():
+    """30 دن سے پرانے اکاؤنٹس اور ود ڈرا ہسٹری کو خود بخود ڈیلیٹ کرنے کا فنکشن"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM tasks WHERE created_at < NOW() - INTERVAL '30 days';")
+        cur.execute("DELETE FROM withdrawals WHERE created_at < NOW() - INTERVAL '30 days';")
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print("Cleanup error:", e)
+
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -153,18 +166,21 @@ def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
+    cleanup_old_records() # 30 دن سے پرانا ڈیٹا صاف کرنا
+    
     conn = get_db_connection()
     cur = conn.cursor()
     
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
     
+    # صرف آخری 6 ریسنٹ ٹاسکس دکھائیں گے
     cur.execute("""
         SELECT gid, email, status 
         FROM tasks 
         WHERE user_id = %s AND status != 'active' 
         ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), id DESC 
-        LIMIT 10
+        LIMIT 6
     """, (session['user_id'],))
     
     activity_rows = cur.fetchall()
@@ -181,6 +197,59 @@ def home():
     conn.close()
     
     return render_template('home.html', user=user_info, recent_activities=recent_activities)
+
+@app.route('/account-history')
+def account_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    cleanup_old_records()
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("""
+        SELECT gid, email, status, price 
+        FROM tasks 
+        WHERE user_id = %s AND status != 'active' 
+        ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), id DESC
+    """, (session['user_id'],))
+    
+    activity_rows = cur.fetchall()
+    history = []
+    for row in activity_rows:
+        history.append({
+            'gid': row[0],
+            'email': row[1],
+            'status': row[2],
+            'price': row[3]
+        })
+        
+    cur.close()
+    conn.close()
+    return render_template('account_history.html', history=history)
+
+@app.route('/withdraw-history')
+def withdraw_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    cleanup_old_records()
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("""
+        SELECT method, account_number, amount, status 
+        FROM withdrawals 
+        WHERE user_id = %s 
+        ORDER BY id DESC
+    """, (session['user_id'],))
+    
+    withdrawals = cur.fetchall()
+    cur.close()
+    conn.close()
+    return render_template('withdraw_history.html', withdrawals=withdrawals)
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -242,6 +311,7 @@ def wallet():
     if 'user_id' not in session:
         return redirect(url_for('login'))
         
+    cleanup_old_records()
     user_id = session['user_id']
     conn = get_db_connection()
     cur = conn.cursor()
@@ -294,6 +364,7 @@ def wallet():
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
+    cleanup_old_records()
     conn = get_db_connection()
     cur = conn.cursor()
     
