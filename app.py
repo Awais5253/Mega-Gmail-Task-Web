@@ -360,7 +360,7 @@ def wallet():
                COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
         FROM withdrawals 
         WHERE user_id = %s 
-        ORDER BY id DESC LIMIT 10
+        ORDER BY id DESC LIMIT 6
     """, (user_id,))
     withdrawals = cur.fetchall()
     
@@ -385,19 +385,19 @@ def admin():
                 row = cur.fetchone()
                 if row and row[2] == 'pending':
                     u_id, price = row[0], row[1]
-                    cur.execute("UPDATE tasks SET status = 'Approved' WHERE id = %s", (task_id,))
+                    cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
                     conn.commit()
             elif action == 'not_exist':
-                cur.execute("UPDATE tasks SET status = 'Not Exist' WHERE id = %s", (task_id,))
+                cur.execute("UPDATE tasks SET status = 'Not Exist', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
                 conn.commit()
             elif action == 'reject':
-                cur.execute("UPDATE tasks SET status = 'Rejected' WHERE id = %s", (task_id,))
+                cur.execute("UPDATE tasks SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
                 conn.commit()
                 
         elif withdraw_id:
             if action == 'approve_withdraw':
-                cur.execute("UPDATE withdrawals SET status = 'Approved' WHERE id = %s", (withdraw_id,))
+                cur.execute("UPDATE withdrawals SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
                 conn.commit()
             elif action == 'reject_withdraw':
                 cur.execute("SELECT user_id, amount, status FROM withdrawals WHERE id = %s", (withdraw_id,))
@@ -405,7 +405,7 @@ def admin():
                 if w_row and w_row[2] == 'pending':
                     u_id, w_amount = w_row[0], w_row[1]
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (w_amount, u_id))
-                    cur.execute("UPDATE withdrawals SET status = 'Rejected' WHERE id = %s", (withdraw_id,))
+                    cur.execute("UPDATE withdrawals SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
                     conn.commit()
             
         cur.close()
