@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Mega Gmail Task</title>
+    <style>
+        body {
+            background-color: #0b132b;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .header h3 {
+            color: #00f2fe;
+            margin: 0 0 5px 0;
+            font-size: 20px;
+        }
+        .welcome-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        /* Balance Card */
+        .balance-card {
+            background: #1c2541;
+            padding: 25px 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+            border: 1px solid #2a3a5e;
+        }
+        .balance-label {
+            font-size: 13px;
+            color: #a0aec0;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .balance-amount {
+            font-size: 40px;
+            font-weight: bold;
+            color: #00f2fe;
+            margin: 10px 0;
+        }
+        /* Side by Side Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 14px 10px;
+            border: none;
+            border-radius: 10px;
+            background: #1c2541;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid #3a506b;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            border-color: #00f2fe;
+            color: #00f2fe;
+        }
+        /* Recent Activity Section */
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+        .activity-card {
+            background: #1c2541;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f6ad55; /* Pending color */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .activity-info div {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .badge-pending {
+            background: rgba(246, 173, 85, 0.2);
+            color: #f6ad55;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .empty-msg {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 14px;
+            padding: 20px;
+            background: #1c2541;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h3>Mega Gmail Task</h3>
+            <div class="welcome-text">Welcome back, {{ user[0] }} 👋</div>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-label">AVAILABLE BALANCE</div>
+            <div class="balance-amount">PKR {{ user[1] }}</div>
+        </div>
+
+        <!-- 2 Side-by-Side Buttons -->
+        <div class="btn-group">
+            <a href="#" class="action-btn">Account History</a>
+            <a href="#" class="action-btn">Withdraw History</a>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="section-title">Recent Activity</div>
+        
+        <!-- Pending Items (Only showing pending tasks/withdrawals) -->
+        <div class="activity-card">
+            <div class="activity-info">
+                <div>Gmail Task Submission</div>
+            </div>
+            <span class="badge-pending">Pending</span>
+        </div>
+
+        <!-- Note: When approved, items disappear automatically -->
+    </div>
+</body>
+</html>
