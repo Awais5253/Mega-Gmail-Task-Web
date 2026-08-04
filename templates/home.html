@@ -118,7 +118,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Subtle Dark Scrollbar (No ugly blue lines) */
+        /* Subtle Dark Scrollbar */
         .table-scroll-container::-webkit-scrollbar {
             height: 4px;
             width: 4px;
@@ -129,6 +129,11 @@
         .table-scroll-container::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 10px;
+        }
+
+        /* Fix White Dot Corner where scrollbars meet */
+        .table-scroll-container::-webkit-scrollbar-corner {
+            background: transparent;
         }
 
         .custom-table {
@@ -161,13 +166,13 @@
             border-bottom: none;
         }
 
-        /* Numbering Tag Style */
+        /* Numbering Tag Style (Without Hashtag) */
         .row-num {
             color: #00f2fe;
             font-weight: 800;
-            margin-right: 8px;
+            margin-right: 6px;
             display: inline-block;
-            min-width: 22px;
+            min-width: 18px;
         }
 
         /* Email Text Style */
@@ -273,8 +278,8 @@
                         {% for item in recent_activities %}
                         <tr>
                             <td>
-                                <span class="row-num">#{{ loop.index }}.</span>
-                                Gmail Task <span class="email-text">({{ item.email }})</span>
+                                <span class="row-num">{{ loop.index }}.</span>
+                                📧 Gmail Task <span class="email-text">({{ item.email }})</span>
                             </td>
                             <td>
                                 {% if item.status == 'pending' %}
