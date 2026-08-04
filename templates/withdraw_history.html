@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdraw History - Mega Gmail Task</title>
+    <title>Withdrawal History - Mega Gmail Task</title>
     <style>
         body {
             background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px 15px 90px 15px;
+            padding: 20px 15px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -18,172 +18,82 @@
         }
         .container {
             width: 100%;
-            max-width: 420px;
-        }
-        .page-header {
-            text-align: center;
-            margin-bottom: 20px;
+            max-width: 450px;
         }
         .page-title {
             font-size: 22px;
             font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-        .history-card {
-            background: #121827;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        }
-        .info-note {
-            font-size: 12px;
-            color: #7a8b9e;
-            margin-bottom: 15px;
-            background: rgba(0, 242, 254, 0.05);
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 242, 254, 0.15);
+            color: #00f2fe;
+            margin-bottom: 20px;
             text-align: center;
         }
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
+        .card {
+            background: #121827;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
         }
-        .custom-table th {
-            background: #182238;
-            color: #7a8b9e;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 12px 10px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .custom-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .details {
             font-size: 13px;
-            font-weight: 600;
             color: #d1d5db;
+            line-height: 1.6;
+            font-family: monospace;
         }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 11px;
+        .status {
             font-weight: 800;
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 6px 12px;
+            border-radius: 8px;
             display: inline-block;
         }
-        .badge-pending {
-            background: rgba(255, 165, 0, 0.15);
-            color: #ffa500;
-            border: 1px solid rgba(255, 165, 0, 0.3);
-        }
-        .badge-approved {
-            background: rgba(46, 213, 115, 0.15);
-            color: #2ed573;
-            border: 1px solid rgba(46, 213, 115, 0.3);
-        }
-        .badge-rejected {
-            background: rgba(255, 71, 87, 0.15);
-            color: #ff4757;
-            border: 1px solid rgba(255, 71, 87, 0.3);
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #121827;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .status-pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; }
+        .status-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+        .status-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
+        .btn-back {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
             text-decoration: none;
-            color: #7a8b9e;
-            font-size: 12px;
             font-weight: 700;
-            gap: 2px;
-        }
-        .nav-item.active {
-            color: #00f2fe;
-        }
-        .nav-icon {
-            font-size: 20px;
-            line-height: 1;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="page-header">
-            <div class="page-title">Withdraw History</div>
-        </div>
+        <div class="page-title">💸 Withdrawal History</div>
 
-        <div class="history-card">
-            <div class="info-note">📅 Shows withdrawal history for the last 30 days</div>
-
-            {% if withdrawals %}
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Method / Acc</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in withdrawals %}
-                    <tr>
-                        <td>
-                            <div style="font-weight: 700; color: #ffffff;">{{ item[0] }}</div>
-                            <div style="font-size: 11px; color: #7a8b9e;">{{ item[1] }}</div>
-                        </td>
-                        <td style="color: #00f2fe;">PKR {{ item[2] }}</td>
-                        <td>
-                            {% if item[3] == 'pending' %}
-                                <span class="badge badge-pending">Pending</span>
-                            {% elif item[3] == 'approved' or item[3] == 'Approved' %}
-                                <span class="badge badge-approved">Approved</span>
-                            {% else %}
-                                <span class="badge badge-rejected">{{ item[3] }}</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div style="padding: 20px; text-align: center; color: #7a8b9e; font-size: 13px;">
-                No withdrawal history found for the last 30 days.
+        {% if withdrawals %}
+            {% for w in withdrawals %}
+            <div class="card">
+                <div class="details">
+Method: {{ w[0] }}<br>
+Account: {{ w[1] }}<br>
+Amount: PKR {{ w[2] }}<br>
+Date & Time: {{ w[4] }}
+                </div>
+                <div>
+                    {% if w[3] == 'pending' %}
+                        <span class="status status-pending">Pending</span>
+                    {% elif w[3] == 'Approved' %}
+                        <span class="status status-approved">Approved</span>
+                    {% else %}
+                        <span class="status status-rejected">Rejected</span>
+                    {% endif %}
+                </div>
             </div>
-            {% endif %}
-        </div>
-    </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; color: #7a8b9e; padding: 20px;">No withdrawal history found.</div>
+        {% endif %}
 
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-        <a href="/home" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="/tasks" class="nav-item">
-            <span class="nav-icon">📑</span>
-            <span>Tasks</span>
-        </a>
-        <a href="/wallet" class="nav-item">
-            <span class="nav-icon">👛</span>
-            <span>Wallet</span>
-        </a>
+        <a href="{{ url_for('wallet') }}" class="btn-back">⬅ Back to Wallet</a>
     </div>
 </body>
 </html>
