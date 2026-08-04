@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - Mega Gmail Task</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 15px 90px 15px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .header-sub {
+            color: #7a8b9e;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Task Container Card */
+        .task-card {
+            background: #121827;
+            border-radius: 22px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            margin-bottom: 25px;
+        }
+        .task-top-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gid-badge {
+            background: rgba(0, 242, 254, 0.15);
+            color: #00f2fe;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        .price-tag {
+            font-size: 18px;
+            font-weight: 800;
+            color: #2ed573;
+        }
+
+        .section-heading {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+        }
+        .tap-instruction {
+            color: #7a8b9e;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        /* Copy Fields */
+        .field-box {
+            background: #182238;
+            border: 1px solid #23314d;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .field-box:active {
+            transform: scale(0.98);
+            border-color: #00f2fe;
+            background: #1f2d4a;
+        }
+        .field-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow: hidden;
+        }
+        .field-label {
+            font-size: 11px;
+            color: #8a99ad;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .field-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .copy-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: #7a8b9e;
+        }
+        .copied-toast {
+            position: absolute;
+            right: 15px;
+            background: #00f2fe;
+            color: #090d16;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        /* Action Buttons */
+        .action-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-done {
+            background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+        }
+        .btn-cancel {
+            background: #23314d;
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+        .btn-new {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+        }
+        .btn-start-big {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #090d16;
+            font-size: 17px;
+            padding: 18px;
+            box-shadow: 0 6px 20px rgba(0, 242, 254, 0.4);
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #121827;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #7a8b9e;
+            font-size: 12px;
+            font-weight: 700;
+            gap: 4px;
+        }
+        .nav-item.active {
+            color: #00f2fe;
+        }
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-title">Available Tasks</div>
+        <div class="header-sub">Create Gmail accounts to earn money</div>
+
+        {% if active_task %}
+        <!-- Active Task Details Box -->
+        <div class="task-card">
+            <div class="task-top-info">
+                <span class="gid-badge">Task ID: {{ active_task.gid }}</span>
+                <span class="price-tag">PKR {{ active_task.price }}</span>
+            </div>
+
+            <div class="section-heading">Your Data</div>
+            <div class="tap-instruction">Tap any field to copy. Use this data to register.</div>
+
+            <!-- Copyable Fields -->
+            <div class="field-box" onclick="copyText('{{ active_task.name }}', this)">
+                <div class="field-info">
+                    <span class="field-label">NAME</span>
+                    <span class="field-value">{{ active_task.name }}</span>
+                </div>
+                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                <span class="copied-toast">Copied!</span>
+            </div>
+
+            <div class="field-box" onclick="copyText('{{ active_task.dob_year }}', this)">
+                <div class="field-info">
+                    <span class="field-label">YEAR OF BIRTH</span>
+                    <span class="field-value">{{ active_task.dob_year }}</span>
+                </div>
+                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                <span class="copied-toast">Copied!</span>
+            </div>
+
+            <div class="field-box" onclick="copyText('{{ active_task.email }}', this)">
+                <div class="field-info">
+                    <span class="field-label">EMAIL / USERNAME</span>
+                    <span class="field-value">{{ active_task.email }}</span>
+                </div>
+                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                <span class="copied-toast">Copied!</span>
+            </div>
+
+            <div class="field-box" onclick="copyText('{{ active_task.password }}', this)">
+                <div class="field-info">
+                    <span class="field-label">PASSWORD</span>
+                    <span class="field-value">{{ active_task.password }}</span>
+                </div>
+                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+                <span class="copied-toast">Copied!</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-container">
+                <div class="btn-row">
+                    <form method="POST" style="flex:1;">
+                        <input type="hidden" name="action" value="done">
+                        <button type="submit" class="btn btn-done">✅ Done</button>
+                    </form>
+                    <form method="POST" style="flex:1;">
+                        <input type="hidden" name="action" value="cancel">
+                        <button type="submit" class="btn btn-cancel">❌ Cancel</button>
+                    </form>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="action" value="start_new">
+                    <button type="submit" class="btn btn-new">🔄 New Task</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <!-- Start Task Button if no active task -->
+        <div style="margin-top: 40px;">
+            <form method="POST">
+                <input type="hidden" name="action" value="start_new">
+                <button type="submit" class="btn btn-start-big">▶️ Start Task</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="/home" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="/tasks" class="nav-item active">
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            <span>Tasks</span>
+        </a>
+    </div>
+
+    <script>
+        function copyText(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = element.querySelector('.copied-toast');
+                toast.style.display = 'block';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 1200);
+            });
+        }
+    </script>
+</body>
+</html>
