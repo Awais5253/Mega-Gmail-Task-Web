@@ -10,7 +10,7 @@
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px 15px;
+            padding: 20px 15px 80px 15px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -87,20 +87,33 @@
             align-items: center;
             font-weight: 600;
         }
-        .btn-back {
-            display: block;
+
+        /* Bottom Navigation Bar Style */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-            color: #ffffff;
-            text-align: center;
-            border-radius: 12px;
+            background: #121827;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #7a8b9e;
             text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            margin-top: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .nav-item.active {
+            color: #00f2fe;
         }
     </style>
 </head>
@@ -140,8 +153,22 @@
         {% else %}
             <div style="text-align: center; color: #7a8b9e; padding: 30px; background:#121827; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">No withdrawal history found.</div>
         {% endif %}
+    </div>
 
-        <a href="{{ url_for('wallet') }}" class="btn-back">⬅ Back to Wallet</a>
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="{{ url_for('index') }}" class="nav-item">
+            <span style="font-size: 18px;">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('tasks') }}" class="nav-item">
+            <span style="font-size: 18px;">📋</span>
+            <span>Tasks</span>
+        </a>
+        <a href="{{ url_for('wallet') }}" class="nav-item">
+            <span style="font-size: 18px;">👛</span>
+            <span>Wallet</span>
+        </a>
     </div>
 </body>
 </html>
