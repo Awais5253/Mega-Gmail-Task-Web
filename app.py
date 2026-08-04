@@ -232,5 +232,53 @@ def tasks():
         
     return render_template('tasks.html', active_task=active_task)
 
+@app.route('/admin', methods=['GET', 'POST'])
+def admin():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if request.method == 'POST':
+        task_id = request.form.get('task_id')
+        action = request.form.get('action')
+        
+        if action == 'approve':
+            # Get user_id and price
+            cur.execute("SELECT user_id, price FROM tasks WHERE id = %s", (task_id,))
+            row = cur.fetchone()
+            if row:
+                u_id, price = row[0], row[1]
+                # Update task status to Approved
+                cur.execute("UPDATE tasks SET status = 'Approved' WHERE id = %s", (task_id,))
+                # Add balance to user account
+                cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                conn.commit()
+                
+        elif action == 'not_exist':
+            cur.execute("UPDATE tasks SET status = 'Not Exist' WHERE id = %s", (task_id,))
+            conn.commit()
+            
+        elif action == 'reject':
+            cur.execute("UPDATE tasks SET status = 'Rejected' WHERE id = %s", (task_id,))
+            conn.commit()
+            
+        cur.close()
+        conn.close()
+        return redirect(url_for('admin'))
+    
+    # Fetch all pending tasks joined with user details
+    cur.execute("""
+        SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
+               tasks.dob_year, tasks.email, tasks.password, tasks.price
+        FROM tasks 
+        JOIN users ON tasks.user_id = users.id 
+        WHERE tasks.status = 'pending' 
+        ORDER BY tasks.id DESC
+    """)
+    pending_tasks = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    return render_template('admin.html', tasks=pending_tasks)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
