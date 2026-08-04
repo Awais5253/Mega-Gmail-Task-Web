@@ -111,14 +111,13 @@
         /* Horizontal Scrollable Table Wrapper */
         .table-scroll-container {
             width: 100%;
-            max-height: 280px; /* Fixed height for max 10 items scroll */
-            overflow-x: auto;  /* Horizontal Scroll for long emails */
-            overflow-y: auto;  /* Vertical Scroll if items grow */
+            max-height: 280px;
+            overflow-x: auto;
+            overflow-y: auto;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Custom Scrollbar */
         .table-scroll-container::-webkit-scrollbar {
             height: 4px;
             width: 4px;
@@ -128,11 +127,10 @@
             border-radius: 4px;
         }
 
-        /* Activity Table Styling */
         .custom-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 320px; /* Ensures scrolling on small screens */
+            min-width: 320px;
             text-align: left;
         }
         .custom-table th {
@@ -153,7 +151,7 @@
             font-size: 13px;
             font-weight: 600;
             color: #d1d5db;
-            white-space: nowrap; /* Keeps email in one line for scrolling */
+            white-space: nowrap;
         }
         .custom-table tr:last-child td {
             border-bottom: none;
@@ -230,8 +228,8 @@
 
         <!-- Top Navigation Buttons -->
         <div class="btn-grid">
-            <a href="#" class="nav-btn">Account History</a>
-            <a href="#" class="nav-btn">Withdraw History</a>
+            <a href="/wallet" class="nav-btn">Account History</a>
+            <a href="/wallet" class="nav-btn">Withdraw History</a>
         </div>
 
         <!-- Recent Activity Section -->
@@ -279,7 +277,7 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar with Wallet Icon -->
     <div class="bottom-nav">
         <a href="/home" class="nav-item active">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -288,6 +286,10 @@
         <a href="/tasks" class="nav-item">
             <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
             <span>Tasks</span>
+        </a>
+        <a href="/wallet" class="nav-item">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            <span>Wallet</span>
         </a>
     </div>
 </body>
