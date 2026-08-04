@@ -108,29 +108,34 @@
             font-weight: 800;
         }
 
-        /* Horizontal Scrollable Table Wrapper */
+        /* Scrollable Table Wrapper */
         .table-scroll-container {
             width: 100%;
-            max-height: 280px;
+            max-height: 270px;
             overflow-x: auto;
             overflow-y: auto;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.2);
         }
 
+        /* Stylish Custom Scrollbars */
         .table-scroll-container::-webkit-scrollbar {
-            height: 4px;
-            width: 4px;
+            height: 5px;
+            width: 5px;
+        }
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
         }
         .table-scroll-container::-webkit-scrollbar-thumb {
-            background: #23314d;
-            border-radius: 4px;
+            background: #00f2fe;
+            border-radius: 10px;
         }
 
         .custom-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 320px;
+            min-width: 340px;
             text-align: left;
         }
         .custom-table th {
@@ -144,6 +149,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .custom-table td {
             padding: 12px 14px;
@@ -153,17 +159,22 @@
             color: #d1d5db;
             white-space: nowrap;
         }
+        .custom-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
         .custom-table tr:last-child td {
             border-bottom: none;
         }
 
         /* Status Badges */
         .badge {
-            padding: 5px 10px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 800;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .badge-pending {
             background: rgba(255, 165, 0, 0.15);
