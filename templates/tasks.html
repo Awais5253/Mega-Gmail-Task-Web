@@ -192,7 +192,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             z-index: 1000;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
@@ -204,15 +204,14 @@
             color: #7a8b9e;
             font-size: 12px;
             font-weight: 700;
-            gap: 4px;
+            gap: 2px;
         }
         .nav-item.active {
             color: #00f2fe;
         }
-        .nav-item svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
+        .nav-icon {
+            font-size: 20px;
+            line-height: 1;
         }
     </style>
 </head>
@@ -288,7 +287,7 @@
             </div>
         </div>
         {% else %}
-        <!-- Beautiful Start Task Box (Fixes Image 2) -->
+        <!-- Beautiful Start Task Box -->
         <div class="task-card">
             <div class="task-top-info">
                 <span class="section-heading" style="margin: 0;">Create Gmail Account</span>
@@ -308,12 +307,16 @@
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
         <a href="/home" class="nav-item">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="nav-icon">🏠</span>
             <span>Home</span>
         </a>
         <a href="/tasks" class="nav-item active">
-            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            <span class="nav-icon">📑</span>
             <span>Tasks</span>
+        </a>
+        <a href="/wallet" class="nav-item">
+            <span class="nav-icon">👛</span>
+            <span>Wallet</span>
         </a>
     </div>
 
