@@ -12,7 +12,7 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 def cleanup_old_records():
-    """30 دن سے پرانے اکاؤنٹس اور ود ڈرا ہسٹری کو خود بخود ڈیلیٹ کرنے کا فنکشن"""
+    """Function to automatically delete tasks and withdrawal history older than 30 days"""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -161,12 +161,17 @@ def login():
             
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/home')
 def home():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    cleanup_old_records() # 30 دن سے پرانا ڈیٹا صاف کرنا
+    cleanup_old_records()
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -174,7 +179,7 @@ def home():
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
     
-    # صرف آخری 6 ریسنٹ ٹاسکس دکھائیں گے
+    # Fetch recent 6 tasks
     cur.execute("""
         SELECT gid, email, status 
         FROM tasks 
@@ -427,7 +432,7 @@ def admin():
     """)
     all_withdrawals = cur.fetchall()
 
-    # تمام رجسٹرڈ یوزرز کا ڈیٹا حاصل کرنا (نام، فون، پاسورڈ)
+    # Fetch all registered users data
     cur.execute("""
         SELECT full_name, whatsapp, password 
         FROM users 
