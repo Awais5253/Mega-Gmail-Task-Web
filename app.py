@@ -65,7 +65,7 @@ def generate_random_task(user_id):
     dob_year = str(random.randint(1993, 2004)) # 20+ years old
     rand_num = random.randint(1000000, 9999999)
     email = f"{first.lower()}{last.lower()}{rand_num}@gmail.com"
-    password = f"aass{random.randint(1000, 9999)}"
+    password = "aass1122"  # Strictly fixed password as requested
     
     conn = get_db_connection()
     cur = conn.cursor()
@@ -149,18 +149,29 @@ def home():
     cur.execute("SELECT full_name, balance, status FROM users WHERE id = %s", (session['user_id'],))
     user_info = cur.fetchone()
     
-    # Fetch Pending Tasks for Recent Activity Section
-    cur.execute("SELECT email FROM tasks WHERE user_id = %s AND status = 'pending'", (session['user_id'],))
-    pending_rows = cur.fetchall()
+    # Fetch Recent Activity (Pending first, then Approved/Rejected, Limit 10)
+    cur.execute("""
+        SELECT gid, email, status 
+        FROM tasks 
+        WHERE user_id = %s AND status != 'active' 
+        ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), id DESC 
+        LIMIT 10
+    """, (session['user_id'],))
     
-    pending_items = []
-    for row in pending_rows:
-        pending_items.append({'title': f"Gmail Task ({row[0]})"})
+    activity_rows = cur.fetchall()
+    
+    recent_activities = []
+    for row in activity_rows:
+        recent_activities.append({
+            'gid': row[0],
+            'email': row[1],
+            'status': row[2]
+        })
         
     cur.close()
     conn.close()
     
-    return render_template('home.html', user=user_info, pending_items=pending_items)
+    return render_template('home.html', user=user_info, recent_activities=recent_activities)
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -170,6 +181,14 @@ def tasks():
     user_id = session['user_id']
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # 1-Hour Task Expiry Cleanup
+    cur.execute("""
+        DELETE FROM tasks 
+        WHERE user_id = %s AND status = 'active' 
+        AND created_at < NOW() - INTERVAL '1 hour'
+    """, (user_id,))
+    conn.commit()
     
     if request.method == 'POST':
         action = request.form.get('action')
