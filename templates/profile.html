@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Mega Gmail Task</title>
+    <style>
+        body {
+            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px 15px 90px 15px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* Profile Header Card */
+        .profile-card {
+            background: #121827;
+            border-radius: 20px;
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .user-id-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 242, 254, 0.15);
+            color: #00f2fe;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            color: #090d16;
+            font-size: 26px;
+            font-weight: 900;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+        }
+        .user-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .user-phone {
+            font-size: 13px;
+            color: #7a8b9e;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .joining-date {
+            font-size: 11px;
+            color: #00f2fe;
+            font-weight: 600;
+        }
+
+        /* 3 Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .stat-card {
+            background: #121827;
+            border-radius: 16px;
+            padding: 14px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .stat-label {
+            font-size: 10px;
+            color: #7a8b9e;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .stat-val {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* Action Card (Change Password) */
+        .action-card {
+            background: #121827;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #7a8b9e;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #0d1322;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #00f2fe;
+        }
+        .btn-update {
+            width: 100%;
+            background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+            color: #090d16;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        /* Logout Button */
+        .btn-logout {
+            width: 100%;
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+        .btn-logout:active {
+            transform: scale(0.98);
+            background: rgba(255, 71, 87, 0.25);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .alert-success { background: rgba(46, 213, 115, 0.2); color: #2ed573; border: 1px solid #2ed573; }
+        .alert-danger { background: rgba(255, 71, 87, 0.2); color: #ff4757; border: 1px solid #ff4757; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #121827;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0;
+            z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #7a8b9e;
+            font-size: 12px;
+            font-weight: 700;
+            gap: 2px;
+            text-align: center;
+        }
+        .nav-item.active {
+            color: #00f2fe;
+        }
+        .nav-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Profile Header Card -->
+        <div class="profile-card">
+            <div class="user-id-badge">ID: #{{ user_id }}</div>
+            <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
+            <div class="user-name">{{ user_name }}</div>
+            <div class="user-phone">📱 {{ user_phone }}</div>
+            <div class="joining-date">🕒 Joined: {{ joining_date }}</div>
+        </div>
+
+        <!-- 3 Stats Cards Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Earned</div>
+                <div class="stat-val" style="color: #00f2fe;">PKR {{ total_earned }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Withdrawn</div>
+                <div class="stat-val" style="color: #2ed573;">PKR {{ total_withdrawn }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Approved Tasks</div>
+                <div class="stat-val" style="color: #ffa500;">{{ approved_tasks }}</div>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="action-card">
+            <div class="card-title">🔑 Change Password</div>
+            <form action="/change_password" method="POST">
+                <div class="form-group">
+                    <label>Old Password</label>
+                    <input type="password" name="old_password" placeholder="Enter current password" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" name="new_password" placeholder="Enter new password" required>
+                </div>
+                <button type="submit" class="btn-update">Update Password</button>
+            </form>
+        </div>
+
+        <!-- Logout Button -->
+        <a href="/logout" class="btn-logout">🚪 Logout Account</a>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="/home" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="/tasks" class="nav-item">
+            <span class="nav-icon">📑</span>
+            <span>Tasks</span>
+        </a>
+        <a href="/referrals" class="nav-item">
+            <span class="nav-icon">🎁</span>
+            <span>Refs</span>
+        </a>
+        <a href="/wallet" class="nav-item">
+            <span class="nav-icon">👛</span>
+            <span>Wallet</span>
+        </a>
+        <a href="/profile" class="nav-item active">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </a>
+    </div>
+</body>
+</html>
