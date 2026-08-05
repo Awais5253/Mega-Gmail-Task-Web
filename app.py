@@ -351,6 +351,90 @@ def withdraw_history():
     conn.close()
     return render_template('withdraw_history.html', withdrawals=withdrawals)
 
+@app.route('/profile')
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    cleanup_old_records()
+    user_id = session['user_id']
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Get user details
+    cur.execute("""
+        SELECT full_name, whatsapp, 
+               COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD Mon YYYY'), 'N/A')
+        FROM users WHERE id = %s
+    """, (user_id,))
+    u_row = cur.fetchone()
+    
+    user_name = u_row[0] if u_row else ''
+    user_phone = u_row[1] if u_row else ''
+    joining_date = u_row[2] if u_row else ''
+    
+    # Display ID starting from 100 (e.g., ID 1 -> #101)
+    display_user_id = user_id + 100
+    
+    # Approved Tasks Count
+    cur.execute("SELECT COUNT(*) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
+    approved_tasks = cur.fetchone()[0]
+    
+    # Total Earned (From Approved Tasks + Referral Earnings)
+    cur.execute("SELECT COALESCE(SUM(price), 0) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
+    task_earned = float(cur.fetchone()[0])
+    
+    cur.execute("SELECT COALESCE(SUM(amount), 0) FROM referral_earnings WHERE referrer_id = %s", (user_id,))
+    ref_earned = float(cur.fetchone()[0])
+    
+    total_earned = task_earned + ref_earned
+    
+    # Total Withdrawn (Approved Withdrawals)
+    cur.execute("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = %s AND status = 'Approved'", (user_id,))
+    total_withdrawn = float(cur.fetchone()[0])
+    
+    cur.close()
+    conn.close()
+    
+    return render_template(
+        'profile.html',
+        user_id=display_user_id,
+        user_name=user_name,
+        user_phone=user_phone,
+        joining_date=joining_date,
+        total_earned=total_earned,
+        total_withdrawn=total_withdrawn,
+        approved_tasks=approved_tasks
+    )
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    user_id = session['user_id']
+    old_password = request.form.get('old_password', '').strip()
+    new_password = request.form.get('new_password', '').strip()
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.execute("SELECT password FROM users WHERE id = %s", (user_id,))
+    current_db_password = cur.fetchone()[0]
+    
+    if current_db_password == old_password:
+        cur.execute("UPDATE users SET password = %s WHERE id = %s", (new_password, user_id))
+        conn.commit()
+        flash("Password updated successfully!", "success")
+    else:
+        flash("Incorrect Old Password!", "danger")
+        
+    cur.close()
+    conn.close()
+    
+    return redirect(url_for('profile'))
+
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
     if 'user_id' not in session:
