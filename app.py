@@ -12,12 +12,13 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 def cleanup_old_records():
-    """Function to automatically delete tasks and withdrawal history older than 30 days"""
+    """Function to automatically delete tasks, withdrawals, and referral earnings older than 30 days"""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("DELETE FROM tasks WHERE created_at < NOW() - INTERVAL '30 days';")
         cur.execute("DELETE FROM withdrawals WHERE created_at < NOW() - INTERVAL '30 days';")
+        cur.execute("DELETE FROM referral_earnings WHERE created_at < NOW() - INTERVAL '30 days';")
         conn.commit()
         cur.close()
         conn.close()
@@ -37,9 +38,13 @@ def init_db():
             password VARCHAR(100) NOT NULL,
             balance NUMERIC DEFAULT 0,
             status VARCHAR(20) DEFAULT 'Approved',
+            referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+    
+    # Ensure referred_by column exists if table was created previously
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL;")
     
     # Tasks Table
     cur.execute('''
@@ -66,6 +71,18 @@ def init_db():
             account_number VARCHAR(20) NOT NULL,
             amount NUMERIC NOT NULL,
             status VARCHAR(20) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
+    
+    # Referral Earnings Table
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS referral_earnings (
+            id SERIAL PRIMARY KEY,
+            referrer_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            referred_user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+            task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+            amount NUMERIC DEFAULT 10,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
@@ -118,16 +135,34 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    ref_param = request.args.get('ref') or request.form.get('ref')
+    
     if request.method == 'POST':
         full_name = request.form['full_name']
         whatsapp = request.form['whatsapp']
         password = request.form['password']
         
+        referrer_id = None
+        if ref_param:
+            try:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute("SELECT id FROM users WHERE id::text = %s OR full_name = %s LIMIT 1", (ref_param, ref_param))
+                ref_user = cur.fetchone()
+                if ref_user:
+                    referrer_id = ref_user[0]
+                cur.close()
+                conn.close()
+            except Exception as e:
+                print("Referrer lookup error:", e)
+
         try:
             conn = get_db_connection()
             cur = conn.cursor()
-            cur.execute("INSERT INTO users (full_name, whatsapp, password) VALUES (%s, %s, %s)",
-                        (full_name, whatsapp, password))
+            cur.execute("""
+                INSERT INTO users (full_name, whatsapp, password, referred_by) 
+                VALUES (%s, %s, %s, %s)
+            """, (full_name, whatsapp, password, referrer_id))
             conn.commit()
             cur.close()
             conn.close()
@@ -135,9 +170,9 @@ def register():
             return redirect(url_for('login'))
         except Exception as e:
             flash("WhatsApp Number already registered!", "danger")
-            return render_template('register.html')
+            return render_template('register.html', ref=ref_param)
             
-    return render_template('register.html')
+    return render_template('register.html', ref=ref_param)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -201,6 +236,66 @@ def home():
     conn.close()
     
     return render_template('home.html', user=user_info, recent_activities=recent_activities)
+
+@app.route('/referrals')
+def referrals():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    cleanup_old_records()
+    user_id = session['user_id']
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Get user details
+    cur.execute("SELECT id, full_name, balance FROM users WHERE id = %s", (user_id,))
+    user_row = cur.fetchone()
+    
+    # Total Referrals Count
+    cur.execute("SELECT COUNT(*) FROM users WHERE referred_by = %s", (user_id,))
+    total_referrals = cur.fetchone()[0]
+    
+    # Total Referral Earnings in Last 30 Days
+    cur.execute("""
+        SELECT COALESCE(SUM(amount), 0) 
+        FROM referral_earnings 
+        WHERE referrer_id = %s AND created_at >= NOW() - INTERVAL '30 days'
+    """, (user_id,))
+    ref_earnings = cur.fetchone()[0]
+    
+    # List of referred users and their generated earnings in 30 days
+    cur.execute("""
+        SELECT u.full_name, COALESCE(SUM(re.amount), 0) as earned_30d
+        FROM users u
+        LEFT JOIN referral_earnings re ON re.referred_user_id = u.id 
+            AND re.referrer_id = %s 
+            AND re.created_at >= NOW() - INTERVAL '30 days'
+        WHERE u.referred_by = %s
+        GROUP BY u.id, u.full_name
+        ORDER BY u.id DESC
+    """, (user_id, user_id))
+    
+    ref_rows = cur.fetchall()
+    referrals_list = []
+    for row in ref_rows:
+        referrals_list.append({
+            'username': row[0],
+            'earned_30d': row[1]
+        })
+        
+    cur.close()
+    conn.close()
+    
+    user_info = [user_row[0], user_row[1], user_row[2]]
+    
+    return render_template(
+        'referrals.html', 
+        user=user_info, 
+        total_referrals=total_referrals, 
+        ref_earnings=ref_earnings, 
+        referrals_list=referrals_list
+    )
 
 @app.route('/account-history')
 def account_history():
@@ -387,6 +482,18 @@ def admin():
                     u_id, price = row[0], row[1]
                     cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                    
+                    # Grant PKR 10 reward to referrer if user was referred
+                    cur.execute("SELECT referred_by FROM users WHERE id = %s", (u_id,))
+                    ref_row = cur.fetchone()
+                    if ref_row and ref_row[0]:
+                        referrer_id = ref_row[0]
+                        cur.execute("UPDATE users SET balance = balance + 10 WHERE id = %s", (referrer_id,))
+                        cur.execute("""
+                            INSERT INTO referral_earnings (referrer_id, referred_user_id, task_id, amount)
+                            VALUES (%s, %s, %s, 10)
+                        """, (referrer_id, u_id, task_id))
+                        
                     conn.commit()
             elif action == 'not_exist':
                 cur.execute("UPDATE tasks SET status = 'Not Exist', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
