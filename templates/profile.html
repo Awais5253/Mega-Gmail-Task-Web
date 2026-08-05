@@ -75,23 +75,23 @@
             font-weight: 600;
         }
 
-        /* 3 Stats Grid */
+        /* 2 Stats Grid (Equal alignment) */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
             margin-bottom: 22px;
         }
         .stat-card {
             background: #121827;
             border-radius: 16px;
-            padding: 14px 8px;
+            padding: 16px 12px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         .stat-label {
-            font-size: 10px;
+            font-size: 11px;
             color: #7a8b9e;
             font-weight: 700;
             text-transform: uppercase;
@@ -99,7 +99,7 @@
             margin-bottom: 6px;
         }
         .stat-val {
-            font-size: 13px;
+            font-size: 16px;
             font-weight: 800;
         }
 
@@ -149,33 +149,43 @@
             background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
             color: #090d16;
             border: none;
-            padding: 12px;
+            padding: 13px;
             border-radius: 10px;
             font-weight: 800;
             font-size: 14px;
             cursor: pointer;
             margin-top: 5px;
+            transition: transform 0.2s;
+        }
+        .btn-update:active {
+            transform: scale(0.98);
         }
 
-        /* Logout Button */
+        /* Sleek Redesigned Logout Button */
         .btn-logout {
             width: 100%;
-            background: rgba(255, 71, 87, 0.15);
+            background: rgba(255, 71, 87, 0.08);
             color: #ff4757;
-            border: 1px solid rgba(255, 71, 87, 0.3);
+            border: 1px solid rgba(255, 71, 87, 0.25);
             padding: 14px;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             box-sizing: border-box;
             transition: all 0.2s;
         }
+        .btn-logout:hover {
+            background: rgba(255, 71, 87, 0.18);
+            border-color: #ff4757;
+        }
         .btn-logout:active {
             transform: scale(0.98);
-            background: rgba(255, 71, 87, 0.25);
         }
 
         /* Alerts */
@@ -244,15 +254,11 @@
             <div class="joining-date">🕒 Joined: {{ joining_date }}</div>
         </div>
 
-        <!-- 3 Stats Cards Row -->
+        <!-- 2 Stats Cards Row Side-by-Side -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">Total Earned</div>
                 <div class="stat-val" style="color: #00f2fe;">PKR {{ total_earned }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Withdrawn</div>
-                <div class="stat-val" style="color: #2ed573;">PKR {{ total_withdrawn }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Approved Tasks</div>
@@ -272,12 +278,14 @@
                     <label>New Password</label>
                     <input type="password" name="new_password" placeholder="Enter new password" required>
                 </div>
-                <button type="submit" class="btn-update">Update Password</button>
+                <button type="submit" class="btn-update">Change Password</button>
             </form>
         </div>
 
-        <!-- Logout Button -->
-        <a href="/logout" class="btn-logout">🚪 Logout Account</a>
+        <!-- Sleek Redesigned Logout Button -->
+        <a href="/logout" class="btn-logout">
+            <span>🚪 Logout Account</span>
+        </a>
     </div>
 
     <!-- Bottom Navigation Bar -->
