@@ -10,7 +10,7 @@
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px 15px 80px 15px;
+            padding: 20px 15px 90px 15px;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -93,27 +93,34 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: 100%;
+            right: 0;
             background: #121827;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 10px 0;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.4);
+            padding: 8px 0;
             z-index: 1000;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
         .nav-item {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #7a8b9e;
             text-decoration: none;
+            color: #7a8b9e;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
+            gap: 2px;
+            text-align: center;
         }
         .nav-item.active {
             color: #00f2fe;
+        }
+        .nav-icon {
+            font-size: 20px;
+            line-height: 1;
         }
     </style>
 </head>
@@ -157,16 +164,20 @@
 
     <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
-        <a href="{{ url_for('index') }}" class="nav-item">
-            <span style="font-size: 18px;">🏠</span>
+        <a href="/home" class="nav-item">
+            <span class="nav-icon">🏠</span>
             <span>Home</span>
         </a>
-        <a href="{{ url_for('tasks') }}" class="nav-item">
-            <span style="font-size: 18px;">📋</span>
+        <a href="/tasks" class="nav-item">
+            <span class="nav-icon">📑</span>
             <span>Tasks</span>
         </a>
-        <a href="{{ url_for('wallet') }}" class="nav-item">
-            <span style="font-size: 18px;">👛</span>
+        <a href="/referrals" class="nav-item">
+            <span class="nav-icon">🎁</span>
+            <span>Refs</span>
+        </a>
+        <a href="/wallet" class="nav-item">
+            <span class="nav-icon">👛</span>
             <span>Wallet</span>
         </a>
     </div>
