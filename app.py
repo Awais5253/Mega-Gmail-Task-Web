@@ -45,6 +45,7 @@ def init_db():
     ''')
     
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL;")
+    cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
     
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tasks (
@@ -60,6 +61,7 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+    cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
 
     cur.execute('''
         CREATE TABLE IF NOT EXISTS withdrawals (
@@ -72,6 +74,7 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+    cur.execute("ALTER TABLE withdrawals ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
     
     cur.execute('''
         CREATE TABLE IF NOT EXISTS referral_earnings (
@@ -83,6 +86,7 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+    cur.execute("ALTER TABLE referral_earnings ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
     
     conn.commit()
     cur.close()
