@@ -5,9 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#121827">
     <meta name="color-scheme" content="dark">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
     
-    <!-- HTMX Script: Fast & Blink-Free Navigation -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <style>
@@ -80,12 +84,10 @@
 </head>
 <body hx-boost="true" hx-select="#main-content" hx-target="#main-content" hx-swap="innerHTML">
 
-    <!-- Dynamic Main Content -->
     <div class="container" id="main-content">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Permanent & Static Navigation Bar -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="/home" class="nav-item {% if request.path == '/home' %}active{% endif %}">
             <span class="nav-icon">🏠</span>
@@ -109,7 +111,6 @@
         </a>
     </div>
 
-    <!-- Script to update active tab color smoothly without reloading navbar -->
     <script>
         document.addEventListener('htmx:afterSettle', function() {
             const currentPath = window.location.pathname;
