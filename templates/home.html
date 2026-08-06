@@ -2,7 +2,7 @@
 
 {% block title %}Home - Mega Gmail Task{% endblock %}
 
-{% block content %}
+{% block head %}
 <style>
     .welcome-title {
         font-size: 22px;
@@ -185,22 +185,21 @@
         border: 1px solid rgba(255, 71, 87, 0.3);
     }
 </style>
+{% endblock %}
 
+{% block content %}
     <div class="welcome-title">Welcome back, {{ user[0] }} 👋</div>
 
-    <!-- Balance Card -->
     <div class="balance-card">
         <div class="balance-label">Available Balance</div>
         <div class="balance-amount">PKR {{ user[1] }}</div>
     </div>
 
-    <!-- Top Navigation Buttons -->
     <div class="btn-grid">
         <a href="{{ url_for('account_history') }}" class="nav-btn">Account History</a>
         <a href="{{ url_for('withdraw_history') }}" class="nav-btn">Withdraw History</a>
     </div>
 
-    <!-- Recent Activity Section -->
     <div class="activity-card">
         <div class="activity-header">
             <div class="icon-box">
@@ -209,7 +208,6 @@
             <div class="activity-title">Recent Activity</div>
         </div>
 
-        <!-- Scrollable Table -->
         <div class="table-scroll-container">
             {% if recent_activities %}
             <table class="custom-table">
