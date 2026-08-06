@@ -1,26 +1,20 @@
 import os
 import random
 import psycopg2
+from psycopg2 import pool
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
 app.secret_key = 'mega_gmail_task_secret_key'
 
-# براؤزر کیشے کو روکنے کے لیے تاکہ ہر بار نیا اور ڈارک تھیم پیج لوڈ ہو
-@app.after_request
-def add_header(response):
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
-    return response
-
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+db_pool = pool.ThreadedConnectionPool(1, 13, DATABASE_URL)
+
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
+    return db_pool.getconn()
 
 def cleanup_old_records():
-    """Function to automatically delete tasks, withdrawals, and referral earnings older than 30 days"""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -37,7 +31,6 @@ def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Users Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -51,10 +44,8 @@ def init_db():
         );
     ''')
     
-    # Ensure referred_by column exists if table was created previously
     cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL;")
     
-    # Tasks Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS tasks (
             id SERIAL PRIMARY KEY,
@@ -70,7 +61,6 @@ def init_db():
         );
     ''')
 
-    # Withdrawals Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS withdrawals (
             id SERIAL PRIMARY KEY,
@@ -83,7 +73,6 @@ def init_db():
         );
     ''')
     
-    # Referral Earnings Table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS referral_earnings (
             id SERIAL PRIMARY KEY,
@@ -104,7 +93,6 @@ try:
 except Exception as e:
     print("Database init error:", e)
 
-# Helper function to generate random task data
 def generate_random_task(user_id):
     first_names = ["Gregory", "Jason", "Christopher", "Daniel", "Matthew", "Andrew", "Joshua", "David", "James", "Robert"]
     last_names = ["Pruitt", "Waters", "Long", "Miller", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris"]
@@ -256,15 +244,12 @@ def referrals():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Get user details
     cur.execute("SELECT id, full_name, balance FROM users WHERE id = %s", (user_id,))
     user_row = cur.fetchone()
     
-    # Total Referrals Count
     cur.execute("SELECT COUNT(*) FROM users WHERE referred_by = %s", (user_id,))
     total_referrals = cur.fetchone()[0]
     
-    # Total Referral Earnings in Last 30 Days
     cur.execute("""
         SELECT COALESCE(SUM(amount), 0) 
         FROM referral_earnings 
@@ -272,7 +257,6 @@ def referrals():
     """, (user_id,))
     ref_earnings = cur.fetchone()[0]
     
-    # List of referred users and their generated earnings in 30 days
     cur.execute("""
         SELECT u.full_name, COALESCE(SUM(re.amount), 0) as earned_30d
         FROM users u
@@ -370,7 +354,6 @@ def profile():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Get user details
     cur.execute("""
         SELECT full_name, whatsapp, 
                COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD Mon YYYY'), 'N/A')
@@ -382,14 +365,11 @@ def profile():
     user_phone = u_row[1] if u_row else ''
     joining_date = u_row[2] if u_row else ''
     
-    # Display ID starting from 100 (e.g., ID 1 -> #101)
     display_user_id = user_id + 100
     
-    # Approved Tasks Count
     cur.execute("SELECT COUNT(*) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
     approved_tasks = cur.fetchone()[0]
     
-    # Total Earned (From Approved Tasks + Referral Earnings)
     cur.execute("SELECT COALESCE(SUM(price), 0) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
     task_earned = float(cur.fetchone()[0])
     
@@ -398,7 +378,6 @@ def profile():
     
     total_earned = task_earned + ref_earned
     
-    # Total Withdrawn (Approved Withdrawals)
     cur.execute("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = %s AND status = 'Approved'", (user_id,))
     total_withdrawn = float(cur.fetchone()[0])
     
@@ -575,7 +554,6 @@ def admin():
                     cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
                     cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
                     
-                    # Grant PKR 10 reward to referrer if user was referred
                     cur.execute("SELECT referred_by FROM users WHERE id = %s", (u_id,))
                     ref_row = cur.fetchone()
                     if ref_row and ref_row[0]:
@@ -611,6 +589,33 @@ def admin():
         conn.close()
         return redirect(url_for('admin'))
     
+    # Pagination parameters for all three sections
+    user_page = request.args.get('user_page', 1, type=int)
+    task_page = request.args.get('task_page', 1, type=int)
+    withdraw_page = request.args.get('withdraw_page', 1, type=int)
+    per_page = 50
+
+    # 1. Users Pagination & Recent First Ordering
+    cur.execute("SELECT COUNT(*) FROM users")
+    total_users = cur.fetchone()[0]
+    total_user_pages = (total_users + per_page - 1) // per_page
+    user_offset = (user_page - 1) * per_page
+
+    cur.execute("""
+        SELECT full_name, whatsapp, password,
+               COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
+        FROM users 
+        ORDER BY id DESC
+        LIMIT %s OFFSET %s
+    """, (per_page, user_offset))
+    all_users = cur.fetchall()
+
+    # 2. Tasks/Reports Pagination & Recent First Ordering (Pending first, then newest ID)
+    cur.execute("SELECT COUNT(*) FROM tasks WHERE status != 'active'")
+    total_tasks = cur.fetchone()[0]
+    total_task_pages = (total_tasks + per_page - 1) // per_page
+    task_offset = (task_page - 1) * per_page
+
     cur.execute("""
         SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
                tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status,
@@ -619,10 +624,16 @@ def admin():
         JOIN users ON tasks.user_id = users.id 
         WHERE tasks.status != 'active' 
         ORDER BY (CASE WHEN tasks.status = 'pending' THEN 1 ELSE 2 END), tasks.id DESC 
-        LIMIT 30
-    """)
+        LIMIT %s OFFSET %s
+    """, (per_page, task_offset))
     all_tasks = cur.fetchall()
     
+    # 3. Withdrawals Pagination & Recent First Ordering (Pending first, then newest ID)
+    cur.execute("SELECT COUNT(*) FROM withdrawals")
+    total_withdrawals = cur.fetchone()[0]
+    total_withdraw_pages = (total_withdrawals + per_page - 1) // per_page
+    withdraw_offset = (withdraw_page - 1) * per_page
+
     cur.execute("""
         SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
                withdrawals.account_number, withdrawals.amount, withdrawals.status,
@@ -630,22 +641,25 @@ def admin():
         FROM withdrawals 
         JOIN users ON withdrawals.user_id = users.id 
         ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
-        LIMIT 30
-    """)
+        LIMIT %s OFFSET %s
+    """, (per_page, withdraw_offset))
     all_withdrawals = cur.fetchall()
-
-    cur.execute("""
-        SELECT full_name, whatsapp, password,
-               COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
-        FROM users 
-        ORDER BY id DESC
-    """)
-    all_users = cur.fetchall()
     
     cur.close()
     conn.close()
     
-    return render_template('admin.html', tasks=all_tasks, withdrawals=all_withdrawals, users=all_users)
+    return render_template(
+        'admin.html', 
+        tasks=all_tasks, 
+        withdrawals=all_withdrawals, 
+        users=all_users, 
+        user_page=user_page, 
+        total_user_pages=total_user_pages,
+        task_page=task_page,
+        total_task_pages=total_task_pages,
+        withdraw_page=withdraw_page,
+        total_withdraw_pages=total_withdraw_pages
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
