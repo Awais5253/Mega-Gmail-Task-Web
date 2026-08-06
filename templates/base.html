@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#121827">
     <meta name="color-scheme" content="dark">
-    
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
 
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
     
@@ -17,7 +13,6 @@
     <style>
         html {
             background-color: #121827;
-            overscroll-behavior-y: contain;
         }
         body {
             background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
@@ -29,7 +24,6 @@
             justify-content: center;
             min-height: 100vh;
             box-sizing: border-box;
-            overscroll-behavior-y: contain;
             -webkit-tap-highlight-color: transparent;
         }
         .container {
@@ -37,7 +31,7 @@
             max-width: 450px;
         }
 
-        /* Fixed Bottom Navigation Bar (GPU Accelerated - No Black Blink on Refresh) */
+        /* Fixed Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -53,16 +47,8 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
             width: 100vw;
-
-            /* GPU Acceleration Flags to Lock Element Layer */
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
-            will-change: transform;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
         }
         
-        /* Har button strictly 20% width lega (No Size Shift) */
         .nav-item {
             flex: 1 1 20%;
             width: 20%;
@@ -122,6 +108,7 @@
     </div>
 
     <script>
+        // Update active tab color smoothly
         document.addEventListener('htmx:afterSettle', function() {
             const currentPath = window.location.pathname;
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -132,6 +119,32 @@
                 }
             });
         });
+
+        // Smart Pull-to-Refresh: Refreshes content only without full page blink
+        let startY = 0;
+        let isRefreshing = false;
+
+        window.addEventListener('touchstart', function(e) {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', function(e) {
+            const endY = e.changedTouches[0].pageY;
+            if (window.scrollY === 0 && (endY - startY > 120) && !isRefreshing) {
+                isRefreshing = true;
+                htmx.ajax('GET', window.location.href, {
+                    target: '#main-content',
+                    select: '#main-content',
+                    swap: 'innerHTML'
+                }).then(() => {
+                    isRefreshing = false;
+                }).catch(() => {
+                    isRefreshing = false;
+                });
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
