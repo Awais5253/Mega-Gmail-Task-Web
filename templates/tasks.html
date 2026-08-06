@@ -1,30 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121827">
-    <meta name="color-scheme" content="dark">
-    <title>Tasks - Mega Gmail Task</title>
+{% extends "base.html" %}
+
+{% block title %}Tasks - Mega Gmail Task{% endblock %}
+
+{% block head %}
     <style>
-        html {
-            background-color: #121827;
-        }
-        body {
-            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px 15px calc(90px + env(safe-area-inset-bottom)) 15px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 420px;
-        }
         .header-title {
             font-size: 24px;
             font-weight: 800;
@@ -185,153 +164,91 @@
             box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
             margin-top: 10px;
         }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #121827;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #7a8b9e;
-            font-size: 12px;
-            font-weight: 700;
-            gap: 2px;
-        }
-        .nav-item.active {
-            color: #00f2fe;
-        }
-        .nav-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header-title">Available Tasks</div>
-        <div class="header-sub">Create Gmail accounts to earn money</div>
+{% endblock %}
 
-        {% if active_task %}
-        <!-- Active Task Details Box -->
-        <div class="task-card">
-            <div class="task-top-info">
-                <span class="gid-badge">Task ID: {{ active_task.gid }}</span>
-                <span class="price-tag">PKR {{ active_task.price }}</span>
-            </div>
+{% block content %}
+    <div class="header-title">Available Tasks</div>
+    <div class="header-sub">Create Gmail accounts to earn money</div>
 
-            <div class="section-heading">Your Data</div>
-            <div class="tap-instruction">Tap any field to copy. Use this data to register.</div>
-
-            <!-- Copyable Fields -->
-            <div class="field-box" onclick="copyText('{{ active_task.name }}', this)">
-                <div class="field-info">
-                    <span class="field-label">NAME</span>
-                    <span class="field-value">{{ active_task.name }}</span>
-                </div>
-                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
-                <span class="copied-toast">Copied!</span>
-            </div>
-
-            <div class="field-box" onclick="copyText('{{ active_task.dob_year }}', this)">
-                <div class="field-info">
-                    <span class="field-label">YEAR OF BIRTH</span>
-                    <span class="field-value">{{ active_task.dob_year }}</span>
-                </div>
-                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
-                <span class="copied-toast">Copied!</span>
-            </div>
-
-            <div class="field-box" onclick="copyText('{{ active_task.email }}', this)">
-                <div class="field-info">
-                    <span class="field-label">EMAIL / USERNAME</span>
-                    <span class="field-value">{{ active_task.email }}</span>
-                </div>
-                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
-                <span class="copied-toast">Copied!</span>
-            </div>
-
-            <div class="field-box" onclick="copyText('{{ active_task.password }}', this)">
-                <div class="field-info">
-                    <span class="field-label">PASSWORD</span>
-                    <span class="field-value">{{ active_task.password }}</span>
-                </div>
-                <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
-                <span class="copied-toast">Copied!</span>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-container">
-                <div class="btn-row">
-                    <form method="POST" style="flex:1;">
-                        <input type="hidden" name="action" value="done">
-                        <button type="submit" class="btn btn-done">✅ Done</button>
-                    </form>
-                    <form method="POST" style="flex:1;">
-                        <input type="hidden" name="action" value="cancel">
-                        <button type="submit" class="btn btn-cancel">❌ Cancel</button>
-                    </form>
-                </div>
-                <form method="POST">
-                    <input type="hidden" name="action" value="start_new">
-                    <button type="submit" class="btn btn-new">🔄 New Task</button>
-                </form>
-            </div>
+    {% if active_task %}
+    <div class="task-card">
+        <div class="task-top-info">
+            <span class="gid-badge">Task ID: {{ active_task.gid }}</span>
+            <span class="price-tag">PKR {{ active_task.price }}</span>
         </div>
-        {% else %}
-        <!-- Beautiful Start Task Box -->
-        <div class="task-card">
-            <div class="task-top-info">
-                <span class="section-heading" style="margin: 0;">Create Gmail Account</span>
-                <span class="price-tag">PKR 30</span>
+
+        <div class="section-heading">Your Data</div>
+        <div class="tap-instruction">Tap any field to copy. Use this data to register.</div>
+
+        <div class="field-box" onclick="copyText('{{ active_task.name }}', this)">
+            <div class="field-info">
+                <span class="field-label">NAME</span>
+                <span class="field-value">{{ active_task.name }}</span>
             </div>
-            <div class="tap-instruction" style="margin-bottom: 15px;">
-                Click below to start a new Gmail registration task and generate your credentials.
+            <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+            <span class="copied-toast">Copied!</span>
+        </div>
+
+        <div class="field-box" onclick="copyText('{{ active_task.dob_year }}', this)">
+            <div class="field-info">
+                <span class="field-label">YEAR OF BIRTH</span>
+                <span class="field-value">{{ active_task.dob_year }}</span>
+            </div>
+            <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+            <span class="copied-toast">Copied!</span>
+        </div>
+
+        <div class="field-box" onclick="copyText('{{ active_task.email }}', this)">
+            <div class="field-info">
+                <span class="field-label">EMAIL / USERNAME</span>
+                <span class="field-value">{{ active_task.email }}</span>
+            </div>
+            <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+            <span class="copied-toast">Copied!</span>
+        </div>
+
+        <div class="field-box" onclick="copyText('{{ active_task.password }}', this)">
+            <div class="field-info">
+                <span class="field-label">PASSWORD</span>
+                <span class="field-value">{{ active_task.password }}</span>
+            </div>
+            <div class="copy-icon"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></div>
+            <span class="copied-toast">Copied!</span>
+        </div>
+
+        <div class="action-container">
+            <div class="btn-row">
+                <form method="POST" style="flex:1;">
+                    <input type="hidden" name="action" value="done">
+                    <button type="submit" class="btn btn-done">✅ Done</button>
+                </form>
+                <form method="POST" style="flex:1;">
+                    <input type="hidden" name="action" value="cancel">
+                    <button type="submit" class="btn btn-cancel">❌ Cancel</button>
+                </form>
             </div>
             <form method="POST">
                 <input type="hidden" name="action" value="start_new">
-                <button type="submit" class="btn btn-start-card">▶️ Start Task</button>
+                <button type="submit" class="btn btn-new">🔄 New Task</button>
             </form>
         </div>
-        {% endif %}
     </div>
-
-    <!-- Bottom Navigation Bar -->
-    <div class="bottom-nav">
-        <a href="/home" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="/tasks" class="nav-item active">
-            <span class="nav-icon">📑</span>
-            <span>Tasks</span>
-        </a>
-        <a href="/referrals" class="nav-item">
-            <span class="nav-icon">🎁</span>
-            <span>Refs</span>
-        </a>
-        <a href="/wallet" class="nav-item">
-            <span class="nav-icon">👛</span>
-            <span>Wallet</span>
-        </a>
-        <a href="/profile" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
-        </a>
+    {% else %}
+    <div class="task-card">
+        <div class="task-top-info">
+            <span class="section-heading" style="margin: 0;">Create Gmail Account</span>
+            <span class="price-tag">PKR 30</span>
+        </div>
+        <div class="tap-instruction" style="margin-bottom: 15px;">
+            Click below to start a new Gmail registration task and generate your credentials.
+        </div>
+        <form method="POST">
+            <input type="hidden" name="action" value="start_new">
+            <button type="submit" class="btn btn-start-card">▶️ Start Task</button>
+        </form>
     </div>
+    {% endif %}
 
     <script>
         function copyText(text, element) {
@@ -344,5 +261,4 @@
             });
         }
     </script>
-</body>
-</html>
+{% endblock %}
