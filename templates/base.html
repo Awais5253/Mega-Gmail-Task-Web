@@ -7,8 +7,6 @@
     <meta name="color-scheme" content="dark">
 
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
-    
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <style>
         html {
@@ -78,7 +76,7 @@
     </style>
     {% block head %}{% endblock %}
 </head>
-<body hx-boost="true" hx-select="#main-content" hx-target="#main-content" hx-swap="innerHTML">
+<body>
 
     <div class="container" id="main-content">
         {% block content %}{% endblock %}
@@ -107,17 +105,5 @@
         </a>
     </div>
 
-    <script>
-        document.addEventListener('htmx:afterSettle', function() {
-            const currentPath = window.location.pathname;
-            document.querySelectorAll('.nav-item').forEach(item => {
-                if (item.getAttribute('href') === currentPath) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>
