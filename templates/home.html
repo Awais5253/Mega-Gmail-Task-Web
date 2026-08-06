@@ -6,8 +6,6 @@
     <meta name="theme-color" content="#121827">
     <meta name="color-scheme" content="dark">
     <title>Home - Mega Gmail Task</title>
-    <!-- HTMX Script for Smooth Targeting -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         html {
             background-color: #121827;
@@ -249,9 +247,7 @@
     </style>
 </head>
 <body>
-
-    <!-- Main Dynamic Content Wrapper -->
-    <div id="main-content" class="container">
+    <div class="container">
         <div class="welcome-title">Welcome back, {{ user[0] }} 👋</div>
 
         <!-- Balance Card -->
@@ -314,59 +310,28 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar (Stays Frozen in DOM) -->
+    <!-- Bottom Navigation Bar -->
     <div class="bottom-nav">
-        <a href="/home" 
-           hx-get="/home" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="outerHTML" 
-           hx-push-url="true" 
-           class="nav-item active">
+        <a href="/home" class="nav-item active">
             <span class="nav-icon">🏠</span>
             <span>Home</span>
         </a>
-        <a href="/tasks" 
-           hx-get="/tasks" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="outerHTML" 
-           hx-push-url="true" 
-           class="nav-item">
+        <a href="/tasks" class="nav-item">
             <span class="nav-icon">📑</span>
             <span>Tasks</span>
         </a>
-        <a href="/referrals" 
-           hx-get="/referrals" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="outerHTML" 
-           hx-push-url="true" 
-           class="nav-item">
+        <a href="/referrals" class="nav-item">
             <span class="nav-icon">🎁</span>
             <span>Refs</span>
         </a>
-        <a href="/wallet" 
-           hx-get="/wallet" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="outerHTML" 
-           hx-push-url="true" 
-           class="nav-item">
+        <a href="/wallet" class="nav-item">
             <span class="nav-icon">👛</span>
             <span>Wallet</span>
         </a>
-        <a href="/profile" 
-           hx-get="/profile" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="outerHTML" 
-           hx-push-url="true" 
-           class="nav-item">
+        <a href="/profile" class="nav-item">
             <span class="nav-icon">👤</span>
             <span>Profile</span>
         </a>
     </div>
-
 </body>
 </html>
