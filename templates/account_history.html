@@ -1,179 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121827">
-    <meta name="color-scheme" content="dark">
-    <title>Account History - Mega Gmail Task</title>
-    <style>
-        html {
-            background-color: #121827;
-        }
-        body {
-            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px 15px calc(90px + env(safe-area-inset-bottom)) 15px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 450px;
-        }
-        .page-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #00f2fe;
-            margin-bottom: 20px;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
-        .card {
-            background: #121827;
-            border-radius: 16px;
-            padding: 16px 18px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 14px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-        }
-        .amount {
-            font-size: 18px;
-            font-weight: 900;
-            color: #ffffff;
-        }
-        .status {
-            font-weight: 800;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.3); }
-        .status-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.3); }
-        .status-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.3); }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-        .label {
-            color: #7a8b9e;
-            font-weight: 600;
-        }
-        .val {
-            color: #e2e8f0;
-            font-weight: 700;
-            word-break: break-all;
-        }
+{% extends "base.html" %}
 
-        /* Bottom Navigation Bar Style */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #121827;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #7a8b9e;
-            font-size: 12px;
-            font-weight: 700;
-            gap: 2px;
-            text-align: center;
-        }
-        .nav-item.active {
-            color: #00f2fe;
-        }
-        .nav-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="page-title">📋 Account History</div>
+{% block title %}Account History - Mega Gmail Task{% endblock %}
 
-        {% if history %}
-            {% for item in history %}
-            <div class="card">
-                <div class="card-header">
-                    <div class="amount">PKR {{ item.price }}</div>
-                    {% if item.status == 'pending' %}
-                        <span class="status status-pending">Pending</span>
-                    {% elif item.status == 'approved' or item.status == 'Approved' %}
-                        <span class="status status-approved">Approved</span>
-                    {% else %}
-                        <span class="status status-rejected">{{ item.status }}</span>
-                    {% endif %}
-                </div>
-                
-                <div class="info-row">
-                    <span class="label">🆔 Task ID</span>
-                    <span class="val">{{ item.gid }}</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">📧 Task Email</span>
-                    <span class="val">{{ item.email }}</span>
-                </div>
+{% block head %}
+<style>
+    .page-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: #00f2fe;
+        margin-bottom: 20px;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+    .card {
+        background: #121827;
+        border-radius: 16px;
+        padding: 16px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+    .amount {
+        font-size: 18px;
+        font-weight: 900;
+        color: #ffffff;
+    }
+    .status {
+        font-weight: 800;
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .status-pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.3); }
+    .status-approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.3); }
+    .status-rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.3); }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    .label {
+        color: #7a8b9e;
+        font-weight: 600;
+    }
+    .val {
+        color: #e2e8f0;
+        font-weight: 700;
+        word-break: break-all;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-title">📋 Account History</div>
+
+    {% if history %}
+        {% for item in history %}
+        <div class="card">
+            <div class="card-header">
+                <div class="amount">PKR {{ item.price }}</div>
+                {% if item.status == 'pending' %}
+                    <span class="status status-pending">Pending</span>
+                {% elif item.status == 'approved' or item.status == 'Approved' %}
+                    <span class="status status-approved">Approved</span>
+                {% else %}
+                    <span class="status status-rejected">{{ item.status }}</span>
+                {% endif %}
             </div>
-            {% endfor %}
-        {% else %}
-            <div style="text-align: center; color: #7a8b9e; padding: 30px; background:#121827; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">No account history found.</div>
-        {% endif %}
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <div class="bottom-nav">
-        <a href="/home" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="/tasks" class="nav-item">
-            <span class="nav-icon">📑</span>
-            <span>Tasks</span>
-        </a>
-        <a href="/referrals" class="nav-item">
-            <span class="nav-icon">🎁</span>
-            <span>Refs</span>
-        </a>
-        <a href="/wallet" class="nav-item">
-            <span class="nav-icon">👛</span>
-            <span>Wallet</span>
-        </a>
-        <a href="/profile" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
-        </a>
-    </div>
-</body>
-</html>
+            
+            <div class="info-row">
+                <span class="label">🆔 Task ID</span>
+                <span class="val">{{ item.gid }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">📧 Task Email</span>
+                <span class="val">{{ item.email }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; color: #7a8b9e; padding: 30px; background:#121827; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">No account history found.</div>
+    {% endif %}
+{% endblock %}
