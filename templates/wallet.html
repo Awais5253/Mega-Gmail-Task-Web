@@ -2,7 +2,7 @@
 
 {% block title %}Wallet - Mega Gmail Task{% endblock %}
 
-{% block content %}
+{% block head %}
 <style>
     .balance-card {
         background: #121827;
@@ -108,7 +108,9 @@
     .st-Approved { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
     .st-Rejected { background: rgba(255, 71, 87, 0.15); color: #ff4757; }
 </style>
+{% endblock %}
 
+{% block content %}
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
