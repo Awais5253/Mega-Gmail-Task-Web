@@ -108,7 +108,6 @@
     </div>
 
     <script>
-        // Update active tab color smoothly
         document.addEventListener('htmx:afterSettle', function() {
             const currentPath = window.location.pathname;
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -119,32 +118,6 @@
                 }
             });
         });
-
-        // Smart Pull-to-Refresh: Refreshes content only without full page blink
-        let startY = 0;
-        let isRefreshing = false;
-
-        window.addEventListener('touchstart', function(e) {
-            if (window.scrollY === 0) {
-                startY = e.touches[0].pageY;
-            }
-        }, { passive: true });
-
-        window.addEventListener('touchend', function(e) {
-            const endY = e.changedTouches[0].pageY;
-            if (window.scrollY === 0 && (endY - startY > 120) && !isRefreshing) {
-                isRefreshing = true;
-                htmx.ajax('GET', window.location.href, {
-                    target: '#main-content',
-                    select: '#main-content',
-                    swap: 'innerHTML'
-                }).then(() => {
-                    isRefreshing = false;
-                }).catch(() => {
-                    isRefreshing = false;
-                });
-            }
-        }, { passive: true });
     </script>
 </body>
 </html>
