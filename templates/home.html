@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#121827">
     <meta name="color-scheme" content="dark">
     <title>Home - Mega Gmail Task</title>
+    <!-- HTMX for Seamless Page Transitions -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
         html {
             background-color: #121827;
@@ -246,7 +248,7 @@
         }
     </style>
 </head>
-<body>
+<body hx-boost="true">
     <div class="container">
         <div class="welcome-title">Welcome back, {{ user[0] }} 👋</div>
 
