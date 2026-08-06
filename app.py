@@ -6,6 +6,14 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 app = Flask(__name__)
 app.secret_key = 'mega_gmail_task_secret_key'
 
+# براؤزر کیشے کو روکنے کے لیے تاکہ ہر بار نیا اور ڈارک تھیم پیج لوڈ ہو
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db_connection():
