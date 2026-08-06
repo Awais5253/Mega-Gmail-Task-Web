@@ -17,6 +17,7 @@
     <style>
         html {
             background-color: #121827;
+            overscroll-behavior-y: contain;
         }
         body {
             background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
@@ -28,13 +29,15 @@
             justify-content: center;
             min-height: 100vh;
             box-sizing: border-box;
+            overscroll-behavior-y: contain;
+            -webkit-tap-highlight-color: transparent;
         }
         .container {
             width: 100%;
             max-width: 450px;
         }
 
-        /* Fixed Bottom Navigation Bar (Zero Shift & Zero Blink) */
+        /* Fixed Bottom Navigation Bar (GPU Accelerated - No Black Blink on Refresh) */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -50,6 +53,13 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
             width: 100vw;
+
+            /* GPU Acceleration Flags to Lock Element Layer */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         
         /* Har button strictly 20% width lega (No Size Shift) */
