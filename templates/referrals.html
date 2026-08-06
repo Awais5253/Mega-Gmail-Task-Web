@@ -1,291 +1,232 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121827">
-    <meta name="color-scheme" content="dark">
-    <title>Referral Program - Mega Gmail Task</title>
-    <style>
-        html {
-            background-color: #121827;
-        }
-        body {
-            background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px 15px calc(90px + env(safe-area-inset-bottom)) 15px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 420px;
-        }
+{% extends "base.html" %}
 
-        /* Page Header */
-        .page-header {
-            margin-bottom: 20px;
-        }
-        .page-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-            color: #ffffff;
-        }
-        .page-subtitle {
-            font-size: 13px;
-            color: #7a8b9e;
-            font-weight: 500;
-            margin: 0;
-        }
+{% block title %}Referral Program - Mega Gmail Task{% endblock %}
 
-        /* Referral Link Main Card */
-        .card {
-            background: #121827;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            margin-bottom: 16px;
-        }
-        .link-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .icon-badge {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3);
-        }
-        .icon-badge svg {
-            width: 22px;
-            height: 22px;
-            fill: #090d16;
-        }
-        .link-title {
-            font-size: 16px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-        .link-desc {
-            font-size: 12px;
-            color: #7a8b9e;
-            margin-top: 2px;
-        }
+{% block head %}
+<style>
+    /* Page Header */
+    .page-header {
+        margin-bottom: 20px;
+    }
+    .page-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+        color: #ffffff;
+    }
+    .page-subtitle {
+        font-size: 13px;
+        color: #7a8b9e;
+        font-weight: 500;
+        margin: 0;
+    }
 
-        /* Input & Copy Button Box */
-        .copy-box {
-            display: flex;
-            background: #090d16;
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            border-radius: 12px;
-            padding: 5px 5px 5px 12px;
-            align-items: center;
-            gap: 8px;
-        }
-        .copy-input {
-            background: transparent;
-            border: none;
-            color: #00f2fe;
-            font-size: 12px;
-            font-weight: 600;
-            width: 100%;
-            outline: none;
-        }
-        .btn-copy {
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-            color: #090d16;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 9px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.2);
-        }
-        .btn-copy:active {
-            transform: scale(0.95);
-        }
+    /* Referral Link Main Card */
+    .card {
+        background: #121827;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        margin-bottom: 16px;
+    }
+    .link-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .icon-badge {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 242, 254, 0.3);
+    }
+    .icon-badge svg {
+        width: 22px;
+        height: 22px;
+        fill: #090d16;
+    }
+    .link-title {
+        font-size: 16px;
+        font-weight: 800;
+        color: #ffffff;
+    }
+    .link-desc {
+        font-size: 12px;
+        color: #7a8b9e;
+        margin-top: 2px;
+    }
 
-        /* 2-Column Stats Grid */
-        .stats-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .stat-card {
-            background: #121827;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-        .stat-number {
-            font-size: 26px;
-            font-weight: 800;
-            color: #00f2fe;
-            margin-bottom: 4px;
-        }
-        .stat-number.green {
-            color: #2ed573;
-        }
-        .stat-label {
-            font-size: 11px;
-            color: #7a8b9e;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+    /* Input & Copy Button Box */
+    .copy-box {
+        display: flex;
+        background: #090d16;
+        border: 1px solid rgba(0, 242, 254, 0.2);
+        border-radius: 12px;
+        padding: 5px 5px 5px 12px;
+        align-items: center;
+        gap: 8px;
+    }
+    .copy-input {
+        background: transparent;
+        border: none;
+        color: #00f2fe;
+        font-size: 12px;
+        font-weight: 600;
+        width: 100%;
+        outline: none;
+    }
+    .btn-copy {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        color: #090d16;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 9px;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(0, 242, 254, 0.2);
+    }
+    .btn-copy:active {
+        transform: scale(0.95);
+    }
 
-        /* How It Works Section */
-        .section-title-box {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: 800;
-        }
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        .step-item:last-child {
-            margin-bottom: 0;
-        }
-        .step-badge {
-            background: rgba(0, 242, 254, 0.15);
-            color: #00f2fe;
-            border: 1px solid rgba(0, 242, 254, 0.3);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 800;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-        .step-text {
-            font-size: 12px;
-            color: #d1d5db;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-        .highlight-green {
-            color: #2ed573;
-            font-weight: 700;
-        }
+    /* 2-Column Stats Grid */
+    .stats-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .stat-card {
+        background: #121827;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .stat-number {
+        font-size: 26px;
+        font-weight: 800;
+        color: #00f2fe;
+        margin-bottom: 4px;
+    }
+    .stat-number.green {
+        color: #2ed573;
+    }
+    .stat-label {
+        font-size: 11px;
+        color: #7a8b9e;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
 
-        /* My Referrals Table */
-        .table-scroll {
-            width: 100%;
-            max-height: 220px;
-            overflow-y: auto;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .table-scroll::-webkit-scrollbar {
-            width: 4px;
-        }
-        .table-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-        }
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-        .custom-table th {
-            background: #182238;
-            color: #7a8b9e;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 10px 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            position: sticky;
-            top: 0;
-        }
-        .custom-table td {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 12px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-        .user-col {
-            color: #00f2fe;
-            font-weight: 700;
-        }
+    /* How It Works Section */
+    .section-title-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .section-title {
+        font-size: 16px;
+        font-weight: 800;
+    }
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .step-item:last-child {
+        margin-bottom: 0;
+    }
+    .step-badge {
+        background: rgba(0, 242, 254, 0.15);
+        color: #00f2fe;
+        border: 1px solid rgba(0, 242, 254, 0.3);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 800;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+    .step-text {
+        font-size: 12px;
+        color: #d1d5db;
+        line-height: 1.5;
+        font-weight: 500;
+    }
+    .highlight-green {
+        color: #2ed573;
+        font-weight: 700;
+    }
 
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #121827;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
-            z-index: 1000;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #7a8b9e;
-            font-size: 12px;
-            font-weight: 700;
-            gap: 2px;
-        }
-        .nav-item.active {
-            color: #00f2fe;
-        }
-        .nav-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
-    </style>
-</head>
-<body>
+    /* My Referrals Table */
+    .table-scroll {
+        width: 100%;
+        max-height: 220px;
+        overflow-y: auto;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .table-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+    }
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .custom-table th {
+        background: #182238;
+        color: #7a8b9e;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 10px 12px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+    }
+    .custom-table td {
+        padding: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+    .user-col {
+        color: #00f2fe;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
 
-    <div class="container">
-        
-        <!-- Header -->
+{% block content %}
         <div class="page-header">
             <h1 class="page-title">Referral Program</h1>
             <p class="page-subtitle">Invite friends and earn from their activity</p>
         </div>
 
-        <!-- Referral Link Box -->
         <div class="card">
             <div class="link-card-header">
                 <div class="icon-badge">
@@ -303,7 +244,6 @@
             </div>
         </div>
 
-        <!-- 2 Stat Boxes -->
         <div class="stats-grid-2">
             <div class="stat-card">
                 <div class="stat-number">{{ total_referrals if total_referrals else 0 }}</div>
@@ -315,7 +255,6 @@
             </div>
         </div>
 
-        <!-- How It Works Section -->
         <div class="card">
             <div class="section-title-box">
                 <span style="font-size: 18px;">ℹ️</span>
@@ -336,7 +275,6 @@
             </div>
         </div>
 
-        <!-- My Referrals Section -->
         <div class="card">
             <div class="section-title-box">
                 <span style="font-size: 18px;">👥</span>
@@ -371,33 +309,6 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <div class="bottom-nav">
-        <a href="/home" class="nav-item">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
-        </a>
-        <a href="/tasks" class="nav-item">
-            <span class="nav-icon">📑</span>
-            <span>Tasks</span>
-        </a>
-        <a href="/referrals" class="nav-item active">
-            <span class="nav-icon">🎁</span>
-            <span>Refs</span>
-        </a>
-        <a href="/wallet" class="nav-item">
-            <span class="nav-icon">👛</span>
-            <span>Wallet</span>
-        </a>
-        <a href="/profile" class="nav-item">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
-        </a>
-    </div>
-
-    <!-- Copy Link Script -->
     <script>
         function copyReferralLink() {
             var copyText = document.getElementById("refLink");
@@ -417,5 +328,4 @@
             }, 2000);
         }
     </script>
-</body>
-</html>
+{% endblock %}
