@@ -8,9 +8,8 @@
 
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
 
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
     <style>
+        /* Base Solid Color to match website bottom gradient */
         html {
             background-color: #0d1322 !important;
         }
@@ -31,13 +30,14 @@
             max-width: 450px;
         }
 
-        /* Pure Fixed Bottom Navigation Bar */
+        /* Fixed GPU-Accelerated Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: #0d1322 !important;
+            /* Matched background color with website dark theme */
+            background: #0d1322;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
@@ -47,6 +47,13 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
             box-sizing: border-box;
             width: 100vw;
+
+            /* GPU Layer Lock - Prevents blink/flicker during page refresh */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         
         .nav-item {
@@ -65,7 +72,6 @@
             text-align: center;
             box-sizing: border-box;
             transition: color 0.15s ease;
-            cursor: pointer;
         }
         
         .nav-item.active {
@@ -85,69 +91,28 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Persistent Bottom Navigation Bar (No Page Refresh on Nav) -->
     <div class="bottom-nav" id="bottom-nav">
-        <a href="/home" 
-           hx-get="/home" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="innerHTML" 
-           hx-push-url="true" 
-           class="nav-item {% if request.path == '/home' %}active{% endif %}">
+        <a href="/home" class="nav-item {% if request.path == '/home' %}active{% endif %}">
             <span class="nav-icon">🏠</span>
             <span>Home</span>
         </a>
-        <a href="/tasks" 
-           hx-get="/tasks" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="innerHTML" 
-           hx-push-url="true" 
-           class="nav-item {% if request.path == '/tasks' %}active{% endif %}">
+        <a href="/tasks" class="nav-item {% if request.path == '/tasks' %}active{% endif %}">
             <span class="nav-icon">📑</span>
             <span>Tasks</span>
         </a>
-        <a href="/referrals" 
-           hx-get="/referrals" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="innerHTML" 
-           hx-push-url="true" 
-           class="nav-item {% if request.path == '/referrals' %}active{% endif %}">
+        <a href="/referrals" class="nav-item {% if request.path == '/referrals' %}active{% endif %}">
             <span class="nav-icon">🎁</span>
             <span>Refs</span>
         </a>
-        <a href="/wallet" 
-           hx-get="/wallet" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="innerHTML" 
-           hx-push-url="true" 
-           class="nav-item {% if request.path == '/wallet' %}active{% endif %}">
+        <a href="/wallet" class="nav-item {% if request.path == '/wallet' %}active{% endif %}">
             <span class="nav-icon">👛</span>
             <span>Wallet</span>
         </a>
-        <a href="/profile" 
-           hx-get="/profile" 
-           hx-target="#main-content" 
-           hx-select="#main-content" 
-           hx-swap="innerHTML" 
-           hx-push-url="true" 
-           class="nav-item {% if request.path == '/profile' %}active{% endif %}">
+        <a href="/profile" class="nav-item {% if request.path == '/profile' %}active{% endif %}">
             <span class="nav-icon">👤</span>
             <span>Profile</span>
         </a>
     </div>
 
-    <script>
-        // Update active tab highlight instantly
-        document.addEventListener('click', function(e) {
-            const item = e.target.closest('.nav-item');
-            if (item) {
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                item.classList.add('active');
-            }
-        });
-    </script>
 </body>
 </html>
