@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#121827">
+    <meta name="theme-color" content="#0d1322">
     <meta name="color-scheme" content="dark">
 
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
 
     <style>
-        /* Base Solid Color to prevent render flash */
+        /* Base Solid Color to match website bottom gradient */
         html {
-            background-color: #121827 !important;
+            background-color: #0d1322 !important;
         }
         body {
             background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
@@ -36,14 +36,15 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: #121827;
+            /* Matched background color with website dark theme */
+            background: #0d1322;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
             z-index: 9999;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
             box-sizing: border-box;
             width: 100vw;
 
