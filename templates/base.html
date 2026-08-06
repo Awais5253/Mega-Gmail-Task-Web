@@ -9,8 +9,9 @@
     <title>{% block title %}Mega Gmail Task{% endblock %}</title>
 
     <style>
+        /* Base Solid Color to prevent render flash */
         html {
-            background-color: #121827;
+            background-color: #121827 !important;
         }
         body {
             background: linear-gradient(180deg, #090d16 0%, #0d1322 100%);
@@ -29,7 +30,7 @@
             max-width: 450px;
         }
 
-        /* Fixed Bottom Navigation Bar */
+        /* Fixed GPU-Accelerated Bottom Navigation Bar */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -41,10 +42,17 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 0 calc(8px + env(safe-area-inset-bottom)) 0;
-            z-index: 1000;
+            z-index: 9999;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
             box-sizing: border-box;
             width: 100vw;
+
+            /* GPU Layer Lock - Prevents blink/flicker during page refresh */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         
         .nav-item {
