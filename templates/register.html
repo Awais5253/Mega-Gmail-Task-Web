@@ -12,18 +12,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .card {
             background: #1c2541;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            width: 320px;
+            width: 100%;
+            max-width: 340px;
         }
         h2 { text-align: center; color: #00f2fe; margin-bottom: 5px; }
-        p { text-align: center; font-size: 14px; color: #a0aec0; }
+        p { text-align: center; font-size: 14px; color: #a0aec0; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-size: 14px; }
         input {
@@ -34,8 +37,12 @@
             background: #0b132b;
             color: #fff;
             box-sizing: border-box;
+            font-size: 14px;
         }
-        /* ریفرل لاکڈ ان پٹ کے لیے خصوصیات */
+        input:focus {
+            border-color: #00f2fe;
+            outline: none;
+        }
         .readonly-input {
             background-color: #101a36 !important;
             color: #00f2fe !important;
@@ -58,10 +65,28 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
+            font-size: 15px;
         }
-        .link { text-align: center; margin-top: 15px; font-size: 14px; }
-        .link a { color: #00f2fe; text-decoration: none; }
-        .alert { background: #e53e3e; color: white; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; text-align: center; }
+        button:hover {
+            background: #00c8e5;
+        }
+        .link { text-align: center; margin-top: 15px; font-size: 14px; color: #a0aec0; }
+        .link a { color: #00f2fe; text-decoration: none; font-weight: bold; }
+        .alert { 
+            padding: 10px; 
+            border-radius: 6px; 
+            margin-bottom: 15px; 
+            font-size: 14px; 
+            text-align: center; 
+        }
+        .alert-danger {
+            background-color: #e53e3e;
+            color: #ffffff;
+        }
+        .alert-success {
+            background-color: #38a169;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -72,7 +97,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <div class="alert">{{ message }}</div>
+              <div class="alert alert-{{ category if category != 'message' else 'danger' }}">{{ message }}</div>
             {% endfor %}
           {% endif %}
         {% endwith %}
@@ -91,7 +116,6 @@
                 <input type="password" name="password" placeholder="Minimum 5 characters" minlength="5" required>
             </div>
 
-            <!-- ریفرل سیکشن -->
             <div class="form-group">
                 <label>
                     Referral Code
@@ -101,10 +125,8 @@
                 </label>
                 
                 {% if ref %}
-                    <!-- اگر یوزر لنک سے آیا ہے تو یہ لاک رہے گا -->
                     <input type="text" name="ref" value="{{ ref }}" class="readonly-input" readonly>
                 {% else %}
-                    <!-- اگر یوزر براہ راست آیا ہے تو وہ خود لکھ سکتا ہے -->
                     <input type="text" name="ref" placeholder="Enter Code (e.g. 102)">
                 {% endif %}
             </div>
