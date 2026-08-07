@@ -5,94 +5,157 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Mega Gmail Task</title>
     <style>
-        body {
-            background-color: #0b132b;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
         }
-        .card {
-            background: #1c2541;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 340px;
+        body { 
+            background-color: #0b0f19; 
+            color: #ffffff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
         }
-        h2 { text-align: center; color: #00f2fe; margin-bottom: 5px; }
-        p { text-align: center; font-size: 14px; color: #a0aec0; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; }
-        input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #3a506b;
-            background: #0b132b;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
+        .card { 
+            background: #161e2e; 
+            width: 100%; 
+            max-width: 380px; 
+            padding: 35px 28px; 
+            border-radius: 16px; 
+            border: 1px solid #243044; 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6); 
+            text-align: center; 
         }
-        input:focus {
-            border-color: #00f2fe;
-            outline: none;
+        h2 { 
+            color: #38bdf8; 
+            margin-bottom: 6px; 
+            font-size: 32px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+        p.subtitle { 
+            color: #94a3b8; 
+            margin-bottom: 25px; 
+            font-size: 14px; 
+        }
+        .form-group { 
+            text-align: left; 
+            margin-bottom: 18px; 
+        }
+        label { 
+            display: block; 
+            color: #cbd5e1; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            font-weight: 500; 
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border-radius: 8px; 
+            border: 1px solid #334155; 
+            background: #0f172a; 
+            color: #ffffff; 
+            font-size: 15px; 
+            outline: none; 
+            transition: all 0.2s ease-in-out; 
+        }
+        input:focus { 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); 
         }
         .readonly-input {
             background-color: #101a36 !important;
-            color: #00f2fe !important;
+            color: #38bdf8 !important;
             font-weight: bold;
             cursor: not-allowed;
-            border: 1px solid #00f2fe !important;
+            border: 1px solid #38bdf8 !important;
         }
         .ref-optional {
-            color: #a0aec0;
+            color: #94a3b8;
             font-size: 12px;
             font-weight: normal;
         }
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            background: #00f2fe;
-            color: #0b132b;
-            font-weight: bold;
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-container input {
+            padding-right: 45px;
+        }
+        .toggle-eye {
+            position: absolute;
+            right: 12px;
             cursor: pointer;
-            margin-top: 10px;
-            font-size: 15px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            user-select: none;
         }
-        button:hover {
-            background: #00c8e5;
+        .toggle-eye:hover {
+            color: #38bdf8;
         }
-        .link { text-align: center; margin-top: 15px; font-size: 14px; color: #a0aec0; }
-        .link a { color: #00f2fe; text-decoration: none; font-weight: bold; }
-        .alert { 
-            padding: 10px; 
-            border-radius: 6px; 
-            margin-bottom: 15px; 
+        .btn { 
+            width: 100%; 
+            padding: 13px; 
+            background: linear-gradient(135deg, #0284c7, #38bdf8); 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover { 
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+        }
+        .btn:active {
+            transform: scale(0.99);
+        }
+        .link { 
+            margin-top: 22px; 
             font-size: 14px; 
-            text-align: center; 
+            color: #94a3b8; 
         }
-        .alert-danger {
-            background-color: #e53e3e;
-            color: #ffffff;
+        .link a { 
+            color: #38bdf8; 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+        .link a:hover {
+            text-decoration: underline;
+        }
+        .alert { 
+            background: rgba(239, 68, 68, 0.15); 
+            color: #f87171; 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            margin-bottom: 18px; 
+            font-size: 14px; 
+            text-align: left; 
         }
         .alert-success {
-            background-color: #38a169;
-            color: #ffffff;
+            background: rgba(56, 161, 105, 0.15);
+            color: #68d391;
+            border: 1px solid rgba(56, 161, 105, 0.3);
         }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>Mega Gmail Task</h2>
-        <p>Create a new account</p>
+        <p class="subtitle">Create a new account</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -102,18 +165,41 @@
           {% endif %}
         {% endwith %}
 
-        <form action="/register" method="POST">
+        <form id="registerForm" action="/register" method="POST">
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" name="full_name" placeholder="Your Full Name" maxlength="20" required>
+                <input type="text" name="full_name" maxlength="20" required>
             </div>
+
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="tel" name="whatsapp" placeholder="e.g. 03001234567" pattern="[0-9]{11}" maxlength="11" minlength="11" title="Please enter an 11-digit WhatsApp number" required>
+                <input type="tel" name="whatsapp" pattern="[0-9]{11}" maxlength="11" minlength="11" title="Please enter an 11-digit WhatsApp number" required>
             </div>
+
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="Minimum 5 characters" minlength="5" required>
+                <div class="password-container">
+                    <input type="text" id="passwordInput" name="password" placeholder="Minimum 8 characters" minlength="8" required>
+                    <span class="toggle-eye" id="togglePassword" title="Hide/Show Password">
+                        <svg id="eyeIcon1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <div class="password-container">
+                    <input type="text" id="confirmPasswordInput" placeholder="Re-enter password" minlength="8" required>
+                    <span class="toggle-eye" id="toggleConfirmPassword" title="Hide/Show Password">
+                        <svg id="eyeIcon2" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
             </div>
 
             <div class="form-group">
@@ -127,16 +213,58 @@
                 {% if is_locked %}
                     <input type="text" name="ref" value="{{ ref }}" class="readonly-input" readonly>
                 {% else %}
-                    <input type="text" name="ref" value="{{ ref if ref else '' }}" placeholder="Enter Code (e.g. 102)">
+                    <input type="text" name="ref" value="{{ ref if ref else '' }}" placeholder="Enter Code">
                 {% endif %}
             </div>
 
-            <button type="submit">Create Account</button>
+            <button type="submit" class="btn">Create Account</button>
         </form>
 
         <div class="link">
             Already have an account? <a href="/login">Sign In</a>
         </div>
     </div>
+
+    <script>
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon1 = document.getElementById('eyeIcon1');
+
+        const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const eyeIcon2 = document.getElementById('eyeIcon2');
+
+        const registerForm = document.getElementById('registerForm');
+
+        const eyeOpenSVG = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+        const eyeClosedSVG = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+        togglePassword.addEventListener('click', function () {
+            if (passwordInput.type === 'text') {
+                passwordInput.type = 'password';
+                eyeIcon1.innerHTML = eyeClosedSVG;
+            } else {
+                passwordInput.type = 'text';
+                eyeIcon1.innerHTML = eyeOpenSVG;
+            }
+        });
+
+        toggleConfirmPassword.addEventListener('click', function () {
+            if (confirmPasswordInput.type === 'text') {
+                confirmPasswordInput.type = 'password';
+                eyeIcon2.innerHTML = eyeClosedSVG;
+            } else {
+                confirmPasswordInput.type = 'text';
+                eyeIcon2.innerHTML = eyeOpenSVG;
+            }
+        });
+
+        registerForm.addEventListener('submit', function (e) {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                e.preventDefault();
+                alert('Passwords do not match! Please check your password.');
+            }
+        });
+    </script>
 </body>
 </html>
