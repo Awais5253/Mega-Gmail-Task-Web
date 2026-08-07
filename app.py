@@ -10,20 +10,49 @@ app.secret_key = 'mega_gmail_task_secret_key'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Connection pool with increased capacity and safety
-db_pool = pool.ThreadedConnectionPool(1, 20, DATABASE_URL)
+db_pool = pool.ThreadedConnectionPool(
+    1, 20, DATABASE_URL,
+    keepalives=1,
+    keepalives_idle=30,
+    keepalives_interval=10,
+    keepalives_count=5
+)
 
 @contextmanager
 def db_cursor():
-    conn = db_pool.getconn()
+    conn = None
+    for attempt in range(2):
+        try:
+            conn = db_pool.getconn()
+            cur = conn.cursor()
+            cur.execute("SELECT 1;")
+            cur.close()
+            break
+        except (psycopg2.OperationalError, psycopg2.InterfaceError):
+            if conn:
+                try:
+                    db_pool.putconn(conn, close=True)
+                except Exception:
+                    pass
+                conn = None
+            if attempt == 1:
+                raise
     try:
         yield conn
         conn.commit()
     except Exception as e:
-        conn.rollback()
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
         raise e
     finally:
-        db_pool.putconn(conn)
+        if conn:
+            try:
+                db_pool.putconn(conn)
+            except Exception:
+                pass
 
 def cleanup_old_records():
     try:
@@ -53,6 +82,7 @@ def init_db():
             );
         ''')
         
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS whatsapp VARCHAR(20);")
         cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL;")
         cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
         
