@@ -172,7 +172,7 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # URL (args) اور Form (form) دونوں سے ref پیرامیٹر حاصل کریں
+    # Fetch ref parameter from both URL (args) and Form (form)
     ref_param = request.args.get('ref') or request.form.get('ref')
     if ref_param:
         ref_param = str(ref_param).strip()
@@ -186,7 +186,7 @@ def register():
         if ref_param:
             try:
                 ref_db_id = None
-                # اگر ریفرل لنک میں 100 سے بڑی ID ہو (جیسے 102) تو اس میں سے 100 مائنس کر کے اصل ID (2) نکالیں
+                # Convert display ID (e.g. 102) to actual DB ID (2)
                 if ref_param.isdigit():
                     val = int(ref_param)
                     if val > 100:
