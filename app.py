@@ -172,19 +172,22 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # URL (args) اور Form (form) دونوں سے ref پیرامیٹر حاصل کریں
     ref_param = request.args.get('ref') or request.form.get('ref')
+    if ref_param:
+        ref_param = str(ref_param).strip()
     
     if request.method == 'POST':
-        full_name = request.form['full_name']
-        whatsapp = request.form['whatsapp']
-        password = request.form['password']
+        full_name = request.form.get('full_name', '').strip()
+        whatsapp = request.form.get('whatsapp', '').strip()
+        password = request.form.get('password', '').strip()
         
         referrer_id = None
         if ref_param:
             try:
                 ref_db_id = None
-                # اگر ریفرل لنک میں آئی ڈی کا نمبر (جیسے 102) ہے تو اس میں سے 100 مائنس کریں
-                if str(ref_param).isdigit():
+                # اگر ریفرل لنک میں 100 سے بڑی ID ہو (جیسے 102) تو اس میں سے 100 مائنس کر کے اصل ID (2) نکالیں
+                if ref_param.isdigit():
                     val = int(ref_param)
                     if val > 100:
                         ref_db_id = val - 100
@@ -327,10 +330,12 @@ def referrals():
         })
         
     user_info = [user_row[0], user_row[1], user_row[2]]
+    display_id = user_row[0] + 100
     
     return render_template(
         'referrals.html', 
         user=user_info, 
+        display_id=display_id,
         total_referrals=total_referrals, 
         ref_earnings=ref_earnings, 
         referrals_list=referrals_list
