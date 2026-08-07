@@ -119,15 +119,15 @@
             <div class="form-group">
                 <label>
                     Referral Code
-                    {% if not ref %}
+                    {% if not is_locked %}
                         <span class="ref-optional">(Optional)</span>
                     {% endif %}
                 </label>
                 
-                {% if ref %}
+                {% if is_locked %}
                     <input type="text" name="ref" value="{{ ref }}" class="readonly-input" readonly>
                 {% else %}
-                    <input type="text" name="ref" placeholder="Enter Code (e.g. 102)">
+                    <input type="text" name="ref" value="{{ ref if ref else '' }}" placeholder="Enter Code (e.g. 102)">
                 {% endif %}
             </div>
 
