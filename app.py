@@ -172,11 +172,35 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Fetch ref parameter from both URL (args) and Form (form)
     ref_param = request.args.get('ref') or request.form.get('ref')
     if ref_param:
         ref_param = str(ref_param).strip()
     
+    ref_db_id = None
+    if ref_param:
+        if ref_param.isdigit():
+            val = int(ref_param)
+            if val > 100:
+                ref_db_id = val - 100
+            else:
+                ref_db_id = val
+
+    if request.method == 'GET' and ref_param:
+        try:
+            with db_cursor() as conn:
+                cur = conn.cursor()
+                if ref_db_id is not None:
+                    cur.execute("SELECT id FROM users WHERE id = %s LIMIT 1", (ref_db_id,))
+                else:
+                    cur.execute("SELECT id FROM users WHERE full_name = %s LIMIT 1", (ref_param,))
+                
+                if not cur.fetchone():
+                    flash("Invalid Referral Link or Code!", "danger")
+                    ref_param = None
+                cur.close()
+        except Exception as e:
+            print("GET referrer validation error:", e)
+
     if request.method == 'POST':
         full_name = request.form.get('full_name', '').strip()
         whatsapp = request.form.get('whatsapp', '').strip()
@@ -185,15 +209,6 @@ def register():
         referrer_id = None
         if ref_param:
             try:
-                ref_db_id = None
-                # Convert display ID (e.g. 102) to actual DB ID (2)
-                if ref_param.isdigit():
-                    val = int(ref_param)
-                    if val > 100:
-                        ref_db_id = val - 100
-                    else:
-                        ref_db_id = val
-
                 with db_cursor() as conn:
                     cur = conn.cursor()
                     if ref_db_id is not None:
@@ -202,9 +217,13 @@ def register():
                         cur.execute("SELECT id FROM users WHERE full_name = %s LIMIT 1", (ref_param,))
                         
                     ref_user = cur.fetchone()
+                    cur.close()
+
                     if ref_user:
                         referrer_id = ref_user[0]
-                    cur.close()
+                    else:
+                        flash("Invalid Referral Code! User does not exist.", "danger")
+                        return render_template('register.html', ref=ref_param)
             except Exception as e:
                 print("Referrer lookup error:", e)
 
