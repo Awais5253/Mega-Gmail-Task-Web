@@ -65,6 +65,9 @@
         {% endwith %}
 
         <form action="/register" method="POST">
+            <!-- ریفرل کوڈ کو محفوظ رکھنے کے لیے ہڈن ان پٹ -->
+            <input type="hidden" name="ref" value="{{ ref if ref else '' }}">
+
             <div class="form-group">
                 <label>Full Name</label>
                 <input type="text" name="full_name" placeholder="Your Full Name" maxlength="20" required>
