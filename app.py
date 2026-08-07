@@ -182,9 +182,22 @@ def register():
         referrer_id = None
         if ref_param:
             try:
+                ref_db_id = None
+                # اگر ریفرل لنک میں آئی ڈی کا نمبر (جیسے 102) ہے تو اس میں سے 100 مائنس کریں
+                if str(ref_param).isdigit():
+                    val = int(ref_param)
+                    if val > 100:
+                        ref_db_id = val - 100
+                    else:
+                        ref_db_id = val
+
                 with db_cursor() as conn:
                     cur = conn.cursor()
-                    cur.execute("SELECT id FROM users WHERE id::text = %s OR full_name = %s LIMIT 1", (ref_param, ref_param))
+                    if ref_db_id is not None:
+                        cur.execute("SELECT id FROM users WHERE id = %s LIMIT 1", (ref_db_id,))
+                    else:
+                        cur.execute("SELECT id FROM users WHERE full_name = %s LIMIT 1", (ref_param,))
+                        
                     ref_user = cur.fetchone()
                     if ref_user:
                         referrer_id = ref_user[0]
