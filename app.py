@@ -172,20 +172,17 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    ref_param = request.args.get('ref') or request.form.get('ref')
-    if ref_param:
-        ref_param = str(ref_param).strip()
+    ref_param = (request.args.get('ref') or request.form.get('ref') or '').strip()
     
     ref_db_id = None
-    if ref_param:
-        if ref_param.isdigit():
-            val = int(ref_param)
-            if val > 100:
-                ref_db_id = val - 100
-            else:
-                ref_db_id = val
+    if ref_param.isdigit():
+        val = int(ref_param)
+        ref_db_id = val - 100 if val > 100 else val
 
-    if request.method == 'GET' and ref_param:
+    valid_referrer_id = None
+    is_valid_ref = False
+
+    if ref_param:
         try:
             with db_cursor() as conn:
                 cur = conn.cursor()
@@ -194,38 +191,31 @@ def register():
                 else:
                     cur.execute("SELECT id FROM users WHERE full_name = %s LIMIT 1", (ref_param,))
                 
-                if not cur.fetchone():
-                    flash("Invalid Referral Link or Code!", "danger")
-                    ref_param = None
+                user_row = cur.fetchone()
                 cur.close()
+
+                if user_row:
+                    valid_referrer_id = user_row[0]
+                    is_valid_ref = True
         except Exception as e:
-            print("GET referrer validation error:", e)
+            print("Referrer lookup error:", e)
+
+    is_locked = False
+    if request.method == 'GET':
+        if ref_param and is_valid_ref:
+            is_locked = True
+        elif ref_param and not is_valid_ref:
+            flash("Invalid Referral Link or Code!", "danger")
+            ref_param = ''
 
     if request.method == 'POST':
         full_name = request.form.get('full_name', '').strip()
         whatsapp = request.form.get('whatsapp', '').strip()
         password = request.form.get('password', '').strip()
-        
-        referrer_id = None
-        if ref_param:
-            try:
-                with db_cursor() as conn:
-                    cur = conn.cursor()
-                    if ref_db_id is not None:
-                        cur.execute("SELECT id FROM users WHERE id = %s LIMIT 1", (ref_db_id,))
-                    else:
-                        cur.execute("SELECT id FROM users WHERE full_name = %s LIMIT 1", (ref_param,))
-                        
-                    ref_user = cur.fetchone()
-                    cur.close()
 
-                    if ref_user:
-                        referrer_id = ref_user[0]
-                    else:
-                        flash("Invalid Referral Code! User does not exist.", "danger")
-                        return render_template('register.html', ref=ref_param)
-            except Exception as e:
-                print("Referrer lookup error:", e)
+        if ref_param and not is_valid_ref:
+            flash("Invalid Referral Code! User does not exist.", "danger")
+            return render_template('register.html', ref=ref_param, is_locked=False)
 
         try:
             with db_cursor() as conn:
@@ -233,15 +223,15 @@ def register():
                 cur.execute("""
                     INSERT INTO users (full_name, whatsapp, password, referred_by) 
                     VALUES (%s, %s, %s, %s)
-                """, (full_name, whatsapp, password, referrer_id))
+                """, (full_name, whatsapp, password, valid_referrer_id))
                 cur.close()
             flash("Registration Successful! Please Login.", "success")
             return redirect(url_for('login'))
         except Exception as e:
             flash("WhatsApp Number already registered!", "danger")
-            return render_template('register.html', ref=ref_param)
-            
-    return render_template('register.html', ref=ref_param)
+            return render_template('register.html', ref=ref_param, is_locked=is_locked)
+
+    return render_template('register.html', ref=ref_param, is_locked=is_locked)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
