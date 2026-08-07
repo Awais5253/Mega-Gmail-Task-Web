@@ -5,20 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Mega Gmail Task</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0b0f19; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: #161e2e; width: 100%; max-width: 400px; padding: 30px; border-radius: 16px; border: 1px solid #243044; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
-        h2 { color: #38bdf8; margin-bottom: 8px; font-size: 26px; font-weight: 700; }
-        p.subtitle { color: #94a3b8; margin-bottom: 25px; font-size: 14px; }
-        .form-group { text-align: left; margin-bottom: 18px; }
-        label { display: block; color: #cbd5e1; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
-        input:focus { border-color: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); }
-        .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; border-radius: 8px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-        .btn:hover { opacity: 0.9; }
-        .link { margin-top: 20px; font-size: 14px; color: #94a3b8; }
-        .link a { color: #38bdf8; text-decoration: none; font-weight: 600; }
-        .alert { background: #ef444422; color: #f87171; border: 1px solid #ef444455; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: left; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        body { 
+            background-color: #0b0f19; 
+            color: #ffffff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        .card { 
+            background: #161e2e; 
+            width: 100%; 
+            max-width: 380px; 
+            padding: 35px 28px; 
+            border-radius: 16px; 
+            border: 1px solid #243044; 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6); 
+            text-align: center; 
+        }
+        h2 { 
+            color: #38bdf8; 
+            margin-bottom: 6px; 
+            font-size: 32px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+        }
+        p.subtitle { 
+            color: #94a3b8; 
+            margin-bottom: 25px; 
+            font-size: 14px; 
+        }
+        .form-group { 
+            text-align: left; 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            color: #cbd5e1; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            font-weight: 500; 
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 14px; 
+            border-radius: 8px; 
+            border: 1px solid #334155; 
+            background: #0f172a; 
+            color: #ffffff; 
+            font-size: 15px; 
+            outline: none; 
+            transition: all 0.2s ease-in-out; 
+        }
+        input:focus { 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3); 
+        }
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-container input {
+            padding-right: 45px;
+        }
+        .toggle-eye {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            user-select: none;
+        }
+        .toggle-eye:hover {
+            color: #38bdf8;
+        }
+        .btn { 
+            width: 100%; 
+            padding: 13px; 
+            background: linear-gradient(135deg, #0284c7, #38bdf8); 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: 5px; 
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover { 
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+        }
+        .btn:active {
+            transform: scale(0.99);
+        }
+        .link { 
+            margin-top: 22px; 
+            font-size: 14px; 
+            color: #94a3b8; 
+        }
+        .link a { 
+            color: #38bdf8; 
+            text-decoration: none; 
+            font-weight: 600; 
+        }
+        .link a:hover {
+            text-decoration: underline;
+        }
+        .alert { 
+            background: rgba(239, 68, 68, 0.15); 
+            color: #f87171; 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            padding: 10px 14px; 
+            border-radius: 8px; 
+            margin-bottom: 18px; 
+            font-size: 14px; 
+            text-align: left; 
+        }
     </style>
 </head>
 <body>
@@ -37,11 +151,19 @@
         <form action="/login" method="POST">
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="text" name="whatsapp" placeholder="e.g. 03001234567" required>
+                <input type="text" name="whatsapp" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <div class="password-container">
+                    <input type="text" id="passwordInput" name="password" required>
+                    <span class="toggle-eye" id="togglePassword" title="Hide/Show Password">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
             </div>
             <button type="submit" class="btn">Sign In</button>
         </form>
@@ -49,5 +171,25 @@
             Don't have an account? <a href="/register">Register</a>
         </div>
     </div>
+
+    <script>
+        const passwordInput = document.getElementById('passwordInput');
+        const togglePassword = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        // SVG Icons
+        const eyeOpenSVG = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+        const eyeClosedSVG = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+
+        togglePassword.addEventListener('click', function () {
+            if (passwordInput.type === 'text') {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = eyeClosedSVG;
+            } else {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = eyeOpenSVG;
+            }
+        });
+    </script>
 </body>
 </html>
