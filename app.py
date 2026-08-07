@@ -2,11 +2,13 @@ import os
 import random
 import psycopg2
 from psycopg2 import pool
+from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from contextlib import contextmanager
 
 app = Flask(__name__)
 app.secret_key = 'mega_gmail_task_secret_key'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -246,6 +248,7 @@ def login():
             cur.close()
         
         if user and user[2] == password:
+            session.permanent = True
             session['user_id'] = user[0]
             session['user_name'] = user[1]
             return redirect(url_for('home'))
