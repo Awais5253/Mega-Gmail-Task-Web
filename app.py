@@ -160,6 +160,10 @@ def generate_random_task(user_id):
         ''', (user_id, gid, full_name, dob_year, email, password))
         cur.close()
 
+@app.route('/ping')
+def ping():
+    return "OK", 200
+
 @app.route('/')
 def index():
     if 'user_id' in session:
