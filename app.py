@@ -21,6 +21,8 @@ db_pool = pool.ThreadedConnectionPool(
     keepalives_count=5
 )
 
+LAST_CLEANUP_TIME = 0
+
 @contextmanager
 def db_cursor():
     conn = None
@@ -63,6 +65,12 @@ def db_cursor():
                 pass
 
 def cleanup_old_records():
+    global LAST_CLEANUP_TIME
+    current_time = time.time()
+    
+    if current_time - LAST_CLEANUP_TIME < 86400:
+        return
+
     try:
         with db_cursor() as conn:
             cur = conn.cursor()
@@ -70,6 +78,7 @@ def cleanup_old_records():
             cur.execute("DELETE FROM withdrawals WHERE created_at < NOW() - INTERVAL '30 days';")
             cur.execute("DELETE FROM referral_earnings WHERE created_at < NOW() - INTERVAL '30 days';")
             cur.close()
+        LAST_CLEANUP_TIME = current_time
     except Exception as e:
         print("Cleanup error:", e)
 
