@@ -333,10 +333,11 @@ Date & Time: {{ task[10] }}
                 {% for u in users %}
                 <div class="admin-card" style="border-left: 4px solid #00f2fe;">
                     <div class="user-info-header" style="margin-bottom:0;">
-                        <div class="user-name">👤 Name: {{ u[0] }}</div>
-                        <div class="user-phone">📞 Phone: {{ u[1] }}</div>
-                        <div class="user-phone" style="color: #00f2fe; margin-top: 4px;">🔑 Password: {{ u[2] }}</div>
-                        <div class="user-phone" style="color: #7a8b9e; margin-top: 4px;">⏰ Joined: {{ u[3] }}</div>
+                        <div class="user-phone" style="color: #00f2fe; font-size: 15px; font-weight: 800; margin-bottom: 5px;">🆔 User ID: {{ u[0] }}</div>
+                        <div class="user-name">👤 Name: {{ u[1] }}</div>
+                        <div class="user-phone">📞 Phone: {{ u[2] }}</div>
+                        <div class="user-phone" style="color: #00f2fe; margin-top: 4px;">🔑 Password: {{ u[3] }}</div>
+                        <div class="user-phone" style="color: #7a8b9e; margin-top: 4px;">⏰ Joined: {{ u[4] }}</div>
                     </div>
                 </div>
                 {% endfor %}
