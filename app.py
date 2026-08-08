@@ -11,8 +11,6 @@ app = Flask(__name__)
 app.secret_key = 'mega_gmail_task_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
-ADMIN_PASSWORD = "AWAISIRSHAD666"
-
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 db_pool = pool.ThreadedConnectionPool(
@@ -611,43 +609,10 @@ def wallet():
         
     return render_template('wallet.html', balance=balance, withdrawals=withdrawals)
 
-@app.route('/admin_logout')
-def admin_logout():
-    session.pop('is_admin', None)
-    return redirect(url_for('admin'))
-
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     cleanup_old_records()
     
-    # 1. Admin Login Submission via Form
-    if request.method == 'POST' and request.form.get('action') == 'admin_login':
-        entered_pass = request.form.get('admin_password', '').strip()
-        if entered_pass.upper() == ADMIN_PASSWORD:
-            session.permanent = True
-            session['is_admin'] = True
-            return redirect(url_for('admin'))
-        else:
-            flash("Incorrect Admin Password!", "danger")
-            return redirect(url_for('admin'))
-
-    # 2. Security Check: If not logged in as Admin, send empty lists so database isn't queried
-    if not session.get('is_admin'):
-        return render_template(
-            'admin.html', 
-            tasks=[], 
-            withdrawals=[], 
-            users=[], 
-            user_page=1, 
-            total_user_pages=1,
-            task_page=1,
-            total_task_pages=1,
-            withdraw_page=1,
-            total_withdraw_pages=1,
-            is_admin=False
-        )
-    
-    # 3. Admin Actions (Approve/Reject Tasks & Withdrawals)
     if request.method == 'POST':
         task_id = request.form.get('task_id')
         withdraw_id = request.form.get('withdraw_id')
@@ -692,7 +657,6 @@ def admin():
             
         return redirect(url_for('admin'))
     
-    # 4. Fetch Admin Data from Database (Only for Authenticated Admin)
     user_page = request.args.get('user_page', 1, type=int)
     task_page = request.args.get('task_page', 1, type=int)
     withdraw_page = request.args.get('withdraw_page', 1, type=int)
@@ -760,8 +724,7 @@ def admin():
         task_page=task_page,
         total_task_pages=total_task_pages,
         withdraw_page=withdraw_page,
-        total_withdraw_pages=total_withdraw_pages,
-        is_admin=True
+        total_withdraw_pages=total_withdraw_pages
     )
 
 if __name__ == '__main__':
