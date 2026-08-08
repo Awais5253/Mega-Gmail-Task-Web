@@ -656,7 +656,7 @@ def admin():
         user_offset = (user_page - 1) * per_page
 
         cur.execute("""
-            SELECT full_name, whatsapp, password,
+            SELECT (id + 100), full_name, whatsapp, password,
                    COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
             FROM users 
             ORDER BY id DESC
