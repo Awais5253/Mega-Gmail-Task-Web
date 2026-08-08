@@ -1,5 +1,6 @@
 import os
 import random
+import time
 import psycopg2
 from psycopg2 import pool
 from datetime import timedelta
@@ -13,7 +14,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 db_pool = pool.ThreadedConnectionPool(
-    1, 20, DATABASE_URL,
+    1, 15, DATABASE_URL,
     keepalives=1,
     keepalives_idle=30,
     keepalives_interval=10,
@@ -23,22 +24,27 @@ db_pool = pool.ThreadedConnectionPool(
 @contextmanager
 def db_cursor():
     conn = None
-    for attempt in range(2):
+    start_time = time.time()
+    
+    while conn is None:
         try:
             conn = db_pool.getconn()
             cur = conn.cursor()
             cur.execute("SELECT 1;")
             cur.close()
             break
-        except (psycopg2.OperationalError, psycopg2.InterfaceError):
+        except (psycopg2.OperationalError, psycopg2.InterfaceError, pool.PoolError) as e:
             if conn:
                 try:
                     db_pool.putconn(conn, close=True)
                 except Exception:
                     pass
                 conn = None
-            if attempt == 1:
-                raise
+            
+            if time.time() - start_time > 3.0:
+                raise e
+            time.sleep(0.05)
+            
     try:
         yield conn
         conn.commit()
