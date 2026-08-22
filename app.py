@@ -506,7 +506,7 @@ def tasks():
         cur.execute("""
             DELETE FROM tasks 
             WHERE user_id = %s AND status = 'active' 
-            AND created_at < NOW() - INTERVAL '1 hour'
+            AND created_at < NOW() - INTERVAL '30 minutes'
         """, (user_id,))
         cur.close()
     
