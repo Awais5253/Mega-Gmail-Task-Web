@@ -117,6 +117,19 @@
         .btn-notexist { background: #ffa500; color: #ffffff; }
         .btn-reject { background: #ff4757; color: #ffffff; }
 
+        .btn-change-status {
+            background: #f1c40f;
+            color: #090d16;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
         .status-banner {
             width: 100%;
             padding: 12px;
@@ -394,12 +407,36 @@ Date & Time: {{ task[10] }}
                             <button type="submit" class="btn-action btn-reject">❌ Reject</button>
                         </form>
                     </div>
-                    {% elif task[9] == 'Approved' or task[9] == 'approved' %}
-                        <div class="status-banner status-approved-bg">STATUS: APPROVED</div>
-                    {% elif task[9] == 'Not Exist' %}
-                        <div class="status-banner status-notexist-bg">STATUS: NOT EXIST</div>
                     {% else %}
-                        <div class="status-banner status-rejected-bg">STATUS: REJECTED</div>
+                        {% if task[9] == 'Approved' or task[9] == 'approved' %}
+                            <div class="status-banner status-approved-bg">STATUS: APPROVED</div>
+                        {% elif task[9] == 'Not Exist' %}
+                            <div class="status-banner status-notexist-bg">STATUS: NOT EXIST</div>
+                        {% else %}
+                            <div class="status-banner status-rejected-bg">STATUS: REJECTED</div>
+                        {% endif %}
+
+                        <button class="btn-change-status" onclick="toggleChangeStatus('change-grid-{{ task[0] }}')">
+                            🔄 Change Status
+                        </button>
+
+                        <div id="change-grid-{{ task[0] }}" class="action-grid" style="display: none; margin-top: 10px;">
+                            <form method="POST" style="margin:0;">
+                                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn-action btn-approve">✅ Approve</button>
+                            </form>
+                            <form method="POST" style="margin:0;">
+                                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                                <input type="hidden" name="action" value="not_exist">
+                                <button type="submit" class="btn-action btn-notexist">⚠️ Not Exist</button>
+                            </form>
+                            <form method="POST" style="margin:0;">
+                                <input type="hidden" name="task_id" value="{{ task[0] }}">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn-action btn-reject">❌ Reject</button>
+                            </form>
+                        </div>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -569,6 +606,17 @@ Date & Time: {{ task[10] }}
                     btn.style.color = "#00f2fe";
                 }, 1200);
             });
+        }
+
+        function toggleChangeStatus(elementId) {
+            const grid = document.getElementById(elementId);
+            if (grid) {
+                if (grid.style.display === 'none' || grid.style.display === '') {
+                    grid.style.display = 'grid';
+                } else {
+                    grid.style.display = 'none';
+                }
+            }
         }
     </script>
 </body>
