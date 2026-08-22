@@ -621,28 +621,44 @@ def admin():
         with db_cursor() as conn:
             cur = conn.cursor()
             if task_id:
-                if action == 'approve':
-                    cur.execute("SELECT user_id, price, status FROM tasks WHERE id = %s", (task_id,))
-                    row = cur.fetchone()
-                    if row and row[2] == 'pending':
-                        u_id, price = row[0], row[1]
-                        cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
-                        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                cur.execute("SELECT user_id, price, status FROM tasks WHERE id = %s", (task_id,))
+                row = cur.fetchone()
+                if row:
+                    u_id, price, old_status = row[0], row[1], row[2]
+                    is_old_approved = (old_status in ['Approved', 'approved'])
+
+                    if action == 'approve':
+                        if not is_old_approved:
+                            cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
+                            cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                            
+                            cur.execute("SELECT id FROM referral_earnings WHERE task_id = %s", (task_id,))
+                            if not cur.fetchone():
+                                cur.execute("SELECT referred_by FROM users WHERE id = %s", (u_id,))
+                                ref_row = cur.fetchone()
+                                if ref_row and ref_row[0]:
+                                    referrer_id = ref_row[0]
+                                    cur.execute("UPDATE users SET balance = balance + 10 WHERE id = %s", (referrer_id,))
+                                    cur.execute("""
+                                        INSERT INTO referral_earnings (referrer_id, referred_user_id, task_id, amount)
+                                        VALUES (%s, %s, %s, 10)
+                                    """, (referrer_id, u_id, task_id))
+
+                    elif action in ['not_exist', 'reject']:
+                        new_status = 'Not Exist' if action == 'not_exist' else 'Rejected'
                         
-                        cur.execute("SELECT referred_by FROM users WHERE id = %s", (u_id,))
-                        ref_row = cur.fetchone()
-                        if ref_row and ref_row[0]:
-                            referrer_id = ref_row[0]
-                            cur.execute("UPDATE users SET balance = balance + 10 WHERE id = %s", (referrer_id,))
-                            cur.execute("""
-                                INSERT INTO referral_earnings (referrer_id, referred_user_id, task_id, amount)
-                                VALUES (%s, %s, %s, 10)
-                            """, (referrer_id, u_id, task_id))
-                elif action == 'not_exist':
-                    cur.execute("UPDATE tasks SET status = 'Not Exist', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
-                elif action == 'reject':
-                    cur.execute("UPDATE tasks SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
-                    
+                        if is_old_approved:
+                            cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (price, u_id))
+                            
+                            cur.execute("SELECT referrer_id, amount FROM referral_earnings WHERE task_id = %s", (task_id,))
+                            ref_earn = cur.fetchone()
+                            if ref_earn:
+                                referrer_id, ref_amt = ref_earn[0], ref_earn[1]
+                                cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (ref_amt, referrer_id))
+                                cur.execute("DELETE FROM referral_earnings WHERE task_id = %s", (task_id,))
+                        
+                        cur.execute("UPDATE tasks SET status = %s, created_at = CURRENT_TIMESTAMP WHERE id = %s", (new_status, task_id))
+
             elif withdraw_id:
                 if action == 'approve_withdraw':
                     cur.execute("UPDATE withdrawals SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
