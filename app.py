@@ -720,7 +720,8 @@ def admin():
         cur.execute("""
             SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
                    withdrawals.account_number, withdrawals.amount, withdrawals.status,
-                   COALESCE(TO_CHAR(withdrawals.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
+                   COALESCE(TO_CHAR(withdrawals.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
+                   (users.id + 100)
             FROM withdrawals 
             JOIN users ON withdrawals.user_id = users.id 
             ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
