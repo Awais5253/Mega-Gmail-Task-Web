@@ -389,6 +389,7 @@ Date & Time: {{ w[7] }}
                     <div class="user-info-header">
                         <div class="user-name">👤 User: {{ task[1] }}</div>
                         <div class="user-phone">📞 Phone: {{ task[2] }}</div>
+                        <div class="user-phone" style="color: #00f2fe; margin-top: 4px; font-weight: 800;">🆔 User ID: {% if task|length > 11 %}{{ task[11] }}{% else %}Updating...{% endif %}</div>
                     </div>
 
                     <div class="details-box">
