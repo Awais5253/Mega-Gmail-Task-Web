@@ -703,7 +703,8 @@ def admin():
         cur.execute("""
             SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
                    tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status,
-                   COALESCE(TO_CHAR(tasks.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
+                   COALESCE(TO_CHAR(tasks.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
+                   (users.id + 100)
             FROM tasks 
             JOIN users ON tasks.user_id = users.id 
             WHERE tasks.status != 'active' 
@@ -721,7 +722,7 @@ def admin():
             SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
                    withdrawals.account_number, withdrawals.amount, withdrawals.status,
                    COALESCE(TO_CHAR(withdrawals.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
-                   (users.id + 100)
+                   (users.id + 100) AS display_id
             FROM withdrawals 
             JOIN users ON withdrawals.user_id = users.id 
             ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
