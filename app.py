@@ -294,7 +294,7 @@ def home():
             SELECT gid, email, status 
             FROM tasks 
             WHERE user_id = %s AND status != 'active' 
-            ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), id DESC 
+            ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), created_at DESC 
             LIMIT 6
         """, (session['user_id'],))
         
@@ -381,7 +381,7 @@ def account_history():
             SELECT gid, email, status, price 
             FROM tasks 
             WHERE user_id = %s AND status != 'active' 
-            ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), id DESC
+            ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), created_at DESC
         """, (session['user_id'],))
         
         activity_rows = cur.fetchall()
@@ -412,7 +412,7 @@ def withdraw_history():
                    COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
             FROM withdrawals 
             WHERE user_id = %s 
-            ORDER BY id DESC
+            ORDER BY created_at DESC
         """, (session['user_id'],))
         
         withdrawals = cur.fetchall()
@@ -602,7 +602,7 @@ def wallet():
                    COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
             FROM withdrawals 
             WHERE user_id = %s 
-            ORDER BY id DESC LIMIT 6
+            ORDER BY created_at DESC LIMIT 6
         """, (user_id,))
         withdrawals = cur.fetchall()
         cur.close()
@@ -708,7 +708,7 @@ def admin():
             FROM tasks 
             JOIN users ON tasks.user_id = users.id 
             WHERE tasks.status != 'active' 
-            ORDER BY (CASE WHEN tasks.status = 'pending' THEN 1 ELSE 2 END), tasks.id DESC 
+            ORDER BY (CASE WHEN tasks.status = 'pending' THEN 1 ELSE 2 END), tasks.created_at DESC 
             LIMIT %s OFFSET %s
         """, (per_page, task_offset))
         all_tasks = cur.fetchall()
@@ -725,7 +725,7 @@ def admin():
                    (users.id + 100) AS display_id
             FROM withdrawals 
             JOIN users ON withdrawals.user_id = users.id 
-            ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.id DESC 
+            ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.created_at DESC 
             LIMIT %s OFFSET %s
         """, (per_page, withdraw_offset))
         all_withdrawals = cur.fetchall()
