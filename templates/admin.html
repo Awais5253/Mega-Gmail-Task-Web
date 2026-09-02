@@ -112,6 +112,28 @@
             margin-bottom: 14px;
         }
 
+        /* --- NEW BUTTON STYLES FOR SOLD / NOT SOLD --- */
+        .btn-toggle-status {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+        .btn-status-notsold {
+            background: rgba(46, 213, 115, 0.15);
+            color: #2ed573;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+        .btn-status-sold {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -404,6 +426,17 @@ Date & Time: {{ task[10] }}
                     <button class="btn-copy-email" onclick="copyEmailOnly('{{ task[6] }}', this)">
                         📧 Copy Email
                     </button>
+
+                    <!-- NEW TOGGLE SOLD / NOT SOLD BUTTON -->
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="task_id" value="{{ task[0] }}">
+                        <input type="hidden" name="action" value="toggle_sold">
+                        {% if task|length > 12 and task[12] == 'Sold' %}
+                            <button type="submit" class="btn-toggle-status btn-status-sold">🔴 SOLD (Do Not Sell Again)</button>
+                        {% else %}
+                            <button type="submit" class="btn-toggle-status btn-status-notsold">🟢 NOT SOLD</button>
+                        {% endif %}
+                    </form>
 
                     {% if task[9] == 'pending' %}
                     <div class="action-grid">
