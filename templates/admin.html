@@ -139,17 +139,26 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
             width: 100%;
+            align-items: stretch;
+        }
+        .action-grid form {
+            display: flex;
+            width: 100%;
+            margin: 0;
         }
         .btn-action {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px 0;
+            padding: 12px 2px;
             border-radius: 10px;
             font-weight: 800;
             font-size: 12px;
             border: none;
             cursor: pointer;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            white-space: nowrap;
         }
         .btn-approve { background: #2ed573; color: #ffffff; }
         .btn-notexist { background: #ffa500; color: #ffffff; }
@@ -373,16 +382,16 @@ Date & Time: {{ w[7] }}
                     </button>
 
                     {% if w[6] == 'pending' %}
-                    <div class="action-grid">
-                        <form method="POST" style="margin:0; width: 100%;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch;">
+                        <form method="POST" style="margin:0; display: flex; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="approve_withdraw">
-                            <button type="submit" class="btn-action btn-approve">✓ Accept</button>
+                            <button type="submit" class="btn-action btn-approve">Accept ✓</button>
                         </form>
-                        <form method="POST" style="margin:0; width: 100%;">
+                        <form method="POST" style="margin:0; display: flex; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="reject_withdraw">
-                            <button type="submit" class="btn-action btn-reject">✕ Reject</button>
+                            <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                         </form>
                     </div>
                     {% elif w[6] == 'Approved' %}
@@ -443,20 +452,20 @@ Date & Time: {{ task[10] }}
 
                     {% if task[9] == 'pending' %}
                     <div class="action-grid">
-                        <form method="POST" style="margin:0; width: 100%;">
+                        <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="approve">
-                            <button type="submit" class="btn-action btn-approve">✓ Approve</button>
+                            <button type="submit" class="btn-action btn-approve">Approve ✓</button>
                         </form>
-                        <form method="POST" style="margin:0; width: 100%;">
+                        <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="not_exist">
-                            <button type="submit" class="btn-action btn-notexist">! Not Exist</button>
+                            <button type="submit" class="btn-action btn-notexist">Not Exist !</button>
                         </form>
-                        <form method="POST" style="margin:0; width: 100%;">
+                        <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="reject">
-                            <button type="submit" class="btn-action btn-reject">✕ Reject</button>
+                            <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                         </form>
                     </div>
                     {% else %}
@@ -473,20 +482,20 @@ Date & Time: {{ task[10] }}
                         </button>
 
                         <div id="change-grid-{{ task[0] }}" class="action-grid" style="display: none; margin-top: 10px;">
-                            <form method="POST" style="margin:0; width: 100%;">
+                            <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn-action btn-approve">✓ Approve</button>
+                                <button type="submit" class="btn-action btn-approve">Approve ✓</button>
                             </form>
-                            <form method="POST" style="margin:0; width: 100%;">
+                            <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="not_exist">
-                                <button type="submit" class="btn-action btn-notexist">! Not Exist</button>
+                                <button type="submit" class="btn-action btn-notexist">Not Exist !</button>
                             </form>
-                            <form method="POST" style="margin:0; width: 100%;">
+                            <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn-action btn-reject">✕ Reject</button>
+                                <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                             </form>
                         </div>
                     {% endif %}
