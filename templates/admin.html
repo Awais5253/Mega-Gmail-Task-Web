@@ -138,9 +138,12 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
+            width: 100%;
         }
         .btn-action {
-            padding: 12px 6px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 0;
             border-radius: 10px;
             font-weight: 800;
             font-size: 12px;
@@ -370,16 +373,16 @@ Date & Time: {{ w[7] }}
                     </button>
 
                     {% if w[6] == 'pending' %}
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <form method="POST" style="margin:0;">
+                    <div class="action-grid">
+                        <form method="POST" style="margin:0; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="approve_withdraw">
-                            <button type="submit" class="btn-action btn-approve" style="width:100%;">✅ Accept</button>
+                            <button type="submit" class="btn-action btn-approve">✓ Accept</button>
                         </form>
-                        <form method="POST" style="margin:0;">
+                        <form method="POST" style="margin:0; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="reject_withdraw">
-                            <button type="submit" class="btn-action btn-reject" style="width:100%;">❌ Reject</button>
+                            <button type="submit" class="btn-action btn-reject">✕ Reject</button>
                         </form>
                     </div>
                     {% elif w[6] == 'Approved' %}
@@ -427,7 +430,7 @@ Date & Time: {{ task[10] }}
                         📧 Copy Email
                     </button>
 
-                    <!-- NEW TOGGLE SOLD / NOT SOLD BUTTON -->
+                    <!-- TOGGLE SOLD / NOT SOLD BUTTON -->
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="task_id" value="{{ task[0] }}">
                         <input type="hidden" name="action" value="toggle_sold">
@@ -440,20 +443,20 @@ Date & Time: {{ task[10] }}
 
                     {% if task[9] == 'pending' %}
                     <div class="action-grid">
-                        <form method="POST" style="margin:0;">
+                        <form method="POST" style="margin:0; width: 100%;">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="approve">
-                            <button type="submit" class="btn-action btn-approve">✅ Approve</button>
+                            <button type="submit" class="btn-action btn-approve">✓ Approve</button>
                         </form>
-                        <form method="POST" style="margin:0;">
+                        <form method="POST" style="margin:0; width: 100%;">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="not_exist">
-                            <button type="submit" class="btn-action btn-notexist">⚠️ Not Exist</button>
+                            <button type="submit" class="btn-action btn-notexist">! Not Exist</button>
                         </form>
-                        <form method="POST" style="margin:0;">
+                        <form method="POST" style="margin:0; width: 100%;">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="reject">
-                            <button type="submit" class="btn-action btn-reject">❌ Reject</button>
+                            <button type="submit" class="btn-action btn-reject">✕ Reject</button>
                         </form>
                     </div>
                     {% else %}
@@ -470,20 +473,20 @@ Date & Time: {{ task[10] }}
                         </button>
 
                         <div id="change-grid-{{ task[0] }}" class="action-grid" style="display: none; margin-top: 10px;">
-                            <form method="POST" style="margin:0;">
+                            <form method="POST" style="margin:0; width: 100%;">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="approve">
-                                <button type="submit" class="btn-action btn-approve">✅ Approve</button>
+                                <button type="submit" class="btn-action btn-approve">✓ Approve</button>
                             </form>
-                            <form method="POST" style="margin:0;">
+                            <form method="POST" style="margin:0; width: 100%;">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="not_exist">
-                                <button type="submit" class="btn-action btn-notexist">⚠️ Not Exist</button>
+                                <button type="submit" class="btn-action btn-notexist">! Not Exist</button>
                             </form>
-                            <form method="POST" style="margin:0;">
+                            <form method="POST" style="margin:0; width: 100%;">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="reject">
-                                <button type="submit" class="btn-action btn-reject">❌ Reject</button>
+                                <button type="submit" class="btn-action btn-reject">✕ Reject</button>
                             </form>
                         </div>
                     {% endif %}
