@@ -232,23 +232,53 @@ def register():
         full_name = request.form.get('full_name', '').strip()
         whatsapp = request.form.get('whatsapp', '').strip()
         password = request.form.get('password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
 
         if ref_param and not is_valid_ref:
             flash("Invalid Referral Code! User does not exist.", "danger")
             return render_template('register.html', ref=ref_param, is_locked=False)
 
+        # --- NAYA SYSTEM (VALIDATIONS) ---
+        if not full_name:
+            flash("Full Name is required!", "danger")
+            return render_template('register.html', ref=ref_param, is_locked=is_locked)
+
+        if not whatsapp.isdigit() or len(whatsapp) != 11:
+            flash("WhatsApp Number must be exactly 11 digits!", "danger")
+            return render_template('register.html', ref=ref_param, is_locked=is_locked)
+
+        if len(password) < 8:
+            flash("Password must be at least 8 characters long!", "danger")
+            return render_template('register.html', ref=ref_param, is_locked=is_locked)
+
+        if 'confirm_password' in request.form and password != confirm_password:
+            flash("Passwords do not match!", "danger")
+            return render_template('register.html', ref=ref_param, is_locked=is_locked)
+        # ---------------------------------
+
         try:
             with db_cursor() as conn:
                 cur = conn.cursor()
+                
+                # نیا چیک: کیا واٹس ایپ نمبر پہلے سے موجود ہے؟ (تاکہ آئی ڈی ضائع نہ ہو)
+                cur.execute("SELECT id FROM users WHERE whatsapp = %s", (whatsapp,))
+                if cur.fetchone():
+                    flash("WhatsApp Number already registered!", "danger")
+                    cur.close()
+                    return render_template('register.html', ref=ref_param, is_locked=is_locked)
+                
+                # اگر تمام معلومات 100% صحیح ہیں، تو پھر انٹری کریں گے
                 cur.execute("""
                     INSERT INTO users (full_name, whatsapp, password, referred_by) 
                     VALUES (%s, %s, %s, %s)
                 """, (full_name, whatsapp, password, valid_referrer_id))
                 cur.close()
+                
             flash("Registration Successful! Please Login.", "success")
             return redirect(url_for('login'))
         except Exception as e:
-            flash("WhatsApp Number already registered!", "danger")
+            print("Registration Error:", e)
+            flash("An error occurred during registration. Please try again.", "danger")
             return render_template('register.html', ref=ref_param, is_locked=is_locked)
 
     return render_template('register.html', ref=ref_param, is_locked=is_locked)
