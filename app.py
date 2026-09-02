@@ -728,11 +728,15 @@ def admin():
         total_user_pages = (total_users + per_page - 1) // per_page
         user_offset = (user_page - 1) * per_page
 
+        # --- NEW QUERY FOR USERS (Added Balance, Referral Earnings, Referred By) ---
         cur.execute("""
-            SELECT (id + 100), full_name, whatsapp, password,
-                   COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
-            FROM users 
-            ORDER BY id DESC
+            SELECT (u.id + 100), u.full_name, u.whatsapp, u.password,
+                   COALESCE(TO_CHAR(u.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
+                   u.balance,
+                   COALESCE((SELECT SUM(amount) FROM referral_earnings WHERE referrer_id = u.id), 0),
+                   (SELECT (id + 100) FROM users WHERE id = u.referred_by)
+            FROM users u
+            ORDER BY u.id DESC
             LIMIT %s OFFSET %s
         """, (per_page, user_offset))
         all_users = cur.fetchall()
@@ -742,7 +746,6 @@ def admin():
         total_task_pages = (total_tasks + per_page - 1) // per_page
         task_offset = (task_page - 1) * per_page
 
-        # Added tasks.is_sold to the end of this query
         cur.execute("""
             SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
                    tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status,
