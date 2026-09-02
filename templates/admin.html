@@ -525,7 +525,10 @@ Date & Time: {{ task[10] }}
                         <div class="user-name">👤 Name: {{ u[1] }}</div>
                         <div class="user-phone">📞 Phone: {{ u[2] }}</div>
                         <div class="user-phone" style="color: #00f2fe; margin-top: 4px;">🔑 Password: {{ u[3] }}</div>
-                        <div class="user-phone" style="color: #7a8b9e; margin-top: 4px;">⏰ Joined: {{ u[4] }}</div>
+                        <div class="user-phone" style="color: #2ed573; margin-top: 6px; font-weight: 800;">💰 Balance: PKR {{ u[5] }}</div>
+                        <div class="user-phone" style="color: #ffa500; margin-top: 4px; font-weight: 800;">🎁 Referral Earnings: PKR {{ u[6] }}</div>
+                        <div class="user-phone" style="color: #00f2fe; margin-top: 4px; font-weight: 800;">🔗 Referred By: {% if u[7] %}{{ u[7] }}{% else %}None{% endif %}</div>
+                        <div class="user-phone" style="color: #7a8b9e; margin-top: 6px;">⏰ Joined: {{ u[4] }}</div>
                     </div>
                 </div>
                 {% endfor %}
