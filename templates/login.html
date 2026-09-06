@@ -151,12 +151,14 @@
         <form action="/login" method="POST">
             <div class="form-group">
                 <label>WhatsApp Number</label>
-                <input type="text" name="whatsapp" placeholder="Enter Your Number" required>
+                <!-- type="tel" اور autocomplete="username" شامل کر دیا گیا -->
+                <input type="tel" name="whatsapp" placeholder="Enter Your Number" autocomplete="username" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
                 <div class="password-container">
-                    <input type="text" id="passwordInput" name="password" placeholder="Enter Your Password" required>
+                    <!-- type="password" اور autocomplete="current-password" شامل کر دیا گیا -->
+                    <input type="password" id="passwordInput" name="password" placeholder="Enter Your Password" autocomplete="current-password" required>
                     <span class="toggle-eye" id="togglePassword" title="Hide/Show Password">
                         <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -181,12 +183,13 @@
         const eyeOpenSVG = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
         const eyeClosedSVG = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
 
+        // جاوا اسکرپٹ کی لاجک کو نئے ٹائپ 'password' کے لحاظ سے اپڈیٹ کر دیا گیا
         togglePassword.addEventListener('click', function () {
-            if (passwordInput.type === 'text') {
-                passwordInput.type = 'password';
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
                 eyeIcon.innerHTML = eyeClosedSVG;
             } else {
-                passwordInput.type = 'text';
+                passwordInput.type = 'password';
                 eyeIcon.innerHTML = eyeOpenSVG;
             }
         });
