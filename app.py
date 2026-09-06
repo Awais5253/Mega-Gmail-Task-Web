@@ -613,8 +613,9 @@ def wallet():
             user_balance = float(cur.fetchone()[0])
             cur.close()
             
-        if method not in ['JazzCash', 'EasyPaisa']:
-            flash("Please select JazzCash or EasyPaisa!", "danger")
+        # تینوں نئے آپشنز (NayaPay, SadaPay, UPaisa) کو یہاں شامل کر دیا گیا ہے
+        if method not in ['JazzCash', 'EasyPaisa', 'NayaPay', 'SadaPay', 'UPaisa']:
+            flash("Please select a valid payment method!", "danger")
         elif not account_number.isdigit() or len(account_number) != 11:
             flash("Account number must be exactly 11 digits!", "danger")
         elif amount < 30:
