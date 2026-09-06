@@ -192,6 +192,10 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # اگر یوزر پہلے سے لاگ ان ہے تو اسے رجسٹر پیج پر جانے سے روک کر سیدھا ہوم پر بھیج دیں
+    if 'user_id' in session:
+        return redirect(url_for('home'))
+        
     ref_param = (request.args.get('ref') or request.form.get('ref') or '').strip()
     
     ref_db_id = None
@@ -285,6 +289,10 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # اگر یوزر پہلے سے لاگ ان ہے تو اسے لاگ ان پیج پر جانے سے روک کر سیدھا ہوم پر بھیج دیں
+    if 'user_id' in session:
+        return redirect(url_for('home'))
+        
     if request.method == 'POST':
         whatsapp = request.form['whatsapp']
         password = request.form['password']
