@@ -16,7 +16,7 @@
             margin-bottom: 20px;
         }
 
-        /* Video Guide Card (Above Task ID) */
+        /* Video Guide Card (Inside Active Task) */
         .video-guide-card {
             background: linear-gradient(135deg, rgba(0, 242, 254, 0.08) 0%, rgba(30, 144, 255, 0.08) 100%);
             border: 1px solid rgba(0, 242, 254, 0.25);
@@ -68,6 +68,27 @@
             color: #7a8b9e;
             font-size: 18px;
             font-weight: 700;
+        }
+
+        /* Small Video Guide Button (Outside Task Preview) */
+        .btn-video-guide {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(112, 0, 255, 0.15);
+            border: 1px solid rgba(147, 112, 219, 0.35);
+            color: #b8acff;
+            padding: 7px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 14px;
+            transition: all 0.2s ease;
+        }
+        .btn-video-guide:active {
+            transform: scale(0.96);
+            background: rgba(112, 0, 255, 0.28);
         }
 
         /* Video Popup Modal */
@@ -279,7 +300,7 @@
             font-size: 16px;
             padding: 14px;
             box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-            margin-top: 10px;
+            margin-top: 5px;
         }
     </style>
 {% endblock %}
@@ -307,7 +328,7 @@
     {% if active_task %}
     <div class="task-card">
 
-        <!-- VIDEO GUIDE CARD (ABOVE TASK ID) -->
+        <!-- VIDEO GUIDE CARD (INSIDE ACTIVE TASK) -->
         <div class="video-guide-card" onclick="openVideoModal()">
             <div class="video-guide-left">
                 <div class="video-icon-box">▶</div>
@@ -382,19 +403,6 @@
     </div>
     {% else %}
     <div class="task-card">
-
-        <!-- VIDEO GUIDE CARD (WHEN NO TASK STARTED) -->
-        <div class="video-guide-card" onclick="openVideoModal()">
-            <div class="video-guide-left">
-                <div class="video-icon-box">▶</div>
-                <div class="video-guide-text">
-                    <span class="video-guide-title">How to Complete This Task</span>
-                    <span class="video-guide-sub">Watch video instruction</span>
-                </div>
-            </div>
-            <span class="video-chevron">›</span>
-        </div>
-
         <div class="task-top-info">
             <span class="section-heading" style="margin: 0;">Create Gmail Account</span>
             <span class="price-tag">PKR 30</span>
@@ -402,6 +410,12 @@
         <div class="tap-instruction" style="margin-bottom: 15px;">
             Click below to start a new Gmail registration task and generate your credentials.
         </div>
+
+        <!-- SMALL VIDEO GUIDE BUTTON (RIGHT ABOVE START TASK) -->
+        <div class="btn-video-guide" onclick="openVideoModal()">
+            📹 Video Guide
+        </div>
+
         <form method="POST">
             <input type="hidden" name="action" value="start_new">
             <button type="submit" class="btn btn-start-card">▶️ Start Task</button>
