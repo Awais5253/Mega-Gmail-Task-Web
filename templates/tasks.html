@@ -16,6 +16,123 @@
             margin-bottom: 20px;
         }
 
+        /* Video Guide Card (Above Task ID) */
+        .video-guide-card {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.08) 0%, rgba(30, 144, 255, 0.08) 100%);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .video-guide-card:active {
+            transform: scale(0.98);
+            background: rgba(0, 242, 254, 0.15);
+        }
+        .video-guide-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .video-icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #00f2fe 0%, #0072ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
+        }
+        .video-guide-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .video-guide-title {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .video-guide-sub {
+            color: #7a8b9e;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .video-chevron {
+            color: #7a8b9e;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Video Popup Modal */
+        .video-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 13, 22, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            padding: 15px;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+        }
+        .video-modal-container {
+            background: #121827;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+        }
+        .video-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: #182238;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .video-modal-title {
+            color: #00f2fe;
+            font-size: 15px;
+            font-weight: 800;
+        }
+        .video-modal-close {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-wrapper {
+            width: 100%;
+            background: #000;
+        }
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+            max-height: 70vh;
+        }
+
         /* Task Container Card */
         .task-card {
             background: #121827;
@@ -171,8 +288,37 @@
     <div class="header-title">Available Tasks</div>
     <div class="header-sub">Create Gmail accounts to earn money</div>
 
+    <!-- VIDEO POPUP MODAL -->
+    <div id="videoModal" class="video-modal-overlay">
+        <div class="video-modal-container">
+            <div class="video-modal-header">
+                <div class="video-modal-title">▶ Task Video Guide</div>
+                <button class="video-modal-close" onclick="closeVideoModal()">✕</button>
+            </div>
+            <div class="video-wrapper">
+                <video id="taskVideoPlayer" controls playsinline>
+                    <source src="https://delosdwrvnkptgfvdyud.supabase.co/storage/v1/object/public/Videos/WhatsApp%20Video%202026-09-13%20at%201.52.21%20PM.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
     {% if active_task %}
     <div class="task-card">
+
+        <!-- VIDEO GUIDE CARD (ABOVE TASK ID) -->
+        <div class="video-guide-card" onclick="openVideoModal()">
+            <div class="video-guide-left">
+                <div class="video-icon-box">▶</div>
+                <div class="video-guide-text">
+                    <span class="video-guide-title">How to Complete This Task</span>
+                    <span class="video-guide-sub">Watch video instruction</span>
+                </div>
+            </div>
+            <span class="video-chevron">›</span>
+        </div>
+
         <div class="task-top-info">
             <span class="gid-badge">Task ID: {{ active_task.gid }}</span>
             <span class="price-tag">PKR {{ active_task.price }}</span>
@@ -236,6 +382,19 @@
     </div>
     {% else %}
     <div class="task-card">
+
+        <!-- VIDEO GUIDE CARD (WHEN NO TASK STARTED) -->
+        <div class="video-guide-card" onclick="openVideoModal()">
+            <div class="video-guide-left">
+                <div class="video-icon-box">▶</div>
+                <div class="video-guide-text">
+                    <span class="video-guide-title">How to Complete This Task</span>
+                    <span class="video-guide-sub">Watch video instruction</span>
+                </div>
+            </div>
+            <span class="video-chevron">›</span>
+        </div>
+
         <div class="task-top-info">
             <span class="section-heading" style="margin: 0;">Create Gmail Account</span>
             <span class="price-tag">PKR 30</span>
@@ -259,6 +418,20 @@
                     toast.style.display = 'none';
                 }, 1200);
             });
+        }
+
+        // Video Modal Control Functions
+        function openVideoModal() {
+            document.getElementById('videoModal').style.display = 'flex';
+            const player = document.getElementById('taskVideoPlayer');
+            player.play();
+        }
+
+        function closeVideoModal() {
+            const player = document.getElementById('taskVideoPlayer');
+            player.pause();
+            player.currentTime = 0;
+            document.getElementById('videoModal').style.display = 'none';
         }
     </script>
 {% endblock %}
