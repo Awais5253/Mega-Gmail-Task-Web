@@ -70,25 +70,32 @@
             font-weight: 700;
         }
 
-        /* Small Video Guide Button (Outside Task Preview) */
+        /* Small Compact Video Guide Button (Matches Site Theme) */
         .btn-video-guide {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(112, 0, 255, 0.15);
-            border: 1px solid rgba(147, 112, 219, 0.35);
-            color: #b8acff;
-            padding: 7px 14px;
-            border-radius: 9px;
-            font-size: 13px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            color: #00f2fe;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
+            letter-spacing: 0.3px;
             cursor: pointer;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             transition: all 0.2s ease;
+        }
+        .btn-video-guide svg {
+            fill: #00f2fe;
+            width: 14px;
+            height: 14px;
         }
         .btn-video-guide:active {
             transform: scale(0.96);
-            background: rgba(112, 0, 255, 0.28);
+            background: rgba(0, 242, 254, 0.18);
+            border-color: #00f2fe;
         }
 
         /* Video Popup Modal */
@@ -411,9 +418,10 @@
             Click below to start a new Gmail registration task and generate your credentials.
         </div>
 
-        <!-- SMALL VIDEO GUIDE BUTTON (RIGHT ABOVE START TASK) -->
+        <!-- SMALL COMPACT VIDEO GUIDE BUTTON (THEME MATCHED) -->
         <div class="btn-video-guide" onclick="openVideoModal()">
-            📹 Video Guide
+            <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+            Video Guide
         </div>
 
         <form method="POST">
