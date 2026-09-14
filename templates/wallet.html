@@ -4,26 +4,47 @@
 
 {% block head %}
 <style>
+    /* Premium Balanced Wallet Card */
     .balance-card {
         background: #121827;
-        border-radius: 18px;
-        padding: 20px;
+        border-radius: 20px;
+        padding: 24px 20px;
         border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 2px solid rgba(0, 242, 254, 0.4);
         box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-        margin-bottom: 20px;
+        margin-bottom: 22px;
         text-align: center;
+        position: relative;
+    }
+    .bal-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(0, 242, 254, 0.08);
+        border: 1px solid rgba(0, 242, 254, 0.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px auto;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+    }
+    .bal-icon-box svg {
+        width: 24px;
+        height: 24px;
+        fill: #00f2fe;
     }
     .bal-label {
         color: #7a8b9e;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 800;
         letter-spacing: 1px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     .bal-val {
         font-size: 32px;
         font-weight: 900;
         color: #00f2fe;
+        letter-spacing: 0.5px;
     }
 
     .withdraw-card {
@@ -76,6 +97,10 @@
         font-size: 15px;
         cursor: pointer;
         margin-top: 5px;
+        transition: transform 0.2s;
+    }
+    .btn-withdraw:active {
+        transform: scale(0.98);
     }
 
     .alert {
@@ -120,6 +145,9 @@
     {% endwith %}
 
     <div class="balance-card">
+        <div class="bal-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+        </div>
         <div class="bal-label">AVAILABLE BALANCE</div>
         <div class="bal-val">PKR {{ balance }}</div>
     </div>
