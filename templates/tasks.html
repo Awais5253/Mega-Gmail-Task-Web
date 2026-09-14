@@ -46,9 +46,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
-            font-size: 16px;
-            box-shadow: 0 4px 10px rgba(0, 242, 254, 0.3);
+            flex-shrink: 0;
+        }
+        .video-icon-box svg {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff;
+            margin-left: 2px;
         }
         .video-guide-text {
             display: flex;
@@ -338,7 +342,9 @@
         <!-- VIDEO GUIDE CARD (INSIDE ACTIVE TASK) -->
         <div class="video-guide-card" onclick="openVideoModal()">
             <div class="video-guide-left">
-                <div class="video-icon-box">▶</div>
+                <div class="video-icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
                 <div class="video-guide-text">
                     <span class="video-guide-title">How to Complete This Task</span>
                     <span class="video-guide-sub">Watch video instruction</span>
