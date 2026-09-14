@@ -6,10 +6,14 @@ from psycopg2 import pool
 from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from contextlib import contextmanager
+from faker import Faker
 
 app = Flask(__name__)
 app.secret_key = 'mega_gmail_task_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+
+# FAKER INITIALIZATION FOR UNIQUE NAMES
+fake = Faker()
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
@@ -154,16 +158,19 @@ except Exception as e:
     print("Database init error:", e)
 
 def generate_random_task(user_id):
-    first_names = ["Gregory", "Jason", "Christopher", "Daniel", "Matthew", "Andrew", "Joshua", "David", "James", "Robert"]
-    last_names = ["Pruitt", "Waters", "Long", "Miller", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris"]
+    # FAKER GENERATES UNLIMITED UNIQUE FIRST AND LAST NAMES
+    first = fake.first_name()
+    last = fake.last_name()
     
-    first = random.choice(first_names)
-    last = random.choice(last_names)
+    # E-mail k liye خاص کریکٹرز صاف کرنا
+    clean_first = ''.join(e for e in first if e.isalnum())
+    clean_last = ''.join(e for e in last if e.isalnum())
+    
     full_name = f"{first} {last}"
     
     dob_year = str(random.randint(1993, 2004))
     rand_num = random.randint(1000000, 9999999)
-    email = f"{first.lower()}{last.lower()}{rand_num}@gmail.com"
+    email = f"{clean_first.lower()}{clean_last.lower()}{rand_num}@gmail.com"
     password = "aass1122"
     
     with db_cursor() as conn:
@@ -192,7 +199,6 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # اگر یوزر پہلے سے لاگ ان ہے تو اسے رجسٹر پیج پر جانے سے روک کر سیدھا ہوم پر بھیج دیں
     if 'user_id' in session:
         return redirect(url_for('home'))
         
@@ -242,7 +248,6 @@ def register():
             flash("Invalid Referral Code! User does not exist.", "danger")
             return render_template('register.html', ref=ref_param, is_locked=False)
 
-        # --- NAYA SYSTEM (VALIDATIONS) ---
         if not full_name:
             flash("Full Name is required!", "danger")
             return render_template('register.html', ref=ref_param, is_locked=is_locked)
@@ -258,20 +263,17 @@ def register():
         if 'confirm_password' in request.form and password != confirm_password:
             flash("Passwords do not match!", "danger")
             return render_template('register.html', ref=ref_param, is_locked=is_locked)
-        # ---------------------------------
 
         try:
             with db_cursor() as conn:
                 cur = conn.cursor()
                 
-                # نیا چیک: کیا واٹس ایپ نمبر پہلے سے موجود ہے؟ (تاکہ آئی ڈی ضائع نہ ہو)
                 cur.execute("SELECT id FROM users WHERE whatsapp = %s", (whatsapp,))
                 if cur.fetchone():
                     flash("WhatsApp Number already registered!", "danger")
                     cur.close()
                     return render_template('register.html', ref=ref_param, is_locked=is_locked)
                 
-                # اگر تمام معلومات 100% صحیح ہیں، تو پھر انٹری کریں گے
                 cur.execute("""
                     INSERT INTO users (full_name, whatsapp, password, referred_by) 
                     VALUES (%s, %s, %s, %s)
@@ -289,7 +291,6 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # اگر یوزر پہلے سے لاگ ان ہے تو اسے لاگ ان پیج پر جانے سے روک کر سیدھا ہوم پر بھیج دیں
     if 'user_id' in session:
         return redirect(url_for('home'))
         
@@ -613,7 +614,6 @@ def wallet():
             user_balance = float(cur.fetchone()[0])
             cur.close()
             
-        # تینوں نئے آپشنز (NayaPay, SadaPay, UPaisa) کو یہاں شامل کر دیا گیا ہے
         if method not in ['JazzCash', 'EasyPaisa', 'NayaPay', 'SadaPay', 'UPaisa']:
             flash("Please select a valid payment method!", "danger")
         elif not account_number.isdigit() or len(account_number) != 11:
@@ -663,7 +663,6 @@ def admin():
         with db_cursor() as conn:
             cur = conn.cursor()
             if task_id:
-                # New Logic for Sold / Not Sold Button
                 if action == 'toggle_sold':
                     cur.execute("SELECT is_sold FROM tasks WHERE id = %s", (task_id,))
                     sold_row = cur.fetchone()
@@ -737,7 +736,6 @@ def admin():
         total_user_pages = (total_users + per_page - 1) // per_page
         user_offset = (user_page - 1) * per_page
 
-        # --- NEW QUERY FOR USERS (Added Balance, Referral Earnings, Referred By) ---
         cur.execute("""
             SELECT (u.id + 100), u.full_name, u.whatsapp, u.password,
                    COALESCE(TO_CHAR(u.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
