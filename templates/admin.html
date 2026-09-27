@@ -112,6 +112,27 @@
             margin-bottom: 14px;
         }
 
+        /* --- WHATSAPP TEMPLATE COPY BUTTON --- */
+        .btn-copy-whatsapp {
+            background: rgba(37, 211, 102, 0.15);
+            color: #25D366;
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-copy-whatsapp:hover {
+            background: rgba(37, 211, 102, 0.25);
+        }
+
         /* --- NEW BUTTON STYLES FOR SOLD / NOT SOLD --- */
         .btn-toggle-status {
             width: 100%;
@@ -471,10 +492,16 @@ Date & Time: {{ task[10] }}
                     {% else %}
                         {% if task[9] == 'Approved' or task[9] == 'approved' %}
                             <div class="status-banner status-approved-bg">STATUS: APPROVED</div>
+                            <button class="btn-copy-whatsapp" onclick="copyWhatsAppMessage('{{ task[6] }}', '{% if task|length > 11 %}{{ task[11] }}{% else %}N/A{% endif %}', 'Approved', this)">
+                                📋 Copy WA Message (Approved)
+                            </button>
                         {% elif task[9] == 'Not Exist' %}
                             <div class="status-banner status-notexist-bg">STATUS: NOT EXIST</div>
                         {% else %}
                             <div class="status-banner status-rejected-bg">STATUS: REJECTED</div>
+                            <button class="btn-copy-whatsapp" onclick="copyWhatsAppMessage('{{ task[6] }}', '{% if task|length > 11 %}{{ task[11] }}{% else %}N/A{% endif %}', 'Rejected', this)">
+                                📋 Copy WA Message (Rejected)
+                            </button>
                         {% endif %}
 
                         <button class="btn-change-status" onclick="toggleChangeStatus('change-grid-{{ task[0] }}')">
@@ -678,6 +705,23 @@ Date & Time: {{ task[10] }}
                     btn.innerHTML = originalText;
                     btn.style.background = "rgba(0, 242, 254, 0.15)";
                     btn.style.color = "#00f2fe";
+                }, 1200);
+            });
+        }
+
+        function copyWhatsAppMessage(email, userId, status, btn) {
+            let statusText = (status === 'Approved') ? '✅ Approved' : '❌ Rejected';
+            let message = `${email}\nUser ID: ${userId}\n${statusText}`;
+
+            navigator.clipboard.writeText(message).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = "✓ Copied for WA!";
+                btn.style.background = "#25D366";
+                btn.style.color = "#ffffff";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = "rgba(37, 211, 102, 0.15)";
+                    btn.style.color = "#25D366";
                 }, 1200);
             });
         }
