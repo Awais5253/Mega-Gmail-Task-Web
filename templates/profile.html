@@ -55,7 +55,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 3px;
         line-height: 1;
     }
     .joining-date {
@@ -65,14 +65,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 3px;
         line-height: 1;
     }
-    .emoji-icon {
-        font-size: 15px;
+    .phone-emoji {
+        font-size: 13px;
         line-height: 1;
         display: inline-block;
-        vertical-align: middle;
+    }
+    .calendar-emoji {
+        font-size: 11px;
+        line-height: 1;
+        display: inline-block;
     }
 
     /* 2 Stats Grid (Equal alignment) */
@@ -281,15 +285,15 @@
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
         
-        <!-- Mobile Number with Mobile Emoji (Centered & Aligned) -->
+        <!-- Mobile Number with Mobile Emoji (Centered & Minimal Gap) -->
         <div class="user-phone">
-            <span class="emoji-icon">📱</span>
+            <span class="phone-emoji">📱</span>
             <span>{{ user_phone }}</span>
         </div>
         
-        <!-- Joining Date with Spiral Calendar Grid Emoji 🗓️ (Centered & Aligned) -->
+        <!-- Joining Date with Compact Calendar Emoji 🗓️ (Centered & Proportional Size) -->
         <div class="joining-date">
-            <span class="emoji-icon">🗓️</span>
+            <span class="calendar-emoji">🗓️</span>
             <span>Joined: {{ joining_date }}</span>
         </div>
     </div>
