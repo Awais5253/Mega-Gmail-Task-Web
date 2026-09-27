@@ -26,6 +26,7 @@
         border-radius: 12px;
         font-size: 11px;
         font-weight: 800;
+        letter-spacing: 0.3px;
     }
     .user-avatar {
         width: 60px;
@@ -44,18 +45,36 @@
         font-size: 20px;
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
     .user-phone {
         font-size: 13px;
         color: #7a8b9e;
         font-weight: 600;
         margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .user-phone svg {
+        width: 15px;
+        height: 15px;
+        fill: #00f2fe;
     }
     .joining-date {
-        font-size: 11px;
+        font-size: 12px;
         color: #00f2fe;
         font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .joining-date svg {
+        width: 14px;
+        height: 14px;
+        fill: #00f2fe;
     }
 
     /* 2 Stats Grid (Equal alignment) */
@@ -260,11 +279,21 @@
 
     <!-- Profile Header Card -->
     <div class="profile-card">
-        <div class="user-id-badge">ID: #{{ user_id }}</div>
+        <div class="user-id-badge">User ID: {{ user_id }}</div>
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
-        <div class="user-phone">{{ user_phone }}</div>
-        <div class="joining-date">Joined: {{ joining_date }}</div>
+        
+        <!-- Mobile Number with Mobile Icon -->
+        <div class="user-phone">
+            <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+            <span>{{ user_phone }}</span>
+        </div>
+        
+        <!-- Joining Date with Calendar Icon -->
+        <div class="joining-date">
+            <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg>
+            <span>Joined: {{ joining_date }}</span>
+        </div>
     </div>
 
     <!-- 2 Stats Cards Row Side-by-Side -->
