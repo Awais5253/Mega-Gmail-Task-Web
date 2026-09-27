@@ -81,83 +81,73 @@
             padding: 14px;
             font-size: 13px;
             line-height: 1.6;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             font-family: monospace;
             color: #d1d5db;
+        }
+
+        /* --- UNIFORM SIZING & SPACING FOR ALL FULL-WIDTH BUTTONS --- */
+        .btn-copy-email, 
+        .btn-copy-account, 
+        .btn-copy-whatsapp, 
+        .btn-toggle-status, 
+        .btn-change-status {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            line-height: normal;
         }
 
         .btn-copy-email {
             background: rgba(0, 242, 254, 0.15);
             color: #00f2fe;
             border: 1px solid rgba(0, 242, 254, 0.3);
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            margin-bottom: 14px;
-            box-sizing: border-box;
         }
 
         .btn-copy-account {
             background: rgba(0, 242, 254, 0.15);
             color: #00f2fe;
             border: 1px solid rgba(0, 242, 254, 0.3);
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            margin-bottom: 14px;
-            box-sizing: border-box;
         }
 
-        /* --- WHATSAPP TEMPLATE COPY BUTTON (ALIGNED, SPACED & MATCHED) --- */
         .btn-copy-whatsapp {
             background: rgba(37, 211, 102, 0.15);
             color: #25D366;
             border: 1px solid rgba(37, 211, 102, 0.3);
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            box-sizing: border-box;
-            line-height: normal;
         }
         .btn-copy-whatsapp:hover {
             background: rgba(37, 211, 102, 0.25);
         }
 
-        /* --- NEW BUTTON STYLES FOR SOLD / NOT SOLD --- */
         .btn-toggle-status {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 12px;
-            cursor: pointer;
-            margin-bottom: 14px;
             text-transform: uppercase;
-            box-sizing: border-box;
+            border-style: solid;
+            border-width: 1px;
         }
         .btn-status-notsold {
             background: rgba(46, 213, 115, 0.15);
             color: #2ed573;
-            border: 1px solid rgba(46, 213, 115, 0.3);
+            border-color: rgba(46, 213, 115, 0.3);
         }
         .btn-status-sold {
             background: rgba(255, 71, 87, 0.15);
             color: #ff4757;
-            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-color: rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-change-status {
+            background: #f1c40f;
+            color: #090d16;
+            border: none;
         }
 
         .action-grid {
@@ -190,29 +180,15 @@
         .btn-notexist { background: #ffa500; color: #ffffff; }
         .btn-reject { background: #ff4757; color: #ffffff; }
 
-        .btn-change-status {
-            background: #f1c40f;
-            color: #090d16;
-            border: none;
+        .status-banner {
             width: 100%;
-            padding: 10px;
+            padding: 11px 14px;
             border-radius: 10px;
             font-weight: 800;
             font-size: 12px;
-            cursor: pointer;
-            margin-top: 0;
-            box-sizing: border-box;
-        }
-
-        .status-banner {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 13px;
             text-align: center;
             box-sizing: border-box;
-            margin-bottom: 14px; /* Added proper spacing below status banner */
+            margin-bottom: 14px;
         }
         .status-approved-bg { background: rgba(46, 213, 115, 0.15); color: #2ed573; border: 1px solid rgba(46, 213, 115, 0.4); }
         .status-notexist-bg { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.4); }
@@ -423,9 +399,9 @@ Date & Time: {{ w[7] }}
                         </form>
                     </div>
                     {% elif w[6] == 'Approved' %}
-                        <div class="status-banner status-approved-bg">STATUS: APPROVED</div>
+                        <div class="status-banner status-approved-bg">APPROVED</div>
                     {% else %}
-                        <div class="status-banner status-rejected-bg">STATUS: REJECTED</div>
+                        <div class="status-banner status-rejected-bg">REJECTED</div>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -472,7 +448,7 @@ Date & Time: {{ task[10] }}
                         <input type="hidden" name="task_id" value="{{ task[0] }}">
                         <input type="hidden" name="action" value="toggle_sold">
                         {% if task|length > 12 and task[12] == 'Sold' %}
-                            <button type="submit" class="btn-toggle-status btn-status-sold">🔴 SOLD (Do Not Sell Again)</button>
+                            <button type="submit" class="btn-toggle-status btn-status-sold">🔴 SOLD</button>
                         {% else %}
                             <button type="submit" class="btn-toggle-status btn-status-notsold">🟢 NOT SOLD</button>
                         {% endif %}
@@ -498,14 +474,14 @@ Date & Time: {{ task[10] }}
                     </div>
                     {% else %}
                         {% if task[9] == 'Approved' or task[9] == 'approved' %}
-                            <div class="status-banner status-approved-bg">STATUS: APPROVED</div>
+                            <div class="status-banner status-approved-bg">APPROVED</div>
                             <button class="btn-copy-whatsapp" onclick="copyWhatsAppMessage('{{ task[6] }}', '{% if task|length > 11 %}{{ task[11] }}{% else %}N/A{% endif %}', 'Approved', this)">
                                 📋 Copy WhatsApp Message
                             </button>
                         {% elif task[9] == 'Not Exist' %}
-                            <div class="status-banner status-notexist-bg">STATUS: NOT EXIST</div>
+                            <div class="status-banner status-notexist-bg">NOT EXIST</div>
                         {% else %}
-                            <div class="status-banner status-rejected-bg">STATUS: REJECTED</div>
+                            <div class="status-banner status-rejected-bg">REJECTED</div>
                             <button class="btn-copy-whatsapp" onclick="copyWhatsAppMessage('{{ task[6] }}', '{% if task|length > 11 %}{{ task[11] }}{% else %}N/A{% endif %}', 'Rejected', this)">
                                 📋 Copy WhatsApp Message
                             </button>
