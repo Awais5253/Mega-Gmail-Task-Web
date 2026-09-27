@@ -45,17 +45,17 @@
         font-size: 20px;
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 6px; /* Equal vertical gap */
+        margin-bottom: 6px;
     }
     .user-phone {
         font-size: 13px;
         color: #9ca3af;
         font-weight: 600;
-        margin-bottom: 6px; /* Equal vertical gap */
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0; /* Zero gap between emoji and phone number */
+        gap: 0;
         line-height: 1;
     }
     .joining-date {
@@ -131,7 +131,6 @@
         align-items: center;
         gap: 14px;
     }
-    /* CLEANED WA ICON BOX - NO GREEN GLOW / NO GREEN BORDER */
     .wa-icon-box {
         width: 44px;
         height: 44px;
@@ -143,9 +142,8 @@
         justify-content: center;
     }
     .wa-icon-box svg {
-        width: 24px;
-        height: 24px;
-        fill: #25D366;
+        width: 26px;
+        height: 26px;
     }
     .wa-text-box {
         display: flex;
@@ -286,10 +284,10 @@
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
         
-        <!-- Mobile Number with Mobile Emoji (Joined Directly With Zero Horizontal Gap) -->
+        <!-- Mobile Number with Mobile Emoji -->
         <div class="user-phone"><span class="phone-emoji">📱</span><span>{{ user_phone }}</span></div>
         
-        <!-- Joining Date with Compact Calendar Emoji 🗓️ (Equal Vertical Margin) -->
+        <!-- Joining Date with Compact Calendar Emoji 🗓️ -->
         <div class="joining-date"><span class="calendar-emoji">🗓️</span><span>Joined: {{ joining_date }}</span></div>
     </div>
 
@@ -301,7 +299,6 @@
         </div>
         <div class="stat-card">
             <div class="stat-label">Approved Tasks</div>
-            <!-- RESTORED TO ORIGINAL ORANGE COLOR (#ff9f43) -->
             <div class="stat-val" style="color: #ff9f43;">{{ approved_tasks }}</div>
         </div>
     </div>
@@ -310,7 +307,10 @@
     <a href="https://wa.me/923288686069" target="_blank" class="whatsapp-card">
         <div class="wa-left">
             <div class="wa-icon-box">
-                <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 16.25c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.32a8.13 8.13 0 0 1-1.26-4.38c0-4.51 3.67-8.18 8.18-8.18 2.18 0 4.24.85 5.79 2.4 1.55 1.55 2.4 3.61 2.4 5.79 0 4.52-3.67 8.19-8.18 8.19zm4.49-6.14c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.65.81-.8 1-.15.18-.3.2-.55.08-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.39-1.73-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.24-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.59.1.49-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+                <!-- PURE GREEN WHATSAPP MESSENGER LOGO (NO WHITE FILL) -->
+                <svg viewBox="0 0 24 24">
+                    <path fill="#25D366" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.1-1.3A10 10 0 1 0 12 2zm4.5 13.9c-.2.6-1.2 1.1-1.7 1.2-.4 0-1-.1-1.6-.3-2.5-1.1-4.2-3.6-4.3-3.8-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2.1.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.4.2.5.8 1.8.8 1.8s.1.2 0 .4c-.1.2-.2.3-.3.4-.2.2-.3.4-.1.7.2.3.7 1.1 1.4 1.7 1 1 1.8 1.2 2 .1.2-.2.2-.4.4-.6.2-.2.4-.2.6-.1.2.1 1.5.7 1.7.8.2.1.4.2.4.4s0 .6-.2 1.2z"/>
+                </svg>
             </div>
             <div class="wa-text-box">
                 <span class="wa-title">WhatsApp Customer Support</span>
