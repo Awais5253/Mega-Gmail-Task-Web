@@ -45,17 +45,17 @@
         font-size: 20px;
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 8px;
+        margin-bottom: 6px; /* Equal vertical gap */
     }
     .user-phone {
         font-size: 13px;
         color: #9ca3af;
         font-weight: 600;
-        margin-bottom: 6px;
+        margin-bottom: 6px; /* Equal vertical gap */
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 0; /* Zero gap between emoji and phone number */
         line-height: 1;
     }
     .joining-date {
@@ -285,17 +285,11 @@
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
         
-        <!-- Mobile Number with Mobile Emoji (Centered & Minimal Gap) -->
-        <div class="user-phone">
-            <span class="phone-emoji">📱</span>
-            <span>{{ user_phone }}</span>
-        </div>
+        <!-- Mobile Number with Mobile Emoji (Joined Directly With Zero Horizontal Gap) -->
+        <div class="user-phone"><span class="phone-emoji">📱</span><span>{{ user_phone }}</span></div>
         
-        <!-- Joining Date with Compact Calendar Emoji 🗓️ (Centered & Proportional Size) -->
-        <div class="joining-date">
-            <span class="calendar-emoji">🗓️</span>
-            <span>Joined: {{ joining_date }}</span>
-        </div>
+        <!-- Joining Date with Compact Calendar Emoji 🗓️ (Equal Vertical Margin) -->
+        <div class="joining-date"><span class="calendar-emoji">🗓️</span><span>Joined: {{ joining_date }}</span></div>
     </div>
 
     <!-- 2 Stats Cards Row Side-by-Side -->
