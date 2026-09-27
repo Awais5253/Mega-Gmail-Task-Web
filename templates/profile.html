@@ -14,6 +14,9 @@
         margin-bottom: 20px;
         text-align: center;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Enforces strict vertical center axis */
     }
     .user-id-badge {
         position: absolute;
@@ -45,18 +48,22 @@
         font-size: 20px;
         font-weight: 800;
         color: #ffffff;
-        margin-bottom: 6px; /* Equal vertical gap */
+        margin-bottom: 6px;
+        text-align: center;
+        width: 100%;
     }
     .user-phone {
         font-size: 13px;
         color: #9ca3af;
         font-weight: 600;
-        margin-bottom: 6px; /* Equal vertical gap */
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0; /* Zero gap between emoji and phone number */
+        gap: 4px;
         line-height: 1;
+        width: 100%;
+        text-align: center;
     }
     .joining-date {
         font-size: 12px;
@@ -65,18 +72,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 4px;
         line-height: 1;
+        width: 100%;
+        text-align: center;
     }
     .phone-emoji {
         font-size: 13px;
         line-height: 1;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
     }
     .calendar-emoji {
         font-size: 11px;
         line-height: 1;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
     }
 
     /* 2 Stats Grid (Equal alignment) */
@@ -285,11 +296,17 @@
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
         
-        <!-- Mobile Number with Mobile Emoji (Joined Directly With Zero Horizontal Gap) -->
-        <div class="user-phone"><span class="phone-emoji">📱</span><span>{{ user_phone }}</span></div>
+        <!-- Perfectly Centered Mobile Number -->
+        <div class="user-phone">
+            <span class="phone-emoji">📱</span>
+            <span>{{ user_phone }}</span>
+        </div>
         
-        <!-- Joining Date with Compact Calendar Emoji 🗓️ (Equal Vertical Margin) -->
-        <div class="joining-date"><span class="calendar-emoji">🗓️</span><span>Joined: {{ joining_date }}</span></div>
+        <!-- Perfectly Centered Joined Date -->
+        <div class="joining-date">
+            <span class="calendar-emoji">🗓️</span>
+            <span>Joined: {{ joining_date }}</span>
+        </div>
     </div>
 
     <!-- 2 Stats Cards Row Side-by-Side -->
