@@ -57,11 +57,6 @@
         justify-content: center;
         gap: 6px;
     }
-    .user-phone svg {
-        width: 15px;
-        height: 15px;
-        fill: #00f2fe;
-    }
     .joining-date {
         font-size: 12px;
         color: #00f2fe;
@@ -283,13 +278,13 @@
         <div class="user-avatar">{{ user_name[0] if user_name else 'U' }}</div>
         <div class="user-name">{{ user_name }}</div>
         
-        <!-- Mobile Number with Mobile Icon -->
+        <!-- Mobile Number with Mobile Emoji (Centered) -->
         <div class="user-phone">
-            <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+            <span>📱</span>
             <span>{{ user_phone }}</span>
         </div>
         
-        <!-- Joining Date with Calendar Icon -->
+        <!-- Joining Date with Calendar Icon (Centered) -->
         <div class="joining-date">
             <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg>
             <span>Joined: {{ joining_date }}</span>
