@@ -79,7 +79,6 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
-        /* براؤزر کے ڈیفالٹ نیلے کراس آئیکن کو ختم کرنے کے لیے CSS */
         .search-input::-webkit-search-cancel-button,
         .search-input::-webkit-search-decoration,
         .search-input::-webkit-search-results-button,
@@ -108,7 +107,6 @@
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            display: none;
             line-height: 1;
         }
         .clear-search-btn:hover {
@@ -155,7 +153,6 @@
             color: #d1d5db;
         }
 
-        /* --- UNIFORM SIZING & SPACING FOR ALL FULL-WIDTH BUTTONS --- */
         .btn-copy-email, 
         .btn-copy-account, 
         .btn-copy-whatsapp, 
@@ -336,7 +333,6 @@
             line-height: 1;
         }
 
-        /* --- LOGIN OVERLAY STYLES --- */
         #login-overlay {
             position: fixed;
             top: 0;
@@ -344,7 +340,7 @@
             width: 100%;
             height: 100%;
             background: #090d16;
-            display: none; /* ریفریش کے وقت لاگ ان باکس کی جھلک (Flicker) ختم کرنے کے لیے none کیا ہے */
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 99999;
@@ -433,19 +429,21 @@
         </div>
         <div class="admin-sub">Manage Tasks, Withdrawals & Users</div>
 
+        <!-- WITHDRAWALS TAB -->
         <div id="withdrawals-tab" class="tab-section active">
             <div class="section-header">💸 Withdrawal Requests</div>
 
-            <!-- GOOGLE PILL STYLE SEARCH BAR FOR WITHDRAWALS -->
-            <div class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="search" id="withdraw-search-input" name="search_withdraw_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterWithdrawals()">
-                    <button id="clear-withdraw-search-btn" class="clear-search-btn" onclick="clearWithdrawSearch()">✕</button>
+                    <input type="search" name="search_withdraw" class="search-input" placeholder="Search" value="{{ search_withdraw or '' }}" autocomplete="off">
+                    {% if search_withdraw %}
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                    {% endif %}
                 </div>
-            </div>
+            </form>
 
             {% if withdrawals %}
                 {% for w in withdrawals %}
@@ -490,7 +488,7 @@ Date & Time: {{ w[7] }}
                 {% if total_withdraw_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_withdraw_pages + 1) %}
-                        <a href="{{ url_for('admin', withdraw_page=p, task_page=task_page, user_page=user_page) }}#withdrawals" class="page-btn {% if p == withdraw_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', withdraw_page=p, search_withdraw=search_withdraw, task_page=task_page, user_page=user_page) }}" class="page-btn {% if p == withdraw_page %}active{% endif %}">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -500,19 +498,21 @@ Date & Time: {{ w[7] }}
             {% endif %}
         </div>
 
+        <!-- TASKS TAB -->
         <div id="tasks-tab" class="tab-section">
             <div class="section-header">📑 Task Submissions</div>
 
-            <!-- GOOGLE PILL STYLE SEARCH BAR WITH AUTOFILL PREVENTIONS -->
-            <div class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="search" id="gmail-search-input" name="search_gmail_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterGmailTasks()">
-                    <button id="clear-search-btn" class="clear-search-btn" onclick="clearGmailSearch()">✕</button>
+                    <input type="search" name="search_task" class="search-input" placeholder="Search" value="{{ search_task or '' }}" autocomplete="off">
+                    {% if search_task %}
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                    {% endif %}
                 </div>
-            </div>
+            </form>
 
             {% if tasks %}
                 {% for task in tasks %}
@@ -536,7 +536,6 @@ Date & Time: {{ task[10] }}
                         📧 Copy Email
                     </button>
 
-                    <!-- TOGGLE SOLD / NOT SOLD BUTTON -->
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="task_id" value="{{ task[0] }}">
                         <input type="hidden" name="action" value="toggle_sold">
@@ -608,7 +607,7 @@ Date & Time: {{ task[10] }}
                 {% if total_task_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_task_pages + 1) %}
-                        <a href="{{ url_for('admin', task_page=p, withdraw_page=withdraw_page, user_page=user_page) }}" class="page-btn {% if p == task_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', task_page=p, search_task=search_task, withdraw_page=withdraw_page, user_page=user_page) }}" class="page-btn {% if p == task_page %}active{% endif %}">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -618,19 +617,21 @@ Date & Time: {{ task[10] }}
             {% endif %}
         </div>
 
+        <!-- USERS TAB -->
         <div id="users-tab" class="tab-section">
             <div class="section-header">👥 Registered Users</div>
 
-            <!-- GOOGLE PILL STYLE SEARCH BAR FOR REGISTERED USERS -->
-            <div class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="search" id="user-search-input" name="search_user_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterUsers()">
-                    <button id="clear-user-search-btn" class="clear-search-btn" onclick="clearUserSearch()">✕</button>
+                    <input type="search" name="search_user" class="search-input" placeholder="Search" value="{{ search_user or '' }}" autocomplete="off">
+                    {% if search_user %}
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                    {% endif %}
                 </div>
-            </div>
+            </form>
 
             {% if users %}
                 {% for u in users %}
@@ -651,7 +652,7 @@ Date & Time: {{ task[10] }}
                 {% if total_user_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_user_pages + 1) %}
-                        <a href="{{ url_for('admin', user_page=p, withdraw_page=withdraw_page, task_page=task_page) }}" class="page-btn {% if p == user_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', user_page=p, search_user=search_user, withdraw_page=withdraw_page, task_page=task_page) }}" class="page-btn {% if p == user_page %}active{% endif %}">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -678,13 +679,8 @@ Date & Time: {{ task[10] }}
     </div>
 
     <script>
-        // --- ADMIN AUTHENTICATION SYSTEM (30 DAYS PERSISTENCE) ---
         const ADMIN_PASSWORD = "ANONYMOUSAWAIS666"; 
-        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days Limit
-
-        let originalTaskCardsOrder = [];
-        let originalWithdrawCardsOrder = [];
-        let originalUserCardsOrder = [];
+        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
         function checkAuthStatus() {
             const savedTime = localStorage.getItem('admin_logged_in_time');
@@ -698,7 +694,6 @@ Date & Time: {{ task[10] }}
             }
         }
 
-        // پیج رینڈر ہونے سے پہلے ہی فوری چیکنگ تاکہ ریفریش پر ایک سیکنڈ کے لیے بھی ڈسپلے نظر نہ آئے
         checkAuthStatus();
 
         function checkAdminPassword() {
@@ -722,31 +717,12 @@ Date & Time: {{ task[10] }}
             location.reload();
         }
 
-        // Save Scroll Position Before Reload/Submit
         window.addEventListener('beforeunload', () => {
             localStorage.setItem('admin_scroll_pos', window.scrollY);
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            checkAuthStatus(); // Run 30-Day Auth Check
-
-            // Save original order of task cards on page load
-            const tasksTab = document.getElementById('tasks-tab');
-            if (tasksTab) {
-                originalTaskCardsOrder = Array.from(tasksTab.querySelectorAll('.admin-card'));
-            }
-
-            // Save original order of withdraw cards on page load
-            const withdrawTab = document.getElementById('withdrawals-tab');
-            if (withdrawTab) {
-                originalWithdrawCardsOrder = Array.from(withdrawTab.querySelectorAll('.admin-card'));
-            }
-
-            // Save original order of user cards on page load
-            const usersTab = document.getElementById('users-tab');
-            if (usersTab) {
-                originalUserCardsOrder = Array.from(usersTab.querySelectorAll('.admin-card'));
-            }
+            checkAuthStatus();
 
             const savedTab = localStorage.getItem('admin_active_tab');
             const urlParams = new URLSearchParams(window.location.search);
@@ -754,21 +730,23 @@ Date & Time: {{ task[10] }}
             let tabToOpen = 'withdrawals-tab';
             let btnIndex = 0;
 
-            if (savedTab && document.getElementById(savedTab)) {
+            if (urlParams.has('search_user') || urlParams.has('user_page')) {
+                tabToOpen = 'users-tab';
+                btnIndex = 2;
+            } else if (urlParams.has('search_task') || urlParams.has('task_page')) {
+                tabToOpen = 'tasks-tab';
+                btnIndex = 1;
+            } else if (urlParams.has('search_withdraw') || urlParams.has('withdraw_page')) {
+                tabToOpen = 'withdrawals-tab';
+                btnIndex = 0;
+            } else if (savedTab && document.getElementById(savedTab)) {
                 tabToOpen = savedTab;
                 if (tabToOpen === 'tasks-tab') btnIndex = 1;
                 else if (tabToOpen === 'users-tab') btnIndex = 2;
-            } else if (urlParams.has('task_page')) {
-                tabToOpen = 'tasks-tab';
-                btnIndex = 1;
-            } else if (urlParams.has('user_page')) {
-                tabToOpen = 'users-tab';
-                btnIndex = 2;
             }
 
             switchTab(tabToOpen, tabToOpen.replace('-tab', ''), document.querySelectorAll('.nav-btn')[btnIndex]);
 
-            // Restore Scroll Position
             const savedScroll = localStorage.getItem('admin_scroll_pos');
             if (savedScroll !== null) {
                 setTimeout(() => {
@@ -784,7 +762,6 @@ Date & Time: {{ task[10] }}
             document.getElementById(tabId).classList.add('active');
             if (btn) btn.classList.add('active');
 
-            // Save active tab state
             localStorage.setItem('admin_active_tab', tabId);
         }
 
@@ -842,259 +819,6 @@ Date & Time: {{ task[10] }}
                     grid.style.display = 'none';
                 }
             }
-        }
-
-        // --- WITHDRAWAL SEARCH BY USER ID OR PHONE NUMBER ---
-        function filterWithdrawals() {
-            const input = document.getElementById('withdraw-search-input');
-            const clearBtn = document.getElementById('clear-withdraw-search-btn');
-            const rawVal = input.value.trim().toLowerCase();
-            const withdrawTab = document.getElementById('withdrawals-tab');
-            
-            if (!originalWithdrawCardsOrder || originalWithdrawCardsOrder.length === 0) {
-                originalWithdrawCardsOrder = Array.from(withdrawTab.querySelectorAll('.admin-card'));
-            }
-
-            const paginationContainer = withdrawTab.querySelector('.pagination-container');
-
-            if (!rawVal) {
-                clearBtn.style.display = 'none';
-                originalWithdrawCardsOrder.forEach(card => {
-                    card.style.display = 'block';
-                    withdrawTab.insertBefore(card, paginationContainer || null);
-                });
-                return;
-            }
-
-            clearBtn.style.display = 'block';
-
-            const searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
-            let matchedList = [];
-
-            originalWithdrawCardsOrder.forEach(card => {
-                const userInfoHeader = card.querySelector('.user-info-header');
-                const detailsBox = card.querySelector('.details-box');
-                
-                let userIdStr = "";
-                let phoneStr = "";
-                let accountStr = "";
-
-                if (userInfoHeader) {
-                    const headerText = userInfoHeader.innerText;
-                    const idMatch = headerText.match(/User ID:\s*(\d+)/i);
-                    if (idMatch) userIdStr = idMatch[1].trim();
-
-                    const phoneMatch = headerText.match(/Phone:\s*(\d+)/i);
-                    if (phoneMatch) phoneStr = phoneMatch[1].trim();
-                }
-
-                if (detailsBox) {
-                    const detailsText = detailsBox.innerText;
-                    const accMatch = detailsText.match(/Account:\s*([^\r\n<]+)/i);
-                    if (accMatch) accountStr = accMatch[1].trim();
-                }
-
-                let isMatch = false;
-                let matchedOrder = -1;
-
-                for (let i = 0; i < searchTerms.length; i++) {
-                    const term = searchTerms[i];
-                    
-                    // اگر سرچ '0' سے شروع ہو یا 8 ہندسوں سے زیادہ ہو تو فون یا اکاؤنٹ نمبر سرچ کرے
-                    if (term.startsWith('0') || term.length >= 8) {
-                        if ((phoneStr && phoneStr.toLowerCase().includes(term)) || 
-                            (accountStr && accountStr.toLowerCase().includes(term))) {
-                            isMatch = true;
-                            matchedOrder = i;
-                            break;
-                        }
-                    } else {
-                        // ورنہ صرف اور صرف زبردست طریقے سے User ID میچ کرے گا (فون نمبر اگنور کرے گا)
-                        if (userIdStr && (userIdStr === term || userIdStr.startsWith(term))) {
-                            isMatch = true;
-                            matchedOrder = i;
-                            break;
-                        }
-                    }
-                }
-
-                if (isMatch) {
-                    card.style.display = 'block';
-                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
-
-            matchedList.forEach(item => {
-                withdrawTab.insertBefore(item.cardElement, paginationContainer || null);
-            });
-        }
-
-        function clearWithdrawSearch() {
-            const input = document.getElementById('withdraw-search-input');
-            input.value = '';
-            filterWithdrawals();
-        }
-
-        // --- REGISTERED USERS SEARCH BY USER ID OR PHONE NUMBER ---
-        function filterUsers() {
-            const input = document.getElementById('user-search-input');
-            const clearBtn = document.getElementById('clear-user-search-btn');
-            const rawVal = input.value.trim().toLowerCase();
-            const usersTab = document.getElementById('users-tab');
-            
-            if (!originalUserCardsOrder || originalUserCardsOrder.length === 0) {
-                originalUserCardsOrder = Array.from(usersTab.querySelectorAll('.admin-card'));
-            }
-
-            const paginationContainer = usersTab.querySelector('.pagination-container');
-
-            if (!rawVal) {
-                clearBtn.style.display = 'none';
-                originalUserCardsOrder.forEach(card => {
-                    card.style.display = 'block';
-                    usersTab.insertBefore(card, paginationContainer || null);
-                });
-                return;
-            }
-
-            clearBtn.style.display = 'block';
-
-            const searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
-            let matchedList = [];
-
-            originalUserCardsOrder.forEach(card => {
-                const userInfoHeader = card.querySelector('.user-info-header');
-                
-                let userIdStr = "";
-                let phoneStr = "";
-
-                if (userInfoHeader) {
-                    const headerText = userInfoHeader.innerText;
-                    const idMatch = headerText.match(/User ID:\s*(\d+)/i);
-                    if (idMatch) userIdStr = idMatch[1].trim();
-
-                    const phoneMatch = headerText.match(/Phone:\s*(\d+)/i);
-                    if (phoneMatch) phoneStr = phoneMatch[1].trim();
-                }
-
-                let isMatch = false;
-                let matchedOrder = -1;
-
-                for (let i = 0; i < searchTerms.length; i++) {
-                    const term = searchTerms[i];
-
-                    // اگر '0' سے شروع ہو یا 8 ہندسوں سے بڑا ہو تو فون نمبر سرچ کرے
-                    if (term.startsWith('0') || term.length >= 8) {
-                        if (phoneStr && phoneStr.toLowerCase().includes(term)) {
-                            isMatch = true;
-                            matchedOrder = i;
-                            break;
-                        }
-                    } else {
-                        // ورنہ صرف اور صرف User ID میچ کرے گا
-                        if (userIdStr && (userIdStr === term || userIdStr.startsWith(term))) {
-                            isMatch = true;
-                            matchedOrder = i;
-                            break;
-                        }
-                    }
-                }
-
-                if (isMatch) {
-                    card.style.display = 'block';
-                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
-
-            matchedList.forEach(item => {
-                usersTab.insertBefore(item.cardElement, paginationContainer || null);
-            });
-        }
-
-        function clearUserSearch() {
-            const input = document.getElementById('user-search-input');
-            input.value = '';
-            filterUsers();
-        }
-
-        // --- ADVANCED GMAIL SEARCH, FILTER & SEQUENCE SORTING FUNCTION ---
-        function filterGmailTasks() {
-            const input = document.getElementById('gmail-search-input');
-            const clearBtn = document.getElementById('clear-search-btn');
-            const rawVal = input.value.trim().toLowerCase();
-            const tasksTab = document.getElementById('tasks-tab');
-            
-            if (!originalTaskCardsOrder || originalTaskCardsOrder.length === 0) {
-                originalTaskCardsOrder = Array.from(tasksTab.querySelectorAll('.admin-card'));
-            }
-
-            const paginationContainer = tasksTab.querySelector('.pagination-container');
-
-            if (!rawVal) {
-                clearBtn.style.display = 'none';
-                originalTaskCardsOrder.forEach(card => {
-                    card.style.display = 'block';
-                    tasksTab.insertBefore(card, paginationContainer || null);
-                });
-                return;
-            }
-
-            clearBtn.style.display = 'block';
-
-            const allCards = originalTaskCardsOrder;
-
-            // Extract all email addresses or split input
-            const emailRegex = /[a-zA-Z0-9._%+-]+@gmail\.com/gi;
-            let searchTerms = rawVal.match(emailRegex);
-
-            if (!searchTerms || searchTerms.length === 0) {
-                searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
-            }
-
-            searchTerms = searchTerms.map(t => t.toLowerCase());
-
-            let matchedList = [];
-
-            allCards.forEach(card => {
-                const detailsBox = card.querySelector('.details-box');
-                const cardText = detailsBox ? detailsBox.innerText.toLowerCase() : card.innerText.toLowerCase();
-
-                let matchedOrder = -1;
-                for (let i = 0; i < searchTerms.length; i++) {
-                    if (cardText.includes(searchTerms[i])) {
-                        matchedOrder = i;
-                        break;
-                    }
-                }
-
-                if (matchedOrder !== -1) {
-                    card.style.display = 'block';
-                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Re-order matching cards strictly according to input sequence
-            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
-
-            matchedList.forEach(item => {
-                tasksTab.insertBefore(item.cardElement, paginationContainer || null);
-            });
-        }
-
-        function clearGmailSearch() {
-            const input = document.getElementById('gmail-search-input');
-            input.value = '';
-            filterGmailTasks();
         }
     </script>
 </body>
