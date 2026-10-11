@@ -46,6 +46,47 @@
             padding-bottom: 6px;
         }
 
+        /* --- SEARCH BOX STYLES --- */
+        .search-box-container {
+            position: relative;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            background: #121827;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .search-input:focus {
+            border-color: #00f2fe;
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+        }
+        .clear-search-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #7a8b9e;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            line-height: 1;
+        }
+        .clear-search-btn:hover {
+            color: #ff4757;
+        }
+
         .admin-card {
             background: #121827;
             border-radius: 18px;
@@ -420,6 +461,12 @@ Date & Time: {{ w[7] }}
         </div>
 
         <div id="tasks-tab" class="tab-section">
+            <!-- SEARCH BAR FOR GMAIL FILTERING -->
+            <div class="search-box-container">
+                <input type="text" id="gmail-search-input" class="search-input" placeholder="🔍 Paste or type Gmail(s) here..." oninput="filterGmailTasks()">
+                <button id="clear-search-btn" class="clear-search-btn" onclick="clearGmailSearch()">✕</button>
+            </div>
+
             <div class="section-header">📑 Task Submissions</div>
             {% if tasks %}
                 {% for task in tasks %}
@@ -718,6 +765,50 @@ Date & Time: {{ task[10] }}
                     grid.style.display = 'none';
                 }
             }
+        }
+
+        // --- GMAIL SEARCH & FILTER FUNCTION ---
+        function filterGmailTasks() {
+            const input = document.getElementById('gmail-search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            const rawVal = input.value.trim().toLowerCase();
+
+            if (!rawVal) {
+                clearBtn.style.display = 'none';
+                document.querySelectorAll('#tasks-tab .admin-card').forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+
+            clearBtn.style.display = 'block';
+
+            // Extract all email addresses or split input
+            const emailRegex = /[a-zA-Z0-9._%+-]+@gmail\.com/gi;
+            let searchTerms = rawVal.match(emailRegex);
+
+            if (!searchTerms || searchTerms.length === 0) {
+                searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
+            }
+
+            document.querySelectorAll('#tasks-tab .admin-card').forEach(card => {
+                const detailsBox = card.querySelector('.details-box');
+                const cardText = detailsBox ? detailsBox.innerText.toLowerCase() : card.innerText.toLowerCase();
+
+                const matches = searchTerms.some(term => cardText.includes(term.toLowerCase()));
+
+                if (matches) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function clearGmailSearch() {
+            const input = document.getElementById('gmail-search-input');
+            input.value = '';
+            filterGmailTasks();
         }
     </script>
 </body>
