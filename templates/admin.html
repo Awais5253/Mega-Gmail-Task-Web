@@ -110,7 +110,7 @@
             line-height: 1;
         }
         .clear-search-btn:hover {
-            color: #ff4757;
+            color: #ffffff;
         }
 
         .admin-card {
@@ -433,14 +433,14 @@
         <div id="withdrawals-tab" class="tab-section active">
             <div class="section-header">💸 Withdrawal Requests</div>
 
-            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('withdrawals-tab')">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                     <input type="search" name="search_withdraw" class="search-input" placeholder="Search" value="{{ search_withdraw or '' }}" autocomplete="off">
                     {% if search_withdraw %}
-                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" onclick="saveActiveTab('withdrawals-tab')" style="text-decoration:none; display:flex; align-items:center;">✕</a>
                     {% endif %}
                 </div>
             </form>
@@ -488,7 +488,7 @@ Date & Time: {{ w[7] }}
                 {% if total_withdraw_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_withdraw_pages + 1) %}
-                        <a href="{{ url_for('admin', withdraw_page=p, search_withdraw=search_withdraw, task_page=task_page, user_page=user_page) }}" class="page-btn {% if p == withdraw_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', withdraw_page=p, search_withdraw=search_withdraw) }}" class="page-btn {% if p == withdraw_page %}active{% endif %}" onclick="saveActiveTab('withdrawals-tab')">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -502,14 +502,14 @@ Date & Time: {{ w[7] }}
         <div id="tasks-tab" class="tab-section">
             <div class="section-header">📑 Task Submissions</div>
 
-            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('tasks-tab')">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                     <input type="search" name="search_task" class="search-input" placeholder="Search" value="{{ search_task or '' }}" autocomplete="off">
                     {% if search_task %}
-                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" onclick="saveActiveTab('tasks-tab')" style="text-decoration:none; display:flex; align-items:center;">✕</a>
                     {% endif %}
                 </div>
             </form>
@@ -607,7 +607,7 @@ Date & Time: {{ task[10] }}
                 {% if total_task_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_task_pages + 1) %}
-                        <a href="{{ url_for('admin', task_page=p, search_task=search_task, withdraw_page=withdraw_page, user_page=user_page) }}" class="page-btn {% if p == task_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', task_page=p, search_task=search_task) }}" class="page-btn {% if p == task_page %}active{% endif %}" onclick="saveActiveTab('tasks-tab')">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -621,14 +621,14 @@ Date & Time: {{ task[10] }}
         <div id="users-tab" class="tab-section">
             <div class="section-header">👥 Registered Users</div>
 
-            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container">
+            <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('users-tab')">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                     <input type="search" name="search_user" class="search-input" placeholder="Search" value="{{ search_user or '' }}" autocomplete="off">
                     {% if search_user %}
-                        <a href="{{ url_for('admin') }}" class="clear-search-btn" style="text-decoration:none; display:flex; align-items:center;">✕</a>
+                        <a href="{{ url_for('admin') }}" class="clear-search-btn" onclick="saveActiveTab('users-tab')" style="text-decoration:none; display:flex; align-items:center;">✕</a>
                     {% endif %}
                 </div>
             </form>
@@ -652,7 +652,7 @@ Date & Time: {{ task[10] }}
                 {% if total_user_pages > 1 %}
                 <div class="pagination-container">
                     {% for p in range(1, total_user_pages + 1) %}
-                        <a href="{{ url_for('admin', user_page=p, search_user=search_user, withdraw_page=withdraw_page, task_page=task_page) }}" class="page-btn {% if p == user_page %}active{% endif %}">Page {{ p }}</a>
+                        <a href="{{ url_for('admin', user_page=p, search_user=search_user) }}" class="page-btn {% if p == user_page %}active{% endif %}" onclick="saveActiveTab('users-tab')">Page {{ p }}</a>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -717,6 +717,10 @@ Date & Time: {{ task[10] }}
             location.reload();
         }
 
+        function saveActiveTab(tabId) {
+            localStorage.setItem('admin_active_tab', tabId);
+        }
+
         window.addEventListener('beforeunload', () => {
             localStorage.setItem('admin_scroll_pos', window.scrollY);
         });
@@ -724,26 +728,20 @@ Date & Time: {{ task[10] }}
         window.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus();
 
-            const savedTab = localStorage.getItem('admin_active_tab');
             const urlParams = new URLSearchParams(window.location.search);
+            let tabToOpen = localStorage.getItem('admin_active_tab') || 'withdrawals-tab';
 
-            let tabToOpen = 'withdrawals-tab';
-            let btnIndex = 0;
-
-            if (urlParams.has('search_user') || urlParams.has('user_page')) {
+            if (urlParams.has('search_user')) {
                 tabToOpen = 'users-tab';
-                btnIndex = 2;
-            } else if (urlParams.has('search_task') || urlParams.has('task_page')) {
+            } else if (urlParams.has('search_task')) {
                 tabToOpen = 'tasks-tab';
-                btnIndex = 1;
-            } else if (urlParams.has('search_withdraw') || urlParams.has('withdraw_page')) {
+            } else if (urlParams.has('search_withdraw')) {
                 tabToOpen = 'withdrawals-tab';
-                btnIndex = 0;
-            } else if (savedTab && document.getElementById(savedTab)) {
-                tabToOpen = savedTab;
-                if (tabToOpen === 'tasks-tab') btnIndex = 1;
-                else if (tabToOpen === 'users-tab') btnIndex = 2;
             }
+
+            let btnIndex = 0;
+            if (tabToOpen === 'tasks-tab') btnIndex = 1;
+            else if (tabToOpen === 'users-tab') btnIndex = 2;
 
             switchTab(tabToOpen, tabToOpen.replace('-tab', ''), document.querySelectorAll('.nav-btn')[btnIndex]);
 
