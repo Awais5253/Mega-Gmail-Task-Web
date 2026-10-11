@@ -65,6 +65,9 @@
             margin: 15px 0 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* --- GOOGLE PILL STYLE SEARCH BAR --- */
@@ -142,6 +145,7 @@
             border-radius: 18px;
             padding: 18px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #ffa500;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             margin-bottom: 20px;
         }
@@ -471,7 +475,7 @@
 
             {% if withdrawals %}
                 {% for w in withdrawals %}
-                <div class="admin-card" style="border-left: 4px solid #ffa500;">
+                <div class="admin-card">
                     <div class="user-info-header">
                         <div class="user-name">👤 {{ w[1] }}</div>
                         <div class="user-phone">📞 Phone: {{ w[2] }}</div>
@@ -540,7 +544,7 @@ Date & Time: {{ w[7] }}
 
             {% if tasks %}
                 {% for task in tasks %}
-                <div class="admin-card" style="border-left: 4px solid #ffa500;">
+                <div class="admin-card">
                     <div class="user-info-header">
                         <div class="user-name">👤 User: {{ task[1] }}</div>
                         <div class="user-phone">📞 Phone: {{ task[2] }}</div>
@@ -648,7 +652,7 @@ Date & Time: {{ task[10] }}
             <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('users-tab')">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
                     </svg>
                     <input type="search" name="search_user" class="search-input" placeholder="Search" value="{{ search_user or '' }}" autocomplete="off">
                     {% if search_user %}
@@ -659,7 +663,7 @@ Date & Time: {{ task[10] }}
 
             {% if users %}
                 {% for u in users %}
-                <div class="admin-card" style="border-left: 4px solid #00f2fe;">
+                <div class="admin-card">
                     <div class="user-info-header" style="margin-bottom:0;">
                         <div class="user-phone" style="color: #00f2fe; font-size: 15px; font-weight: 800; margin-bottom: 5px;">🆔 User ID: {{ u[0] }}</div>
                         <div class="user-name">👤 Name: {{ u[1] }}</div>
