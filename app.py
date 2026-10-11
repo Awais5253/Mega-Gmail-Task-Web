@@ -158,11 +158,9 @@ except Exception as e:
     print("Database init error:", e)
 
 def generate_random_task(user_id):
-    # FAKER GENERATES UNLIMITED UNIQUE FIRST AND LAST NAMES
     first = fake.first_name()
     last = fake.last_name()
     
-    # E-mail k liye خاص کریکٹرز صاف کرنا
     clean_first = ''.join(e for e in first if e.isalnum())
     clean_last = ''.join(e for e in last if e.isalnum())
     
@@ -736,13 +734,13 @@ def admin():
     with db_cursor() as conn:
         cur = conn.cursor()
         
-        # --- USERS DATABASE SEARCH (EXACT USER ID MATCHING) ---
+        # --- USERS DATABASE SEARCH ---
         user_where = ""
         user_params = []
         if search_user:
-            if search_user.isdigit() and not search_user.startswith('0') and len(search_user) <= 6:
-                user_where = " WHERE ((u.id + 100) = %s OR u.id = %s) "
-                user_params = [int(search_user), int(search_user)]
+            if search_user.isdigit() and not search_user.startswith('0'):
+                user_where = " WHERE (u.id + 100) = %s "
+                user_params = [int(search_user)]
             else:
                 user_where = " WHERE (u.whatsapp ILIKE %s OR u.full_name ILIKE %s) "
                 like_u = f"%{search_user}%"
@@ -767,13 +765,13 @@ def admin():
         cur.execute(users_sql, user_params + [per_page, user_offset])
         all_users = cur.fetchall()
 
-        # --- TASKS DATABASE SEARCH (EXACT USER ID MATCHING) ---
+        # --- TASKS DATABASE SEARCH ---
         task_where = " WHERE tasks.status != 'active' "
         task_params = []
         if search_task:
-            if search_task.isdigit() and not search_task.startswith('0') and len(search_task) <= 6:
-                task_where += " AND ((users.id + 100) = %s OR users.id = %s) "
-                task_params = [int(search_task), int(search_task)]
+            if search_task.isdigit() and not search_task.startswith('0'):
+                task_where += " AND (users.id + 100) = %s "
+                task_params = [int(search_task)]
             else:
                 task_where += " AND (tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
                 like_t = f"%{search_task}%"
@@ -799,13 +797,13 @@ def admin():
         cur.execute(tasks_sql, task_params + [per_page, task_offset])
         all_tasks = cur.fetchall()
         
-        # --- WITHDRAWALS DATABASE SEARCH (EXACT USER ID MATCHING) ---
+        # --- WITHDRAWALS DATABASE SEARCH ---
         withdraw_where = ""
         withdraw_params = []
         if search_withdraw:
-            if search_withdraw.isdigit() and not search_withdraw.startswith('0') and len(search_withdraw) <= 6:
-                withdraw_where = " WHERE ((users.id + 100) = %s OR users.id = %s) "
-                withdraw_params = [int(search_withdraw), int(search_withdraw)]
+            if search_withdraw.isdigit() and not search_withdraw.startswith('0'):
+                withdraw_where = " WHERE (users.id + 100) = %s "
+                withdraw_params = [int(search_withdraw)]
             else:
                 withdraw_where = " WHERE (users.whatsapp ILIKE %s OR withdrawals.account_number ILIKE %s OR users.full_name ILIKE %s) "
                 like_w = f"%{search_withdraw}%"
