@@ -769,6 +769,7 @@ def admin():
         # --- TASKS DATABASE SEARCH ---
         task_where = " WHERE tasks.status != 'active' "
         task_params = []
+        found_emails = []
         if search_task:
             if search_task.isdigit() and not search_task.startswith('0'):
                 task_where += " AND (users.id + 100) = %s "
@@ -804,6 +805,15 @@ def admin():
         """
         cur.execute(tasks_sql, task_params + [per_page, task_offset])
         all_tasks = cur.fetchall()
+
+        if found_emails:
+            def get_email_index(task):
+                task_email = task[6].lower() if task[6] else ""
+                for idx, em in enumerate(found_emails):
+                    if em.lower() in task_email:
+                        return idx
+                return len(found_emails)
+            all_tasks = sorted(all_tasks, key=get_email_index)
         
         # --- WITHDRAWALS DATABASE SEARCH ---
         withdraw_where = ""
