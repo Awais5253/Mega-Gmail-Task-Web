@@ -1,5 +1,6 @@
 import os
 import random
+import re
 import time
 import psycopg2
 from psycopg2 import pool
@@ -773,9 +774,16 @@ def admin():
                 task_where += " AND (users.id + 100) = %s "
                 task_params = [int(search_task)]
             else:
-                task_where += " AND (tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
-                like_t = f"%{search_task}%"
-                task_params = [like_t, like_t, like_t, like_t]
+                found_emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+?\.(?:com|net|org|co|pk|info|[a-z]{2,4})', search_task, re.IGNORECASE)
+                if found_emails:
+                    email_conditions = " OR ".join(["tasks.email ILIKE %s" for _ in found_emails])
+                    task_where += f" AND ({email_conditions}) "
+                    for em in found_emails:
+                        task_params.append(f"%{em}%")
+                else:
+                    task_where += " AND (tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
+                    like_t = f"%{search_task}%"
+                    task_params = [like_t, like_t, like_t, like_t]
 
         cur.execute("SELECT COUNT(*) FROM tasks JOIN users ON tasks.user_id = users.id " + task_where, task_params)
         total_tasks = cur.fetchone()[0]
