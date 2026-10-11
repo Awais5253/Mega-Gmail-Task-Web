@@ -620,6 +620,18 @@ Date & Time: {{ task[10] }}
 
         <div id="users-tab" class="tab-section">
             <div class="section-header">👥 Registered Users</div>
+
+            <!-- GOOGLE PILL STYLE SEARCH BAR FOR REGISTERED USERS -->
+            <div class="search-box-container">
+                <div class="search-wrapper">
+                    <svg class="search-icon-left" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="search" id="user-search-input" name="search_user_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterUsers()">
+                    <button id="clear-user-search-btn" class="clear-search-btn" onclick="clearUserSearch()">✕</button>
+                </div>
+            </div>
+
             {% if users %}
                 {% for u in users %}
                 <div class="admin-card" style="border-left: 4px solid #00f2fe;">
@@ -672,6 +684,7 @@ Date & Time: {{ task[10] }}
 
         let originalTaskCardsOrder = [];
         let originalWithdrawCardsOrder = [];
+        let originalUserCardsOrder = [];
 
         function checkAuthStatus() {
             const savedTime = localStorage.getItem('admin_logged_in_time');
@@ -727,6 +740,12 @@ Date & Time: {{ task[10] }}
             const withdrawTab = document.getElementById('withdrawals-tab');
             if (withdrawTab) {
                 originalWithdrawCardsOrder = Array.from(withdrawTab.querySelectorAll('.admin-card'));
+            }
+
+            // Save original order of user cards on page load
+            const usersTab = document.getElementById('users-tab');
+            if (usersTab) {
+                originalUserCardsOrder = Array.from(usersTab.querySelectorAll('.admin-card'));
             }
 
             const savedTab = localStorage.getItem('admin_active_tab');
@@ -918,6 +937,92 @@ Date & Time: {{ task[10] }}
             const input = document.getElementById('withdraw-search-input');
             input.value = '';
             filterWithdrawals();
+        }
+
+        // --- REGISTERED USERS SEARCH BY USER ID OR PHONE NUMBER ---
+        function filterUsers() {
+            const input = document.getElementById('user-search-input');
+            const clearBtn = document.getElementById('clear-user-search-btn');
+            const rawVal = input.value.trim().toLowerCase();
+            const usersTab = document.getElementById('users-tab');
+            
+            if (!originalUserCardsOrder || originalUserCardsOrder.length === 0) {
+                originalUserCardsOrder = Array.from(usersTab.querySelectorAll('.admin-card'));
+            }
+
+            const paginationContainer = usersTab.querySelector('.pagination-container');
+
+            if (!rawVal) {
+                clearBtn.style.display = 'none';
+                originalUserCardsOrder.forEach(card => {
+                    card.style.display = 'block';
+                    usersTab.insertBefore(card, paginationContainer || null);
+                });
+                return;
+            }
+
+            clearBtn.style.display = 'block';
+
+            const searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
+            let matchedList = [];
+
+            originalUserCardsOrder.forEach(card => {
+                const userInfoHeader = card.querySelector('.user-info-header');
+                
+                let userIdStr = "";
+                let phoneStr = "";
+
+                if (userInfoHeader) {
+                    const headerText = userInfoHeader.innerText;
+                    const idMatch = headerText.match(/User ID:\s*(\d+)/i);
+                    if (idMatch) userIdStr = idMatch[1].trim();
+
+                    const phoneMatch = headerText.match(/Phone:\s*(\d+)/i);
+                    if (phoneMatch) phoneStr = phoneMatch[1].trim();
+                }
+
+                let isMatch = false;
+                let matchedOrder = -1;
+
+                for (let i = 0; i < searchTerms.length; i++) {
+                    const term = searchTerms[i];
+
+                    // اگر '0' سے شروع ہو یا 8 ہندسوں سے بڑا ہو تو فون نمبر سرچ کرے
+                    if (term.startsWith('0') || term.length >= 8) {
+                        if (phoneStr && phoneStr.toLowerCase().includes(term)) {
+                            isMatch = true;
+                            matchedOrder = i;
+                            break;
+                        }
+                    } else {
+                        // ورنہ صرف اور صرف User ID میچ کرے گا
+                        if (userIdStr && (userIdStr === term || userIdStr.startsWith(term))) {
+                            isMatch = true;
+                            matchedOrder = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (isMatch) {
+                    card.style.display = 'block';
+                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
+
+            matchedList.forEach(item => {
+                usersTab.insertBefore(item.cardElement, paginationContainer || null);
+            });
+        }
+
+        function clearUserSearch() {
+            const input = document.getElementById('user-search-input');
+            input.value = '';
+            filterUsers();
         }
 
         // --- ADVANCED GMAIL SEARCH, FILTER & SEQUENCE SORTING FUNCTION ---
