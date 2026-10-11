@@ -435,6 +435,18 @@
 
         <div id="withdrawals-tab" class="tab-section active">
             <div class="section-header">💸 Withdrawal Requests</div>
+
+            <!-- GOOGLE PILL STYLE SEARCH BAR FOR WITHDRAWALS -->
+            <div class="search-box-container">
+                <div class="search-wrapper">
+                    <svg class="search-icon-left" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="search" id="withdraw-search-input" name="search_withdraw_filter_input_unique" class="search-input" placeholder="Search by User ID or Phone..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterWithdrawals()">
+                    <button id="clear-withdraw-search-btn" class="clear-search-btn" onclick="clearWithdrawSearch()">✕</button>
+                </div>
+            </div>
+
             {% if withdrawals %}
                 {% for w in withdrawals %}
                 <div class="admin-card" style="border-left: 4px solid #ffa500;">
@@ -659,6 +671,7 @@ Date & Time: {{ task[10] }}
         const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days Limit
 
         let originalTaskCardsOrder = [];
+        let originalWithdrawCardsOrder = [];
 
         function checkAuthStatus() {
             const savedTime = localStorage.getItem('admin_logged_in_time');
@@ -708,6 +721,12 @@ Date & Time: {{ task[10] }}
             const tasksTab = document.getElementById('tasks-tab');
             if (tasksTab) {
                 originalTaskCardsOrder = Array.from(tasksTab.querySelectorAll('.admin-card'));
+            }
+
+            // Save original order of withdraw cards on page load
+            const withdrawTab = document.getElementById('withdrawals-tab');
+            if (withdrawTab) {
+                originalWithdrawCardsOrder = Array.from(withdrawTab.querySelectorAll('.admin-card'));
             }
 
             const savedTab = localStorage.getItem('admin_active_tab');
@@ -804,6 +823,66 @@ Date & Time: {{ task[10] }}
                     grid.style.display = 'none';
                 }
             }
+        }
+
+        // --- WITHDRAWAL SEARCH BY USER ID OR PHONE NUMBER ---
+        function filterWithdrawals() {
+            const input = document.getElementById('withdraw-search-input');
+            const clearBtn = document.getElementById('clear-withdraw-search-btn');
+            const rawVal = input.value.trim().toLowerCase();
+            const withdrawTab = document.getElementById('withdrawals-tab');
+            
+            if (!originalWithdrawCardsOrder || originalWithdrawCardsOrder.length === 0) {
+                originalWithdrawCardsOrder = Array.from(withdrawTab.querySelectorAll('.admin-card'));
+            }
+
+            const paginationContainer = withdrawTab.querySelector('.pagination-container');
+
+            if (!rawVal) {
+                clearBtn.style.display = 'none';
+                originalWithdrawCardsOrder.forEach(card => {
+                    card.style.display = 'block';
+                    withdrawTab.insertBefore(card, paginationContainer || null);
+                });
+                return;
+            }
+
+            clearBtn.style.display = 'block';
+
+            const searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
+            let matchedList = [];
+
+            originalWithdrawCardsOrder.forEach(card => {
+                const userInfoHeader = card.querySelector('.user-info-header');
+                const cardText = userInfoHeader ? userInfoHeader.innerText.toLowerCase() : card.innerText.toLowerCase();
+
+                let matchedOrder = -1;
+                for (let i = 0; i < searchTerms.length; i++) {
+                    if (cardText.includes(searchTerms[i])) {
+                        matchedOrder = i;
+                        break;
+                    }
+                }
+
+                if (matchedOrder !== -1) {
+                    card.style.display = 'block';
+                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
+
+            matchedList.forEach(item => {
+                withdrawTab.insertBefore(item.cardElement, paginationContainer || null);
+            });
+        }
+
+        function clearWithdrawSearch() {
+            const input = document.getElementById('withdraw-search-input');
+            input.value = '';
+            filterWithdrawals();
         }
 
         // --- ADVANCED GMAIL SEARCH, FILTER & SEQUENCE SORTING FUNCTION ---
