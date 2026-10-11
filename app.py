@@ -726,34 +726,57 @@ def admin():
     user_page = request.args.get('user_page', 1, type=int)
     task_page = request.args.get('task_page', 1, type=int)
     withdraw_page = request.args.get('withdraw_page', 1, type=int)
+    
+    search_user = request.args.get('search_user', '').strip()
+    search_task = request.args.get('search_task', '').strip()
+    search_withdraw = request.args.get('search_withdraw', '').strip()
+
     per_page = 50
 
     with db_cursor() as conn:
         cur = conn.cursor()
         
-        cur.execute("SELECT COUNT(*) FROM users")
+        # --- USERS SERVER-SIDE DATABASE SEARCH ---
+        user_where = ""
+        user_params = []
+        if search_user:
+            user_where = " WHERE ((u.id + 100)::text = %s OR u.id::text = %s OR u.whatsapp ILIKE %s OR u.full_name ILIKE %s) "
+            like_u = f"%{search_user}%"
+            user_params = [search_user, search_user, like_u, like_u]
+
+        cur.execute("SELECT COUNT(*) FROM users u" + user_where, user_params)
         total_users = cur.fetchone()[0]
-        total_user_pages = (total_users + per_page - 1) // per_page
+        total_user_pages = max(1, (total_users + per_page - 1) // per_page)
         user_offset = (user_page - 1) * per_page
 
-        cur.execute("""
+        users_sql = f"""
             SELECT (u.id + 100), u.full_name, u.whatsapp, u.password,
                    COALESCE(TO_CHAR(u.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
                    u.balance,
                    COALESCE((SELECT SUM(amount) FROM referral_earnings WHERE referrer_id = u.id), 0),
                    (SELECT (id + 100) FROM users WHERE id = u.referred_by)
             FROM users u
+            {user_where}
             ORDER BY u.id DESC
             LIMIT %s OFFSET %s
-        """, (per_page, user_offset))
+        """
+        cur.execute(users_sql, user_params + [per_page, user_offset])
         all_users = cur.fetchall()
 
-        cur.execute("SELECT COUNT(*) FROM tasks WHERE status != 'active'")
+        # --- TASKS SERVER-SIDE DATABASE SEARCH ---
+        task_where = " WHERE tasks.status != 'active' "
+        task_params = []
+        if search_task:
+            task_where += " AND ((users.id + 100)::text = %s OR users.id::text = %s OR tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
+            like_t = f"%{search_task}%"
+            task_params = [search_task, search_task, like_t, like_t, like_t, like_t]
+
+        cur.execute("SELECT COUNT(*) FROM tasks JOIN users ON tasks.user_id = users.id " + task_where, task_params)
         total_tasks = cur.fetchone()[0]
-        total_task_pages = (total_tasks + per_page - 1) // per_page
+        total_task_pages = max(1, (total_tasks + per_page - 1) // per_page)
         task_offset = (task_page - 1) * per_page
 
-        cur.execute("""
+        tasks_sql = f"""
             SELECT tasks.id, users.full_name, users.whatsapp, tasks.gid, tasks.name, 
                    tasks.dob_year, tasks.email, tasks.password, tasks.price, tasks.status,
                    COALESCE(TO_CHAR(tasks.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
@@ -761,27 +784,38 @@ def admin():
                    COALESCE(tasks.is_sold, 'Not Sold')
             FROM tasks 
             JOIN users ON tasks.user_id = users.id 
-            WHERE tasks.status != 'active' 
+            {task_where}
             ORDER BY (CASE WHEN tasks.status = 'pending' THEN 1 ELSE 2 END), tasks.created_at DESC 
             LIMIT %s OFFSET %s
-        """, (per_page, task_offset))
+        """
+        cur.execute(tasks_sql, task_params + [per_page, task_offset])
         all_tasks = cur.fetchall()
         
-        cur.execute("SELECT COUNT(*) FROM withdrawals")
+        # --- WITHDRAWALS SERVER-SIDE DATABASE SEARCH ---
+        withdraw_where = ""
+        withdraw_params = []
+        if search_withdraw:
+            withdraw_where = " WHERE ((users.id + 100)::text = %s OR users.id::text = %s OR users.whatsapp ILIKE %s OR withdrawals.account_number ILIKE %s OR users.full_name ILIKE %s) "
+            like_w = f"%{search_withdraw}%"
+            withdraw_params = [search_withdraw, search_withdraw, like_w, like_w, like_w]
+
+        cur.execute("SELECT COUNT(*) FROM withdrawals JOIN users ON withdrawals.user_id = users.id " + withdraw_where, withdraw_params)
         total_withdrawals = cur.fetchone()[0]
-        total_withdraw_pages = (total_withdrawals + per_page - 1) // per_page
+        total_withdraw_pages = max(1, (total_withdrawals + per_page - 1) // per_page)
         withdraw_offset = (withdraw_page - 1) * per_page
 
-        cur.execute("""
+        withdraw_sql = f"""
             SELECT withdrawals.id, users.full_name, users.whatsapp, withdrawals.method, 
                    withdrawals.account_number, withdrawals.amount, withdrawals.status,
                    COALESCE(TO_CHAR(withdrawals.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
                    (users.id + 100) AS display_id
             FROM withdrawals 
             JOIN users ON withdrawals.user_id = users.id 
+            {withdraw_where}
             ORDER BY (CASE WHEN withdrawals.status = 'pending' THEN 1 ELSE 2 END), withdrawals.created_at DESC 
             LIMIT %s OFFSET %s
-        """, (per_page, withdraw_offset))
+        """
+        cur.execute(withdraw_sql, withdraw_params + [per_page, withdraw_offset])
         all_withdrawals = cur.fetchall()
         
         cur.close()
@@ -796,7 +830,10 @@ def admin():
         task_page=task_page,
         total_task_pages=total_task_pages,
         withdraw_page=withdraw_page,
-        total_withdraw_pages=total_withdraw_pages
+        total_withdraw_pages=total_withdraw_pages,
+        search_user=search_user,
+        search_task=search_task,
+        search_withdraw=search_withdraw
     )
 
 if __name__ == '__main__':
