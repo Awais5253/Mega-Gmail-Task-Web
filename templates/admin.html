@@ -442,7 +442,7 @@
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="search" id="withdraw-search-input" name="search_withdraw_filter_input_unique" class="search-input" placeholder="Search by User ID or Phone..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterWithdrawals()">
+                    <input type="search" id="withdraw-search-input" name="search_withdraw_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterWithdrawals()">
                     <button id="clear-withdraw-search-btn" class="clear-search-btn" onclick="clearWithdrawSearch()">✕</button>
                 </div>
             </div>
@@ -854,17 +854,52 @@ Date & Time: {{ task[10] }}
 
             originalWithdrawCardsOrder.forEach(card => {
                 const userInfoHeader = card.querySelector('.user-info-header');
-                const cardText = userInfoHeader ? userInfoHeader.innerText.toLowerCase() : card.innerText.toLowerCase();
+                const detailsBox = card.querySelector('.details-box');
+                
+                let userIdStr = "";
+                let phoneStr = "";
+                let accountStr = "";
 
+                if (userInfoHeader) {
+                    const headerText = userInfoHeader.innerText;
+                    const idMatch = headerText.match(/User ID:\s*(\d+)/i);
+                    if (idMatch) userIdStr = idMatch[1].trim();
+
+                    const phoneMatch = headerText.match(/Phone:\s*(\d+)/i);
+                    if (phoneMatch) phoneStr = phoneMatch[1].trim();
+                }
+
+                if (detailsBox) {
+                    const detailsText = detailsBox.innerText;
+                    const accMatch = detailsText.match(/Account:\s*([^\r\n<]+)/i);
+                    if (accMatch) accountStr = accMatch[1].trim();
+                }
+
+                let isMatch = false;
                 let matchedOrder = -1;
+
                 for (let i = 0; i < searchTerms.length; i++) {
-                    if (cardText.includes(searchTerms[i])) {
-                        matchedOrder = i;
-                        break;
+                    const term = searchTerms[i];
+                    
+                    // اگر سرچ '0' سے شروع ہو یا 8 ہندسوں سے زیادہ ہو تو فون یا اکاؤنٹ نمبر سرچ کرے
+                    if (term.startsWith('0') || term.length >= 8) {
+                        if ((phoneStr && phoneStr.toLowerCase().includes(term)) || 
+                            (accountStr && accountStr.toLowerCase().includes(term))) {
+                            isMatch = true;
+                            matchedOrder = i;
+                            break;
+                        }
+                    } else {
+                        // ورنہ صرف اور صرف زبردست طریقے سے User ID میچ کرے گا (فون نمبر اگنور کرے گا)
+                        if (userIdStr && (userIdStr === term || userIdStr.startsWith(term))) {
+                            isMatch = true;
+                            matchedOrder = i;
+                            break;
+                        }
                     }
                 }
 
-                if (matchedOrder !== -1) {
+                if (isMatch) {
                     card.style.display = 'block';
                     matchedList.push({ cardElement: card, orderIndex: matchedOrder });
                 } else {
