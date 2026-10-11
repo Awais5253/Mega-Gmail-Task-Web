@@ -79,11 +79,19 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
+        /* براؤزر کے ڈیفالٹ نیلے کراس آئیکن کو ختم کرنے کے لیے CSS */
+        .search-input::-webkit-search-cancel-button,
+        .search-input::-webkit-search-decoration,
+        .search-input::-webkit-search-results-button,
+        .search-input::-webkit-search-results-decoration {
+            -webkit-appearance: none;
+            appearance: none;
+            display: none;
+        }
         .search-input::placeholder {
             color: #7a8b9e;
             font-size: 14px;
         }
-        /* क्लिक/फोकस करने पर रंग समान रखने के लिए फिक्स */
         .search-input:focus {
             border-color: rgba(255, 255, 255, 0.12);
             background: #121827;
