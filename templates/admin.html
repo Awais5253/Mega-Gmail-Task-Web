@@ -480,13 +480,13 @@ Date & Time: {{ w[7] }}
         </div>
 
         <div id="tasks-tab" class="tab-section">
-            <!-- GOOGLE PILL STYLE SEARCH BAR -->
+            <!-- GOOGLE PILL STYLE SEARCH BAR WITH AUTOFILL PREVENTIONS -->
             <div class="search-box-container">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="text" id="gmail-search-input" class="search-input" placeholder="Search" oninput="filterGmailTasks()">
+                    <input type="search" id="gmail-search-input" name="search_gmail_filter_input_unique" class="search-input" placeholder="Search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="filterGmailTasks()">
                     <button id="clear-search-btn" class="clear-search-btn" onclick="clearGmailSearch()">✕</button>
                 </div>
             </div>
@@ -791,49 +791,6 @@ Date & Time: {{ task[10] }}
             }
         }
 
-        // --- GMAIL SEARCH & FILTER FUNCTION ---
+        // --- ADVANCED GMAIL SEARCH, FILTER & SEQUENCE SORTING FUNCTION ---
         function filterGmailTasks() {
             const input = document.getElementById('gmail-search-input');
-            const clearBtn = document.getElementById('clear-search-btn');
-            const rawVal = input.value.trim().toLowerCase();
-
-            if (!rawVal) {
-                clearBtn.style.display = 'none';
-                document.querySelectorAll('#tasks-tab .admin-card').forEach(card => {
-                    card.style.display = 'block';
-                });
-                return;
-            }
-
-            clearBtn.style.display = 'block';
-
-            // Extract all email addresses or split input
-            const emailRegex = /[a-zA-Z0-9._%+-]+@gmail\.com/gi;
-            let searchTerms = rawVal.match(emailRegex);
-
-            if (!searchTerms || searchTerms.length === 0) {
-                searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
-            }
-
-            document.querySelectorAll('#tasks-tab .admin-card').forEach(card => {
-                const detailsBox = card.querySelector('.details-box');
-                const cardText = detailsBox ? detailsBox.innerText.toLowerCase() : card.innerText.toLowerCase();
-
-                const matches = searchTerms.some(term => cardText.includes(term.toLowerCase()));
-
-                if (matches) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        function clearGmailSearch() {
-            const input = document.getElementById('gmail-search-input');
-            input.value = '';
-            filterGmailTasks();
-        }
-    </script>
-</body>
-</html>
