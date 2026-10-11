@@ -46,38 +46,57 @@
             padding-bottom: 6px;
         }
 
-        /* --- SEARCH BOX STYLES --- */
+        /* --- GOOGLE PILL STYLE SEARCH BAR --- */
         .search-box-container {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             width: 100%;
+        }
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .search-icon-left {
+            position: absolute;
+            left: 18px;
+            width: 18px;
+            height: 18px;
+            fill: #7a8b9e;
+            pointer-events: none;
         }
         .search-input {
             width: 100%;
-            padding: 12px 40px 12px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 14px 42px 14px 48px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             background: #121827;
             color: #ffffff;
-            font-size: 13px;
+            font-size: 14px;
             outline: none;
             box-sizing: border-box;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+        .search-input::placeholder {
+            color: #7a8b9e;
+            font-size: 14px;
         }
         .search-input:focus {
-            border-color: #00f2fe;
-            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+            border-color: rgba(255, 255, 255, 0.28);
+            background: #161e31;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
         }
         .clear-search-btn {
             position: absolute;
-            right: 12px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             color: #7a8b9e;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             display: none;
@@ -461,10 +480,15 @@ Date & Time: {{ w[7] }}
         </div>
 
         <div id="tasks-tab" class="tab-section">
-            <!-- SEARCH BAR FOR GMAIL FILTERING -->
+            <!-- GOOGLE PILL STYLE SEARCH BAR -->
             <div class="search-box-container">
-                <input type="text" id="gmail-search-input" class="search-input" placeholder="🔍 Paste or type Gmail(s) here..." oninput="filterGmailTasks()">
-                <button id="clear-search-btn" class="clear-search-btn" onclick="clearGmailSearch()">✕</button>
+                <div class="search-wrapper">
+                    <svg class="search-icon-left" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" id="gmail-search-input" class="search-input" placeholder="Search" oninput="filterGmailTasks()">
+                    <button id="clear-search-btn" class="clear-search-btn" onclick="clearGmailSearch()">✕</button>
+                </div>
             </div>
 
             <div class="section-header">📑 Task Submissions</div>
