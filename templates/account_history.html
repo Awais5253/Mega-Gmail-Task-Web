@@ -95,6 +95,22 @@
         font-weight: 700;
         word-break: break-all;
     }
+
+    /* Date & Time Row Style like Withdrawal History */
+    .date-row {
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        margin-top: 10px;
+        padding-top: 8px;
+        margin-bottom: 0;
+    }
+    .date-label {
+        color: #00f2fe;
+        font-weight: 700;
+    }
+    .date-val {
+        color: #00f2fe;
+        font-weight: 800;
+    }
 </style>
 {% endblock %}
 
@@ -130,6 +146,13 @@
                 <span class="label">📧 Task Email</span>
                 <span class="val">{{ item.email }}</span>
             </div>
+
+            {% if item.status != 'pending' and item.date_time %}
+            <div class="info-row date-row">
+                <span class="label date-label">🕒 Date & Time:</span>
+                <span class="val date-val">{{ item.date_time }}</span>
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     {% else %}
