@@ -419,7 +419,8 @@ def account_history():
     with db_cursor() as conn:
         cur = conn.cursor()
         cur.execute("""
-            SELECT gid, email, status, price 
+            SELECT gid, email, status, price,
+                   COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A')
             FROM tasks 
             WHERE user_id = %s AND status != 'active' 
             ORDER BY (CASE WHEN status = 'pending' THEN 1 ELSE 2 END), created_at DESC
@@ -434,7 +435,8 @@ def account_history():
             'gid': row[0],
             'email': row[1],
             'status': row[2],
-            'price': row[3]
+            'price': row[3],
+            'date_time': row[4]
         })
         
     return render_template('account_history.html', history=history)
