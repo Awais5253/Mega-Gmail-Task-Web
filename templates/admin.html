@@ -658,6 +658,8 @@ Date & Time: {{ task[10] }}
         const ADMIN_PASSWORD = "ANONYMOUSAWAIS666"; 
         const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days Limit
 
+        let originalTaskCardsOrder = [];
+
         function checkAuthStatus() {
             const savedTime = localStorage.getItem('admin_logged_in_time');
             const overlay = document.getElementById('login-overlay');
@@ -697,6 +699,12 @@ Date & Time: {{ task[10] }}
 
         window.addEventListener('DOMContentLoaded', () => {
             checkAuthStatus(); // Run 30-Day Auth Check
+
+            // Save original order of task cards on page load
+            const tasksTab = document.getElementById('tasks-tab');
+            if (tasksTab) {
+                originalTaskCardsOrder = Array.from(tasksTab.querySelectorAll('.admin-card'));
+            }
 
             const savedTab = localStorage.getItem('admin_active_tab');
             const urlParams = new URLSearchParams(window.location.search);
@@ -800,17 +808,25 @@ Date & Time: {{ task[10] }}
             const clearBtn = document.getElementById('clear-search-btn');
             const rawVal = input.value.trim().toLowerCase();
             const tasksTab = document.getElementById('tasks-tab');
-            const allCards = Array.from(tasksTab.querySelectorAll('.admin-card'));
+            
+            if (!originalTaskCardsOrder || originalTaskCardsOrder.length === 0) {
+                originalTaskCardsOrder = Array.from(tasksTab.querySelectorAll('.admin-card'));
+            }
+
+            const paginationContainer = tasksTab.querySelector('.pagination-container');
 
             if (!rawVal) {
                 clearBtn.style.display = 'none';
-                allCards.forEach(card => {
+                originalTaskCardsOrder.forEach(card => {
                     card.style.display = 'block';
+                    tasksTab.insertBefore(card, paginationContainer || null);
                 });
                 return;
             }
 
             clearBtn.style.display = 'block';
+
+            const allCards = originalTaskCardsOrder;
 
             // Extract all email addresses or split input
             const emailRegex = /[a-zA-Z0-9._%+-]+@gmail\.com/gi;
@@ -847,7 +863,6 @@ Date & Time: {{ task[10] }}
             // Re-order matching cards strictly according to input sequence
             matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
 
-            const paginationContainer = tasksTab.querySelector('.pagination-container');
             matchedList.forEach(item => {
                 tasksTab.insertBefore(item.cardElement, paginationContainer || null);
             });
