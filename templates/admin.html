@@ -344,7 +344,7 @@
             width: 100%;
             height: 100%;
             background: #090d16;
-            display: flex;
+            display: none; /* ریفریش کے وقت لاگ ان باکس کی جھلک (Flicker) ختم کرنے کے لیے none کیا ہے */
             justify-content: center;
             align-items: center;
             z-index: 99999;
@@ -663,6 +663,7 @@ Date & Time: {{ task[10] }}
         function checkAuthStatus() {
             const savedTime = localStorage.getItem('admin_logged_in_time');
             const overlay = document.getElementById('login-overlay');
+            if (!overlay) return;
             
             if (savedTime && (Date.now() - parseInt(savedTime)) < THIRTY_DAYS_MS) {
                 overlay.style.display = 'none';
@@ -670,6 +671,9 @@ Date & Time: {{ task[10] }}
                 overlay.style.display = 'flex';
             }
         }
+
+        // پیج رینڈر ہونے سے پہلے ہی فوری چیکنگ تاکہ ریفریش پر ایک سیکنڈ کے لیے بھی ڈسپلے نظر نہ آئے
+        checkAuthStatus();
 
         function checkAdminPassword() {
             const inputPass = document.getElementById('admin-pass-input').value.trim();
