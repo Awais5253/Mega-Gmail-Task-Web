@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Mega Gmail Task</title>
+    <script>
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let tabToOpen = localStorage.getItem('admin_active_tab') || 'withdrawals-tab';
+
+            if (urlParams.has('search_user') || urlParams.has('user_page')) {
+                tabToOpen = 'users-tab';
+            } else if (urlParams.has('search_task') || urlParams.has('task_page')) {
+                tabToOpen = 'tasks-tab';
+            } else if (urlParams.has('search_withdraw') || urlParams.has('withdraw_page')) {
+                tabToOpen = 'withdrawals-tab';
+            }
+
+            localStorage.setItem('admin_active_tab', tabToOpen);
+
+            const style = document.createElement('style');
+            style.id = 'tab-preload-style';
+            style.innerHTML = '.tab-section { display: none !important; } #' + tabToOpen + ' { display: block !important; } .nav-btn { color: #7a8b9e !important; } #nav-' + tabToOpen + ' { color: #00f2fe !important; }';
+            document.head.appendChild(style);
+        })();
+    </script>
     <style>
         html {
             background: #0d1322;
@@ -433,7 +454,7 @@
         <div class="admin-sub">Manage Tasks, Withdrawals & Users</div>
 
         <!-- WITHDRAWALS TAB -->
-        <div id="withdrawals-tab" class="tab-section active">
+        <div id="withdrawals-tab" class="tab-section">
             <div class="section-header">💸 Withdrawal Requests</div>
 
             <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('withdrawals-tab')">
@@ -667,15 +688,15 @@ Date & Time: {{ task[10] }}
     </div>
 
     <div class="bottom-nav">
-        <button class="nav-btn active" onclick="switchTab('withdrawals-tab', 'withdrawals', this)">
+        <button id="nav-withdrawals-tab" class="nav-btn" onclick="switchTab('withdrawals-tab', 'withdrawals', this)">
             <span class="nav-icon">💸</span>
             <span>Withdrawals</span>
         </button>
-        <button class="nav-btn" onclick="switchTab('tasks-tab', 'tasks', this)">
+        <button id="nav-tasks-tab" class="nav-btn" onclick="switchTab('tasks-tab', 'tasks', this)">
             <span class="nav-icon">📑</span>
             <span>Tasks</span>
         </button>
-        <button class="nav-btn" onclick="switchTab('users-tab', 'users', this)">
+        <button id="nav-users-tab" class="nav-btn" onclick="switchTab('users-tab', 'users', this)">
             <span class="nav-icon">👥</span>
             <span>Users</span>
         </button>
@@ -734,11 +755,11 @@ Date & Time: {{ task[10] }}
             const urlParams = new URLSearchParams(window.location.search);
             let tabToOpen = localStorage.getItem('admin_active_tab') || 'withdrawals-tab';
 
-            if (urlParams.has('search_user')) {
+            if (urlParams.has('search_user') || urlParams.has('user_page')) {
                 tabToOpen = 'users-tab';
-            } else if (urlParams.has('search_task')) {
+            } else if (urlParams.has('search_task') || urlParams.has('task_page')) {
                 tabToOpen = 'tasks-tab';
-            } else if (urlParams.has('search_withdraw')) {
+            } else if (urlParams.has('search_withdraw') || urlParams.has('withdraw_page')) {
                 tabToOpen = 'withdrawals-tab';
             }
 
@@ -747,6 +768,9 @@ Date & Time: {{ task[10] }}
             else if (tabToOpen === 'users-tab') btnIndex = 2;
 
             switchTab(tabToOpen, tabToOpen.replace('-tab', ''), document.querySelectorAll('.nav-btn')[btnIndex]);
+
+            const preloadStyle = document.getElementById('tab-preload-style');
+            if (preloadStyle) preloadStyle.remove();
 
             const savedScroll = localStorage.getItem('admin_scroll_pos');
             if (savedScroll !== null) {
