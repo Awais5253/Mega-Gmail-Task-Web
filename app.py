@@ -736,13 +736,17 @@ def admin():
     with db_cursor() as conn:
         cur = conn.cursor()
         
-        # --- USERS SERVER-SIDE DATABASE SEARCH ---
+        # --- USERS DATABASE SEARCH (EXACT USER ID MATCHING) ---
         user_where = ""
         user_params = []
         if search_user:
-            user_where = " WHERE ((u.id + 100)::text = %s OR u.id::text = %s OR u.whatsapp ILIKE %s OR u.full_name ILIKE %s) "
-            like_u = f"%{search_user}%"
-            user_params = [search_user, search_user, like_u, like_u]
+            if search_user.isdigit() and not search_user.startswith('0') and len(search_user) <= 6:
+                user_where = " WHERE ((u.id + 100) = %s OR u.id = %s) "
+                user_params = [int(search_user), int(search_user)]
+            else:
+                user_where = " WHERE (u.whatsapp ILIKE %s OR u.full_name ILIKE %s) "
+                like_u = f"%{search_user}%"
+                user_params = [like_u, like_u]
 
         cur.execute("SELECT COUNT(*) FROM users u" + user_where, user_params)
         total_users = cur.fetchone()[0]
@@ -763,13 +767,17 @@ def admin():
         cur.execute(users_sql, user_params + [per_page, user_offset])
         all_users = cur.fetchall()
 
-        # --- TASKS SERVER-SIDE DATABASE SEARCH ---
+        # --- TASKS DATABASE SEARCH (EXACT USER ID MATCHING) ---
         task_where = " WHERE tasks.status != 'active' "
         task_params = []
         if search_task:
-            task_where += " AND ((users.id + 100)::text = %s OR users.id::text = %s OR tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
-            like_t = f"%{search_task}%"
-            task_params = [search_task, search_task, like_t, like_t, like_t, like_t]
+            if search_task.isdigit() and not search_task.startswith('0') and len(search_task) <= 6:
+                task_where += " AND ((users.id + 100) = %s OR users.id = %s) "
+                task_params = [int(search_task), int(search_task)]
+            else:
+                task_where += " AND (tasks.email ILIKE %s OR users.whatsapp ILIKE %s OR users.full_name ILIKE %s OR tasks.gid ILIKE %s) "
+                like_t = f"%{search_task}%"
+                task_params = [like_t, like_t, like_t, like_t]
 
         cur.execute("SELECT COUNT(*) FROM tasks JOIN users ON tasks.user_id = users.id " + task_where, task_params)
         total_tasks = cur.fetchone()[0]
@@ -791,13 +799,17 @@ def admin():
         cur.execute(tasks_sql, task_params + [per_page, task_offset])
         all_tasks = cur.fetchall()
         
-        # --- WITHDRAWALS SERVER-SIDE DATABASE SEARCH ---
+        # --- WITHDRAWALS DATABASE SEARCH (EXACT USER ID MATCHING) ---
         withdraw_where = ""
         withdraw_params = []
         if search_withdraw:
-            withdraw_where = " WHERE ((users.id + 100)::text = %s OR users.id::text = %s OR users.whatsapp ILIKE %s OR withdrawals.account_number ILIKE %s OR users.full_name ILIKE %s) "
-            like_w = f"%{search_withdraw}%"
-            withdraw_params = [search_withdraw, search_withdraw, like_w, like_w, like_w]
+            if search_withdraw.isdigit() and not search_withdraw.startswith('0') and len(search_withdraw) <= 6:
+                withdraw_where = " WHERE ((users.id + 100) = %s OR users.id = %s) "
+                withdraw_params = [int(search_withdraw), int(search_withdraw)]
+            else:
+                withdraw_where = " WHERE (users.whatsapp ILIKE %s OR withdrawals.account_number ILIKE %s OR users.full_name ILIKE %s) "
+                like_w = f"%{search_withdraw}%"
+                withdraw_params = [like_w, like_w, like_w]
 
         cur.execute("SELECT COUNT(*) FROM withdrawals JOIN users ON withdrawals.user_id = users.id " + withdraw_where, withdraw_params)
         total_withdrawals = cur.fetchone()[0]
