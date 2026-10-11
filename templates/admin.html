@@ -409,12 +409,12 @@
 <body>
 
     <div id="login-overlay">
-        <div class="login-box">
+        <form class="login-box" onsubmit="event.preventDefault(); checkAdminPassword();">
             <div class="login-title">🔑 Admin Access Required</div>
-            <input type="password" id="admin-pass-input" class="login-input" placeholder="Enter Password">
-            <button class="btn-login" onclick="checkAdminPassword()">Login to Dashboard</button>
+            <input type="password" id="admin-pass-input" class="login-input" placeholder="Enter Password" autocomplete="current-password" required>
+            <button type="submit" class="btn-login">Login to Dashboard</button>
             <div id="login-error-msg" class="login-error">❌ Incorrect Password! Try again.</div>
-        </div>
+        </form>
     </div>
 
     <div class="container">
@@ -663,7 +663,7 @@ Date & Time: {{ task[10] }}
             const inputPass = document.getElementById('admin-pass-input').value.trim();
             const errorMsg = document.getElementById('login-error-msg');
             
-            if (inputPass.toUpperCase() === ADMIN_PASSWORD) {
+            if (inputPass.toUpperCase() === ADMIN_PASSWORD.toUpperCase()) {
                 localStorage.setItem('admin_logged_in_time', Date.now().toString());
                 document.getElementById('login-overlay').style.display = 'none';
                 errorMsg.style.display = 'none';
@@ -679,13 +679,6 @@ Date & Time: {{ task[10] }}
             localStorage.removeItem('admin_scroll_pos');
             location.reload();
         }
-
-        // Enter key press listener
-        document.getElementById('admin-pass-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkAdminPassword();
-            }
-        });
 
         // Save Scroll Position Before Reload/Submit
         window.addEventListener('beforeunload', () => {
@@ -794,3 +787,67 @@ Date & Time: {{ task[10] }}
         // --- ADVANCED GMAIL SEARCH, FILTER & SEQUENCE SORTING FUNCTION ---
         function filterGmailTasks() {
             const input = document.getElementById('gmail-search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            const rawVal = input.value.trim().toLowerCase();
+            const tasksTab = document.getElementById('tasks-tab');
+            const allCards = Array.from(tasksTab.querySelectorAll('.admin-card'));
+
+            if (!rawVal) {
+                clearBtn.style.display = 'none';
+                allCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+
+            clearBtn.style.display = 'block';
+
+            // Extract all email addresses or split input
+            const emailRegex = /[a-zA-Z0-9._%+-]+@gmail\.com/gi;
+            let searchTerms = rawVal.match(emailRegex);
+
+            if (!searchTerms || searchTerms.length === 0) {
+                searchTerms = rawVal.split(/[\s,]+/).filter(t => t.length > 0);
+            }
+
+            searchTerms = searchTerms.map(t => t.toLowerCase());
+
+            let matchedList = [];
+
+            allCards.forEach(card => {
+                const detailsBox = card.querySelector('.details-box');
+                const cardText = detailsBox ? detailsBox.innerText.toLowerCase() : card.innerText.toLowerCase();
+
+                let matchedOrder = -1;
+                for (let i = 0; i < searchTerms.length; i++) {
+                    if (cardText.includes(searchTerms[i])) {
+                        matchedOrder = i;
+                        break;
+                    }
+                }
+
+                if (matchedOrder !== -1) {
+                    card.style.display = 'block';
+                    matchedList.push({ cardElement: card, orderIndex: matchedOrder });
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Re-order matching cards strictly according to input sequence
+            matchedList.sort((a, b) => a.orderIndex - b.orderIndex);
+
+            const paginationContainer = tasksTab.querySelector('.pagination-container');
+            matchedList.forEach(item => {
+                tasksTab.insertBefore(item.cardElement, paginationContainer || null);
+            });
+        }
+
+        function clearGmailSearch() {
+            const input = document.getElementById('gmail-search-input');
+            input.value = '';
+            filterGmailTasks();
+        }
+    </script>
+</body>
+</html>
