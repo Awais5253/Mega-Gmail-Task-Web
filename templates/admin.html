@@ -497,11 +497,15 @@ Date & Time: {{ w[7] }}
                         <form method="POST" style="margin:0; display: flex; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="approve_withdraw">
+                            <input type="hidden" name="search_withdraw" value="{{ search_withdraw or '' }}">
+                            <input type="hidden" name="withdraw_page" value="{{ withdraw_page or 1 }}">
                             <button type="submit" class="btn-action btn-approve">Accept ✓</button>
                         </form>
                         <form method="POST" style="margin:0; display: flex; width: 100%;">
                             <input type="hidden" name="withdraw_id" value="{{ w[0] }}">
                             <input type="hidden" name="action" value="reject_withdraw">
+                            <input type="hidden" name="search_withdraw" value="{{ search_withdraw or '' }}">
+                            <input type="hidden" name="withdraw_page" value="{{ withdraw_page or 1 }}">
                             <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                         </form>
                     </div>
@@ -567,6 +571,8 @@ Date & Time: {{ task[10] }}
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="task_id" value="{{ task[0] }}">
                         <input type="hidden" name="action" value="toggle_sold">
+                        <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                        <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                         {% if task|length > 12 and task[12] == 'Sold' %}
                             <button type="submit" class="btn-toggle-status btn-status-sold">🔴 SOLD</button>
                         {% else %}
@@ -579,16 +585,22 @@ Date & Time: {{ task[10] }}
                         <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="approve">
+                            <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                            <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                             <button type="submit" class="btn-action btn-approve">Approve ✓</button>
                         </form>
                         <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="not_exist">
+                            <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                            <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                             <button type="submit" class="btn-action btn-notexist">Not Exist !</button>
                         </form>
                         <form method="POST">
                             <input type="hidden" name="task_id" value="{{ task[0] }}">
                             <input type="hidden" name="action" value="reject">
+                            <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                            <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                             <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                         </form>
                     </div>
@@ -615,16 +627,22 @@ Date & Time: {{ task[10] }}
                             <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="approve">
+                                <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                                <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                                 <button type="submit" class="btn-action btn-approve">Approve ✓</button>
                             </form>
                             <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="not_exist">
+                                <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                                <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                                 <button type="submit" class="btn-action btn-notexist">Not Exist !</button>
                             </form>
                             <form method="POST">
                                 <input type="hidden" name="task_id" value="{{ task[0] }}">
                                 <input type="hidden" name="action" value="reject">
+                                <input type="hidden" name="search_task" value="{{ search_task or '' }}">
+                                <input type="hidden" name="task_page" value="{{ task_page or 1 }}">
                                 <button type="submit" class="btn-action btn-reject">Reject ✕</button>
                             </form>
                         </div>
@@ -652,7 +670,7 @@ Date & Time: {{ task[10] }}
             <form method="GET" action="{{ url_for('admin') }}" class="search-box-container" onsubmit="saveActiveTab('users-tab')">
                 <div class="search-wrapper">
                     <svg class="search-icon-left" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                     <input type="search" name="search_user" class="search-input" placeholder="Search" value="{{ search_user or '' }}" autocomplete="off">
                     {% if search_user %}
