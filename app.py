@@ -661,6 +661,14 @@ def admin():
         withdraw_id = request.form.get('withdraw_id')
         action = request.form.get('action')
         
+        # Get active search and page params from the form POST request
+        search_task = request.form.get('search_task', '').strip()
+        search_withdraw = request.form.get('search_withdraw', '').strip()
+        search_user = request.form.get('search_user', '').strip()
+        task_page = request.form.get('task_page', '').strip()
+        withdraw_page = request.form.get('withdraw_page', '').strip()
+        user_page = request.form.get('user_page', '').strip()
+        
         with db_cursor() as conn:
             cur = conn.cursor()
             if task_id:
@@ -722,7 +730,15 @@ def admin():
                         cur.execute("UPDATE withdrawals SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
             cur.close()
             
-        return redirect(url_for('admin'))
+        redirect_args = {}
+        if search_task: redirect_args['search_task'] = search_task
+        if search_withdraw: redirect_args['search_withdraw'] = search_withdraw
+        if search_user: redirect_args['search_user'] = search_user
+        if task_page: redirect_args['task_page'] = task_page
+        if withdraw_page: redirect_args['withdraw_page'] = withdraw_page
+        if user_page: redirect_args['user_page'] = user_page
+
+        return redirect(url_for('admin', **redirect_args))
     
     user_page = request.args.get('user_page', 1, type=int)
     task_page = request.args.get('task_page', 1, type=int)
