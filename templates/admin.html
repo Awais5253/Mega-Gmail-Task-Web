@@ -40,6 +40,7 @@
             justify-content: center;
             min-height: 100vh;
             box-sizing: border-box;
+            overscroll-behavior-y: contain;
         }
         .container {
             width: 100%;
@@ -810,6 +811,10 @@ Date & Time: {{ task[10] }}
             if (btn) btn.classList.add('active');
 
             localStorage.setItem('admin_active_tab', tabId);
+
+            if (window.history.replaceState) {
+                window.history.replaceState(null, null, window.location.pathname);
+            }
         }
 
         function copyEmailOnly(emailText, btn) {
