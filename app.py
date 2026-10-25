@@ -81,7 +81,6 @@ def cleanup_old_records():
             cur = conn.cursor()
             cur.execute("DELETE FROM tasks WHERE created_at < NOW() - INTERVAL '30 days';")
             cur.execute("DELETE FROM withdrawals WHERE created_at < NOW() - INTERVAL '30 days';")
-            cur.execute("DELETE FROM referral_earnings WHERE created_at < NOW() - INTERVAL '30 days';")
             cur.close()
         LAST_CLEANUP_TIME = current_time
     except Exception as e:
@@ -108,6 +107,12 @@ def init_db():
         cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by INTEGER REFERENCES users(id) ON DELETE SET NULL;")
         cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
         
+        # Permanent Lifetime Tracking Columns in Users Table
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS approved_tasks_count INTEGER DEFAULT 0;")
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lifetime_task_earned NUMERIC DEFAULT 0;")
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lifetime_ref_earned NUMERIC DEFAULT 0;")
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lifetime_withdrawn NUMERIC DEFAULT 0;")
+        
         cur.execute('''
             CREATE TABLE IF NOT EXISTS tasks (
                 id SERIAL PRIMARY KEY,
@@ -123,8 +128,6 @@ def init_db():
             );
         ''')
         cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
-        
-        # New Column for Sold / Not Sold Status
         cur.execute("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS is_sold VARCHAR(20) DEFAULT 'Not Sold';")
 
         cur.execute('''
@@ -151,6 +154,16 @@ def init_db():
             );
         ''')
         cur.execute("ALTER TABLE referral_earnings ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
+        
+        # Sync initial base count for existing users (so old users stats don't start at 0)
+        cur.execute("""
+            UPDATE users u SET
+                approved_tasks_count = COALESCE((SELECT COUNT(*) FROM tasks WHERE user_id = u.id AND status = 'Approved'), u.approved_tasks_count),
+                lifetime_task_earned = COALESCE((SELECT SUM(price) FROM tasks WHERE user_id = u.id AND status = 'Approved'), u.lifetime_task_earned),
+                lifetime_ref_earned = COALESCE((SELECT SUM(amount) FROM referral_earnings WHERE referrer_id = u.id), u.lifetime_ref_earned),
+                lifetime_withdrawn = COALESCE((SELECT SUM(amount) FROM withdrawals WHERE user_id = u.id AND status = 'Approved'), u.lifetime_withdrawn)
+            WHERE u.approved_tasks_count = 0 AND u.lifetime_task_earned = 0 AND u.lifetime_ref_earned = 0 AND u.lifetime_withdrawn = 0;
+        """)
         cur.close()
 
 try:
@@ -363,25 +376,21 @@ def referrals():
     with db_cursor() as conn:
         cur = conn.cursor()
         
-        cur.execute("SELECT id, full_name, balance FROM users WHERE id = %s", (user_id,))
+        cur.execute("SELECT id, full_name, balance, COALESCE(lifetime_ref_earned, 0) FROM users WHERE id = %s", (user_id,))
         user_row = cur.fetchone()
         
         cur.execute("SELECT COUNT(*) FROM users WHERE referred_by = %s", (user_id,))
         total_referrals = cur.fetchone()[0]
         
-        cur.execute("""
-            SELECT COALESCE(SUM(amount), 0) 
-            FROM referral_earnings 
-            WHERE referrer_id = %s AND created_at >= NOW() - INTERVAL '30 days'
-        """, (user_id,))
-        ref_earnings = cur.fetchone()[0]
+        # Lifetime total referral earnings
+        ref_earnings = float(user_row[3]) if user_row and user_row[3] else 0.0
         
+        # Lifetime earnings per referred user (No 30 days restriction)
         cur.execute("""
-            SELECT u.full_name, COALESCE(SUM(re.amount), 0) as earned_30d
+            SELECT u.full_name, COALESCE(SUM(re.amount), 0) as earned_lifetime
             FROM users u
             LEFT JOIN referral_earnings re ON re.referred_user_id = u.id 
                 AND re.referrer_id = %s 
-                AND re.created_at >= NOW() - INTERVAL '30 days'
             WHERE u.referred_by = %s
             GROUP BY u.id, u.full_name
             ORDER BY u.id DESC
@@ -394,7 +403,7 @@ def referrals():
     for row in ref_rows:
         referrals_list.append({
             'username': row[0],
-            'earned_30d': row[1]
+            'earned_30d': row[1] # Displaying lifetime total
         })
         
     user_info = [user_row[0], user_row[1], user_row[2]]
@@ -476,7 +485,11 @@ def profile():
         
         cur.execute("""
             SELECT full_name, whatsapp, 
-                   COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD Mon YYYY'), 'N/A')
+                   COALESCE(TO_CHAR(created_at + INTERVAL '5 hours', 'DD Mon YYYY'), 'N/A'),
+                   COALESCE(approved_tasks_count, 0),
+                   COALESCE(lifetime_task_earned, 0),
+                   COALESCE(lifetime_ref_earned, 0),
+                   COALESCE(lifetime_withdrawn, 0)
             FROM users WHERE id = %s
         """, (user_id,))
         u_row = cur.fetchone()
@@ -487,19 +500,12 @@ def profile():
         
         display_user_id = user_id + 100
         
-        cur.execute("SELECT COUNT(*) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
-        approved_tasks = cur.fetchone()[0]
-        
-        cur.execute("SELECT COALESCE(SUM(price), 0) FROM tasks WHERE user_id = %s AND status = 'Approved'", (user_id,))
-        task_earned = float(cur.fetchone()[0])
-        
-        cur.execute("SELECT COALESCE(SUM(amount), 0) FROM referral_earnings WHERE referrer_id = %s", (user_id,))
-        ref_earned = float(cur.fetchone()[0])
+        approved_tasks = u_row[3] if u_row else 0
+        task_earned = float(u_row[4]) if u_row else 0.0
+        ref_earned = float(u_row[5]) if u_row else 0.0
         
         total_earned = task_earned + ref_earned
-        
-        cur.execute("SELECT COALESCE(SUM(amount), 0) FROM withdrawals WHERE user_id = %s AND status = 'Approved'", (user_id,))
-        total_withdrawn = float(cur.fetchone()[0])
+        total_withdrawn = float(u_row[6]) if u_row else 0.0
         
         cur.close()
     
@@ -661,7 +667,6 @@ def admin():
         withdraw_id = request.form.get('withdraw_id')
         action = request.form.get('action')
         
-        # Get active search and page params from the form POST request
         search_task = request.form.get('search_task', '').strip()
         search_withdraw = request.form.get('search_withdraw', '').strip()
         search_user = request.form.get('search_user', '').strip()
@@ -689,7 +694,14 @@ def admin():
                         if action == 'approve':
                             if not is_old_approved:
                                 cur.execute("UPDATE tasks SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (task_id,))
-                                cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (price, u_id))
+                                # Update Balance & Permanent Task Stats
+                                cur.execute("""
+                                    UPDATE users SET 
+                                        balance = balance + %s,
+                                        approved_tasks_count = approved_tasks_count + 1,
+                                        lifetime_task_earned = lifetime_task_earned + %s
+                                    WHERE id = %s
+                                """, (price, price, u_id))
                                 
                                 cur.execute("SELECT id FROM referral_earnings WHERE task_id = %s", (task_id,))
                                 if not cur.fetchone():
@@ -697,7 +709,13 @@ def admin():
                                     ref_row = cur.fetchone()
                                     if ref_row and ref_row[0]:
                                         referrer_id = ref_row[0]
-                                        cur.execute("UPDATE users SET balance = balance + 10 WHERE id = %s", (referrer_id,))
+                                        # Update Referrer Balance & Permanent Ref Stats
+                                        cur.execute("""
+                                            UPDATE users SET 
+                                                balance = balance + 10,
+                                                lifetime_ref_earned = lifetime_ref_earned + 10
+                                            WHERE id = %s
+                                        """, (referrer_id,))
                                         cur.execute("""
                                             INSERT INTO referral_earnings (referrer_id, referred_user_id, task_id, amount)
                                             VALUES (%s, %s, %s, 10)
@@ -707,27 +725,42 @@ def admin():
                             new_status = 'Not Exist' if action == 'not_exist' else 'Rejected'
                             
                             if is_old_approved:
-                                cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (price, u_id))
+                                # Revert Task Balance & Permanent Task Stats
+                                cur.execute("""
+                                    UPDATE users SET 
+                                        balance = balance - %s,
+                                        approved_tasks_count = GREATEST(0, approved_tasks_count - 1),
+                                        lifetime_task_earned = GREATEST(0, lifetime_task_earned - %s)
+                                    WHERE id = %s
+                                """, (price, price, u_id))
                                 
                                 cur.execute("SELECT referrer_id, amount FROM referral_earnings WHERE task_id = %s", (task_id,))
                                 ref_earn = cur.fetchone()
                                 if ref_earn:
                                     referrer_id, ref_amt = ref_earn[0], ref_earn[1]
-                                    cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (ref_amt, referrer_id))
+                                    cur.execute("""
+                                        UPDATE users SET 
+                                            balance = balance - %s,
+                                            lifetime_ref_earned = GREATEST(0, lifetime_ref_earned - %s)
+                                        WHERE id = %s
+                                    """, (ref_amt, ref_amt, referrer_id))
                                     cur.execute("DELETE FROM referral_earnings WHERE task_id = %s", (task_id,))
                             
                             cur.execute("UPDATE tasks SET status = %s, created_at = CURRENT_TIMESTAMP WHERE id = %s", (new_status, task_id))
 
             elif withdraw_id:
-                if action == 'approve_withdraw':
-                    cur.execute("UPDATE withdrawals SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
-                elif action == 'reject_withdraw':
-                    cur.execute("SELECT user_id, amount, status FROM withdrawals WHERE id = %s", (withdraw_id,))
-                    w_row = cur.fetchone()
-                    if w_row and w_row[2] == 'pending':
-                        u_id, w_amount = w_row[0], w_row[1]
-                        cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (w_amount, u_id))
-                        cur.execute("UPDATE withdrawals SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
+                cur.execute("SELECT user_id, amount, status FROM withdrawals WHERE id = %s", (withdraw_id,))
+                w_row = cur.fetchone()
+                if w_row:
+                    w_uid, w_amount, w_status = w_row[0], w_row[1], w_row[2]
+                    if action == 'approve_withdraw':
+                        if w_status == 'pending':
+                            cur.execute("UPDATE withdrawals SET status = 'Approved', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
+                            cur.execute("UPDATE users SET lifetime_withdrawn = lifetime_withdrawn + %s WHERE id = %s", (w_amount, w_uid))
+                    elif action == 'reject_withdraw':
+                        if w_status == 'pending':
+                            cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (w_amount, w_uid))
+                            cur.execute("UPDATE withdrawals SET status = 'Rejected', created_at = CURRENT_TIMESTAMP WHERE id = %s", (withdraw_id,))
             cur.close()
             
         redirect_args = {}
@@ -774,7 +807,7 @@ def admin():
             SELECT (u.id + 100), u.full_name, u.whatsapp, u.password,
                    COALESCE(TO_CHAR(u.created_at + INTERVAL '5 hours', 'DD-Mon-YYYY HH12:MI AM'), 'N/A'),
                    u.balance,
-                   COALESCE((SELECT SUM(amount) FROM referral_earnings WHERE referrer_id = u.id), 0),
+                   COALESCE(u.lifetime_ref_earned, 0),
                    (SELECT (id + 100) FROM users WHERE id = u.referred_by)
             FROM users u
             {user_where}
